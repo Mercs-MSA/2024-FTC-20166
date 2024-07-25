@@ -33,10 +33,11 @@ public class AutonTest extends LinearOpMode {
 
         trajectoryAction1 = drive.actionBuilder(drive.pose)
 //                .strafeTo(new Vector2d(10, -5))
-                .splineTo(new Vector2d(30, 30), Math.toRadians(72))
+                .splineTo(new Vector2d(3000, 3000), Math.toRadians(72))
                 .build();
         waitForStart();
         //while (opModeIsActive()) {
+
             Actions.runBlocking(trajectoryAction1);
         //}
     }
