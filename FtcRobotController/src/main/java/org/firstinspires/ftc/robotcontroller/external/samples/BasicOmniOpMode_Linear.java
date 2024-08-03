@@ -171,6 +171,33 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
                 rightBack.setPower(.3);
             }
 
+            if(gamepad1.dpad_up && gamepad1.left_bumper) {
+                leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                leftBack.setTargetPosition(3600);
+                leftFront.setTargetPosition(-3600);
+                rightBack.setTargetPosition(-3600);
+                rightFront.setTargetPosition(3600);
+
+                leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                leftBack.setPower(.5);
+                leftFront.setPower(.5);
+                rightBack.setPower(.5);
+                rightFront.setPower(.5);
+            }
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
