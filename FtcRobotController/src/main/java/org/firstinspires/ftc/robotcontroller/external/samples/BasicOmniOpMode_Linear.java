@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -124,16 +125,16 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower  /= max;
-                rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
-            }
+//            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+//            max = Math.max(max, Math.abs(leftBackPower));
+//            max = Math.max(max, Math.abs(rightBackPower));
+//
+//            if (max > 1.0) {
+//                leftFrontPower  /= max;
+//                rightFrontPower /= max;
+//                leftBackPower   /= max;
+//                rightBackPower  /= max;
+//            }
 
             // This is test code:
             //
@@ -172,30 +173,15 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             }
 
             if(gamepad1.dpad_up && gamepad1.left_bumper) {
-                leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                leftBack.setTargetPosition(3600);
-                leftFront.setTargetPosition(-3600);
-                rightBack.setTargetPosition(-3600);
-                rightFront.setTargetPosition(3600);
-
-                leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
                 leftBack.setPower(.5);
                 leftFront.setPower(.5);
                 rightBack.setPower(.5);
                 rightFront.setPower(.5);
+            } else {
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
             }
 
             // Show the elapsed game time and wheel power.

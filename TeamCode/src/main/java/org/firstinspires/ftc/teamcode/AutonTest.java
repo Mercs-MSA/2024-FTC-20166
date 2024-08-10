@@ -20,24 +20,26 @@ public class AutonTest extends LinearOpMode {
         drive.rightFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         drive.rightBack.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
-    double StartPoseX = -5.0;
-    double StartPoseY = -5.0;
+    double StartPoseX = 0;
+    double StartPoseY = 0;
     double StartPoseT = 0;
     @Override
     public void runOpMode() {
         Pose2d StartPose = new Pose2d(StartPoseX, StartPoseY, Math.toRadians(StartPoseT));
         //We are following this: https://rr.brott.dev/docs/v1-0/guides/centerstage-auto/ while working on this. Setting starting pose
         MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose);
+        drive.leftFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        drive.leftBack.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        drive.rightFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        drive.rightBack.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         Action trajectoryAction1;
 
         trajectoryAction1 = drive.actionBuilder(drive.pose)
-//                .strafeTo(new Vector2d(67, -5))
-                //.strafeTo(new Vector2d(10, 10))
-                .splineTo(new Vector2d(10, 10), Math.toRadians(45))
-                .splineTo(new Vector2d(32, 32), Math.toRadians(-32))
-                .splineTo(new Vector2d(30, 10), Math.toRadians(-90))
-                .splineTo(new Vector2d(-5, -5), Math.toRadians(-180))
+                .splineTo(new Vector2d(15, 15), Math.toRadians(45))
+                .splineTo(new Vector2d(37, 37), Math.toRadians(-32))
+                .splineTo(new Vector2d(35, 15), Math.toRadians(-90))
+                .splineTo(new Vector2d(0, 0), Math.toRadians(-180))
                 .build();
         waitForStart();
 

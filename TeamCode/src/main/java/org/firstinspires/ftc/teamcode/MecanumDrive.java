@@ -66,14 +66,20 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
-        public double inPerTick = .0225621587;
-        public double lateralInPerTick = .0180167315;
-        public double trackWidthTicks = 1344.9631790761148;
+        //public double inPerTick = .0225621587; //encoders
+        public double inPerTick = .0029547973; //odometry.0029484033
+        //public double lateralInPerTick = .0180167315; //encoders
+        public double lateralInPerTick = 0.0023758780330873585; //odometry0.002379769649248765
+        //public double trackWidthTicks = 1344.9631790761148; //encoders
+        public double trackWidthTicks = 5217.310475970538; //odometry
 
         // feedforward parameters (in tick units)
-        public double kS = 1.4238910978211923;
-        public double kV = 0.004216248140197725;
-        public double kA = 0.000001;
+        //public double kS = 1.4238910978211923; //encoders
+        public double kS = 0.7620544913154506; //odometry
+        //public double kV = 0.004216248140197725; //encoders
+        public double kV = 0.0005969742987744868; //odometry
+        //public double kA = 0.000001; //encoders
+        public double kA = 0.0001; //odometry
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -85,9 +91,12 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5;
-        public double lateralGain = 7;
-        public double headingGain = 6; // shared with turn
+        //public double axialGain = 5; //encoders
+        public double axialGain = 5.4; //odometry
+        //public double lateralGain = 7; //encoders
+        public double lateralGain = 7; //odometry
+        //public double headingGain = 6; // shared with turn (encoders)
+        public double headingGain = 5.49; //odometry
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -244,7 +253,7 @@ public final class MecanumDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer();//ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
+        localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);//DriveLocalizer();
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
