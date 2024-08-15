@@ -36,6 +36,7 @@ public class AutonTest extends LinearOpMode {
         Action trajectoryAction1;
 
         trajectoryAction1 = drive.actionBuilder(drive.pose)
+//                .strafeTo(new Vector2d(0,48))
                 .splineTo(new Vector2d(15, 15), Math.toRadians(45))
                 .splineTo(new Vector2d(37, 37), Math.toRadians(-32))
                 .splineTo(new Vector2d(35, 15), Math.toRadians(-90))
