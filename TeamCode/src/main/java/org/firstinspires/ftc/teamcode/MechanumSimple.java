@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp
 public class MechanumSimple extends LinearOpMode {
@@ -44,6 +45,13 @@ public class MechanumSimple extends LinearOpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // Get the PIDF coefficients for the RUN_USING_ENCODER RunMode.
+        PIDFCoefficients pidfOrig = frontLeftDrive.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        telemetry.addData("P",pidfOrig.p);
+        telemetry.addData("I",pidfOrig.i);
+        telemetry.addData("D",pidfOrig.d);
+        telemetry.addData("F",pidfOrig.f);
+        updateTelemetry(telemetry);
     }
 
     private static double[] rotatePoint(double xPoint, double yPoint, double angle) {
