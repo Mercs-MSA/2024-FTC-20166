@@ -16,6 +16,7 @@ public class MechanumSimple extends LinearOpMode {
     private double joy1RightX;
     private double joy1RightY;
     private double FLMP, FRMP, BLMP, BRMP;
+    public int maxTicksPer = 1000;
 
 
     //Motor demo variables
@@ -61,6 +62,14 @@ public class MechanumSimple extends LinearOpMode {
         joy1RightY = gamepad1.right_stick_y;
     }
 
+    private void updateDashboard()
+    {
+        telemetry.addData("FL",frontLeftDrive.getVelocity());
+        telemetry.addData("FR",frontRightDrive.getVelocity());
+        telemetry.addData("BL",backLeftDrive.getVelocity());
+        telemetry.addData("BR",backRightDrive.getVelocity());
+        updateTelemetry(telemetry);
+    }
     private void updateDrivebaseMotors(double FLMP, double FRMP, double BLMP, double BRMP)
     {
         double maxPower;
@@ -74,12 +83,16 @@ public class MechanumSimple extends LinearOpMode {
             BLMP = BLMP / maxPower;
             BRMP = BRMP / maxPower;
         }
-
+/*
         frontLeftDrive.setPower(FLMP);
         frontRightDrive.setPower(FRMP);
         backLeftDrive.setPower(BLMP);
         backRightDrive.setPower(BRMP);
-
+*/
+        frontLeftDrive.setVelocity(FLMP * maxTicksPer);
+        frontRightDrive.setVelocity(FRMP * maxTicksPer);
+        backLeftDrive.setVelocity(BLMP * maxTicksPer);
+        backRightDrive.setVelocity(BRMP * maxTicksPer);
     }
     private void calculateDrivebaseSpeed()
     {
@@ -102,13 +115,6 @@ public class MechanumSimple extends LinearOpMode {
         BLPR = -joy1RightX;
         BRPR = joy1RightX;
 
-        telemetry.addData("RJS", joy1RightX);
-        telemetry.addData("FLPR",FLPR);
-        telemetry.addData("FRPR",FRPR);
-        telemetry.addData("BLPR",BLPR);
-        telemetry.addData("BRPR",BRPR);
-        updateTelemetry(telemetry);
-
         FLMP = FLPFB + FLPLR + FLPR;
         FRMP = FRPFB + FRPLR + FRPR;
         BLMP = BLPFB + BLPLR + BLPR;
@@ -124,6 +130,7 @@ public class MechanumSimple extends LinearOpMode {
             updateJoysticks();
             calculateDrivebaseSpeed();
             updateDrivebaseMotors(FLMP, FRMP, BLMP, BRMP);
+            updateDashboard();
         }
     }
 }
