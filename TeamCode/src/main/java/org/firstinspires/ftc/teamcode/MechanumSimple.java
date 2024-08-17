@@ -17,7 +17,6 @@ public class MechanumSimple extends LinearOpMode {
     private double joy1RightX;
     private double joy1RightY;//
     private double FLMP, FRMP, BLMP, BRMP;
-    public int maxTicksPer = 1000;
 
 
     //Motor demo variables
@@ -45,13 +44,6 @@ public class MechanumSimple extends LinearOpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // Get the PIDF coefficients for the RUN_USING_ENCODER RunMode.
-        PIDFCoefficients pidfOrig = frontLeftDrive.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        telemetry.addData("P",pidfOrig.p);
-        telemetry.addData("I",pidfOrig.i);
-        telemetry.addData("D",pidfOrig.d);
-        telemetry.addData("F",pidfOrig.f);//
-        updateTelemetry(telemetry);
     }
 
     private static double[] rotatePoint(double xPoint, double yPoint, double angle) {
@@ -91,16 +83,10 @@ public class MechanumSimple extends LinearOpMode {
             BLMP = BLMP / maxPower;
             BRMP = BRMP / maxPower;
         }
-/*
         frontLeftDrive.setPower(FLMP);
         frontRightDrive.setPower(FRMP);
         backLeftDrive.setPower(BLMP);
         backRightDrive.setPower(BRMP);
-*/
-        frontLeftDrive.setVelocity(FLMP * maxTicksPer);
-        frontRightDrive.setVelocity(FRMP * maxTicksPer);
-        backLeftDrive.setVelocity(BLMP * maxTicksPer);
-        backRightDrive.setVelocity(BRMP * maxTicksPer);
     }
     private void calculateDrivebaseSpeed()
     {
@@ -113,10 +99,10 @@ public class MechanumSimple extends LinearOpMode {
         BLPFB = joy1LeftY;
         BRPFB = joy1LeftY;
 
-        FLPLR = joy1LeftX;
-        FRPLR = -joy1LeftX;
-        BLPLR = -joy1LeftX;
-        BRPLR = joy1LeftX;
+        FLPLR = -joy1LeftX;
+        FRPLR = joy1LeftX;
+        BLPLR = joy1LeftX;
+        BRPLR = -joy1LeftX;
 
         FLPR = -joy1RightX;
         FRPR = joy1RightX;
