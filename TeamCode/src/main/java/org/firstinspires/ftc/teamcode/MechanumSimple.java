@@ -1,19 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.lang.Double.max;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @TeleOp
 public class MechanumSimple extends LinearOpMode {
 
-    private double joy1LeftX;
-    private double joy1LeftY;
+    private double translateX;
+    private double translateY;
     private double joy1RightX;
     private double joy1RightY;//
     private double FLMP, FRMP, BLMP, BRMP;
@@ -24,6 +26,7 @@ public class MechanumSimple extends LinearOpMode {
     private DcMotorEx frontRightDrive = null;
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
+    private IMU imu         = null;
 
     public void initializeDriveMotors()
     {
@@ -46,6 +49,21 @@ public class MechanumSimple extends LinearOpMode {
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    private void initializeSensors()
+    {
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
+    }
+
+    public double getHeading() {
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        return orientation.getYaw(AngleUnit.RADIANS);
+    }
+
     private static double[] rotatePoint(double xPoint, double yPoint, double angle) {
         double[]  Result = new double[2];
 
@@ -54,12 +72,31 @@ public class MechanumSimple extends LinearOpMode {
         return Result;
     }
 
+    private static double rotatePointX(double xPoint, double yPoint, double angle) {
+        double[]  Result = new double[2];
+
+        return xPoint * Math.cos(angle) - yPoint * Math.sin(angle);
+    }
+
+    private static double rotatePointY(double xPoint, double yPoint, double angle) {
+        double[]  Result = new double[2];
+
+        return xPoint * Math.sin(angle) + yPoint * Math.cos(angle);
+    }
+
     private void updateJoysticks()
     {
-        joy1LeftX = gamepad1.left_stick_x;
-        joy1LeftY = gamepad1.left_stick_y;
+        double x, y, heading;
+
+        heading = getHeading();
+
+        x = gamepad1.left_stick_x;
+        y = gamepad1.left_stick_y;
         joy1RightX = gamepad1.right_stick_x;
         joy1RightY = gamepad1.right_stick_y;
+
+        translateX = rotatePointX(x, y, heading);
+        translateY = rotatePointY(x, y, heading);
     }
 
     private void updateDashboard()
@@ -68,6 +105,7 @@ public class MechanumSimple extends LinearOpMode {
         telemetry.addData("FR",frontRightDrive.getVelocity());
         telemetry.addData("BL",backLeftDrive.getVelocity());
         telemetry.addData("BR",backRightDrive.getVelocity());
+        telemetry.addData("Heading", getHeading());
         updateTelemetry(telemetry);
     }
     private void updateDrivebaseMotors(double FLMP, double FRMP, double BLMP, double BRMP)
@@ -94,15 +132,15 @@ public class MechanumSimple extends LinearOpMode {
         double FLPLR, FRPLR, BLPLR, BRPLR;
         double FLPR, FRPR, BLPR, BRPR;
 
-        FLPFB = joy1LeftY;
-        FRPFB = joy1LeftY;
-        BLPFB = joy1LeftY;
-        BRPFB = joy1LeftY;
+        FLPFB = translateY;
+        FRPFB = translateY;
+        BLPFB = translateY;
+        BRPFB = translateY;
 
-        FLPLR = -joy1LeftX;
-        FRPLR = joy1LeftX;
-        BLPLR = joy1LeftX;
-        BRPLR = -joy1LeftX;
+        FLPLR = -translateX;
+        FRPLR = translateX;
+        BLPLR = translateX;
+        BRPLR = -translateX;
 
         FLPR = -joy1RightX;
         FRPR = joy1RightX;
@@ -115,7 +153,7 @@ public class MechanumSimple extends LinearOpMode {
         BRMP = BRPFB + BRPLR + BRPR;
     }
     public void runOpMode()  {
-
+        initializeSensors();
         initializeDriveMotors();
 
         waitForStart();
