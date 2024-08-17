@@ -95,8 +95,15 @@ public class MechanumSimple extends LinearOpMode {
         joy1RightX = gamepad1.right_stick_x;
         joy1RightY = gamepad1.right_stick_y;
 
-        translateX = rotatePointX(x, y, heading);
-        translateY = rotatePointY(x, y, heading);
+        if (gamepad1.right_bumper){
+            translateX = x;
+            translateY = y;
+        }
+        else{
+            translateX = rotatePointX(x, y, heading);
+            translateY = rotatePointY(x, y, heading);
+        }
+
     }
 
     private void updateDashboard()
