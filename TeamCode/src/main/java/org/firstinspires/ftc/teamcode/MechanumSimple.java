@@ -14,7 +14,7 @@ public class MechanumSimple extends LinearOpMode {
     private double joy1LeftX;
     private double joy1LeftY;
     private double joy1RightX;
-    private double joy1RightY;
+    private double joy1RightY;//
     private double FLMP, FRMP, BLMP, BRMP;
     public int maxTicksPer = 1000;
 
