@@ -50,7 +50,7 @@ public class MechanumSimple extends LinearOpMode {
         telemetry.addData("P",pidfOrig.p);
         telemetry.addData("I",pidfOrig.i);
         telemetry.addData("D",pidfOrig.d);
-        telemetry.addData("F",pidfOrig.f);
+        telemetry.addData("F",pidfOrig.f);//
         updateTelemetry(telemetry);
     }
 
