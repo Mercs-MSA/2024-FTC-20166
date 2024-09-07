@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemArm;
 
 @TeleOp
-public class MechanumSimple extends LinearOpMode {
+public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private double translateX;
     private double translateY;
@@ -27,6 +28,8 @@ public class MechanumSimple extends LinearOpMode {
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
     private IMU imu         = null;
+
+    private SubSystemArm arm;
 
     public void initializeDriveMotors()
     {
@@ -59,6 +62,16 @@ public class MechanumSimple extends LinearOpMode {
         imu.resetYaw();
     }
 
+    private void initializeSubSystems() throws InterruptedException {
+        arm = new SubSystemArm(hardwareMap);
+    }
+
+    private void initalizeEverything() throws InterruptedException {
+        initializeDriveMotors();
+        initializeSensors();
+        initializeSubSystems();
+    }
+
     public double getHeading() {
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         return orientation.getYaw(AngleUnit.RADIANS);
@@ -86,18 +99,14 @@ public class MechanumSimple extends LinearOpMode {
 
     private void updateJoysticks()
     {
+        //driving
         double x, y, heading;
-
         heading = getHeading();
 
         x = gamepad1.left_stick_x;
         y = gamepad1.left_stick_y;
         joy1RightX = gamepad1.right_stick_x;
         joy1RightY = gamepad1.right_stick_y;
-
-
-
-
 
         if (gamepad1.right_bumper){
             translateX = x;
@@ -108,6 +117,9 @@ public class MechanumSimple extends LinearOpMode {
             translateY = rotatePointY(x, y, heading);
         }
 
+        //buttons
+
+        if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
     }
 
     private void updateDashboard()
@@ -117,6 +129,10 @@ public class MechanumSimple extends LinearOpMode {
         telemetry.addData("BL",backLeftDrive.getVelocity());
         telemetry.addData("BR",backRightDrive.getVelocity());
         telemetry.addData("Heading", getHeading());
+
+        telemetry.addLine("\n");
+        telemetry.addData("Arm Pos", arm.getPosition());
+        telemetry.addData("left bumper", gamepad1.left_bumper);
         updateTelemetry(telemetry);
     }
     private void updateDrivebaseMotors(double FLMP, double FRMP, double BLMP, double BRMP)
@@ -163,11 +179,11 @@ public class MechanumSimple extends LinearOpMode {
         BLMP = BLPFB + BLPLR + BLPR;
         BRMP = BRPFB + BRPLR + BRPR;
     }
-    public void runOpMode()  {
-        initializeSensors();
-        initializeDriveMotors();
+    public void runOpMode() throws InterruptedException {
+        initalizeEverything();
 
         waitForStart();
+
         while (opModeIsActive())
         {
             updateJoysticks();
@@ -175,6 +191,7 @@ public class MechanumSimple extends LinearOpMode {
             updateDrivebaseMotors(FLMP, FRMP, BLMP, BRMP);
             updateDashboard();
         }
+
     }
 }
 
