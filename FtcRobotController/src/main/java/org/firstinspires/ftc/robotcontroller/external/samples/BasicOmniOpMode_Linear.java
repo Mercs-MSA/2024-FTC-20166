@@ -63,26 +63,26 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp
+@TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
 @Disabled
 public class BasicOmniOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFront = null;
-    private DcMotor leftBack = null;
-    private DcMotor rightFront = null;
-    private DcMotor rightBack = null;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
 
     @Override
     public void runOpMode() {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFront  = hardwareMap.get(DcMotor.class, "FL");
-        leftBack  = hardwareMap.get(DcMotor.class, "BL");
-        rightFront = hardwareMap.get(DcMotor.class, "FR");
-        rightBack = hardwareMap.get(DcMotor.class, "BR");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -94,12 +94,12 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        // Wait for the game to start (driver presses PLAY)
+        // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -153,59 +153,15 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            leftFront.setPower(leftFrontPower);
-            rightFront.setPower(rightFrontPower);
-            leftBack.setPower(leftBackPower);
-            rightBack.setPower(rightBackPower);
-
-            if(gamepad1.b) {
-                leftFront.setPower(.3);
-            }
-            if(gamepad1.a) {
-                leftBack.setPower(.3);
-            }
-            if(gamepad1.x) {
-                rightFront.setPower(.3);
-            }
-            if(gamepad1.y) {
-                rightBack.setPower(.3);
-            }
-
-            if(gamepad1.dpad_up && gamepad1.left_bumper) {
-                leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                leftBack.setTargetPosition(3600);
-                leftFront.setTargetPosition(-3600);
-                rightBack.setTargetPosition(-3600);
-                rightFront.setTargetPosition(3600);
-
-                leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                leftBack.setPower(.5);
-                leftFront.setPower(.5);
-                rightBack.setPower(.5);
-                rightFront.setPower(.5);
-            }
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Front Right Pos", rightFront.getCurrentPosition());
-            telemetry.addData("Front Left Pos", leftFront.getCurrentPosition());
-            telemetry.addData("Back Right Pos", rightBack.getCurrentPosition());
-            telemetry.addData("Back Left Pos", leftBack.getCurrentPosition());
             telemetry.update();
         }
     }}
