@@ -11,16 +11,34 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
+    private static final int ELEVATOR_BOTTOM_POSITION = 0;
+    private static final int ELEVATOR_TOP_POSITION = 0;
+
+    private static final int ELEVATOR_LOW_POSITION = 0;
+
+    private static final int ELEVATOR_HIGH_POSITION = 0;
+    private static final int ELEVATOR_TEST_CHANGE = 50;
+    private static final double GRABBER_OPEN_POSITION = 0.3;
+    private static final double GRABBER_CLOSE_POSITION = 0.7;
     private double translateX;
     private double translateY;
     private double joy1RightX;
     private double joy1RightY;//
     private double FLMP, FRMP, BLMP, BRMP;
 
+    private boolean elevatorMoveBottom = false;
+    private boolean elevatorMoveTop = false;
+    private boolean elevatorMoveLow = false;
+    private boolean elevatorMoveHigh = false;
+
+    private boolean grabberOpen;
+    private boolean grabberClose;
 
     //Motor demo variables
     private DcMotorEx frontLeftDrive = null;
@@ -29,7 +47,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private DcMotorEx backRightDrive = null;
     private IMU imu         = null;
 
-    private SubSystemArm arm;
+    private SubSystemElevator robotElevator = null;
+    private SubSystemGrabber grabber = null;
 
     public void initializeDriveMotors()
     {
@@ -63,7 +82,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     }
 
     private void initializeSubSystems() throws InterruptedException {
-        arm = new SubSystemArm(hardwareMap);
+        robotElevator = new SubSystemElevator(hardwareMap);
     }
 
     private void initalizeEverything() throws InterruptedException {
@@ -117,9 +136,17 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             translateY = rotatePointY(x, y, heading);
         }
 
+        elevatorMoveBottom = gamepad2.dpad_down;
+        elevatorMoveTop = gamepad2.dpad_up;
+        elevatorMoveLow = gamepad2.dpad_left;
+        elevatorMoveHigh = gamepad2.dpad_right;
+
+        grabberOpen = gamepad2.x;
+        grabberClose = gamepad2.b;
+
         //buttons
 
-        if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
+        //if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
     }
 
     private void updateDashboard()
@@ -131,7 +158,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         telemetry.addData("Heading", getHeading());
 
         telemetry.addLine("\n");
-        telemetry.addData("Arm Pos", arm.getPosition());
+        telemetry.addData("Elevator Pos", robotElevator.getPosition());
         telemetry.addData("left bumper", gamepad1.left_bumper);
         updateTelemetry(telemetry);
     }
@@ -179,7 +206,45 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         BLMP = BLPFB + BLPLR + BLPR;
         BRMP = BRPFB + BRPLR + BRPR;
     }
-    public void runOpMode() throws InterruptedException {
+    public void updateElevator()
+    {
+        if (elevatorMoveBottom == true)
+        {
+            robotElevator.setPosition(ELEVATOR_BOTTOM_POSITION);
+        }
+        else if (elevatorMoveTop == true)
+        {
+            robotElevator.setPosition(ELEVATOR_TOP_POSITION);
+        }
+        else if (elevatorMoveLow == true)
+        {
+            robotElevator.setPosition(ELEVATOR_LOW_POSITION);
+        }
+        else if (elevatorMoveHigh == true)
+        {
+            robotElevator.setPosition(ELEVATOR_HIGH_POSITION);
+        }
+        else if (gamepad2.right_bumper == true)
+        {
+            robotElevator.setPosition(robotElevator.getPosition() + ELEVATOR_TEST_CHANGE);
+        }
+        else if (gamepad2.left_bumper == true)
+        {
+            robotElevator.setPosition(robotElevator.getPosition() - ELEVATOR_TEST_CHANGE);
+        }
+    }
+    public void updateGrabber()
+    {
+       if (grabberOpen == true)
+       {
+           grabber.setPosition(GRABBER_OPEN_POSITION);
+       }
+       else if (grabberClose == true)
+        {
+            grabber.setPosition(GRABBER_CLOSE_POSITION);
+        }
+    }
+        public void runOpMode() throws InterruptedException {
         initalizeEverything();
 
         waitForStart();
@@ -189,6 +254,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             updateJoysticks();
             calculateDrivebaseSpeed();
             updateDrivebaseMotors(FLMP, FRMP, BLMP, BRMP);
+            updateElevator();
+            updateGrabber();
             updateDashboard();
         }
 
