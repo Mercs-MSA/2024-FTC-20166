@@ -42,6 +42,7 @@ $SampleGrabberArmRotation = -20;
 module _block_customizer(){}
 
 $fn = 100;
+
 $Hex2Circle = 1/(sin(60));
 $Inch2mm = 25.5;
 $ServoRotateOffset = 9.85;
@@ -351,7 +352,7 @@ module SampleGrabberLifterAttach()
     {
       cube([30, $SampleGrabberFrameThickness, 50], center = true);
       translate([0, -$SampleGrabberFrameThickness + 0.6, 0])
-        cube([16, $SampleGrabberFrameThickness, 51], center = true);
+        cube([20.1, $SampleGrabberFrameThickness, 51], center = true);
       rotate(90, [1, 0, 0])
         cylinder(d = 3.5, h = $SampleGrabberFrameThickness + 1, center = true);
     }
@@ -422,7 +423,7 @@ module BotBase()
 */
 
   //Lift latch point
-  
+/*  
   $ClimbArmLength = 18 * $Inch2mm;
   $ClimbArmVOffset = 10 * $Inch2mm;
   $ClimbArmHOffset = -3 * $Inch2mm;
@@ -430,7 +431,7 @@ module BotBase()
   $BotHOffset = 0 * $Inch2mm;
   $BotVOffset = 9 * $Inch2mm;
   $BotRotation = -30;
-
+*/
 
 module ClimbArm()
 {
@@ -485,10 +486,120 @@ module ClimbTest()
   }
 }
 
+/*
+  //Start climb position
+  $ClimbSliderLength = 12 * $Inch2mm;
+  $ClimbSliderLocation = [0, 0, 12 * $Inch2mm];
+  $ClimbSliderRotation = -45;
+  $BotHOffset = -8.5 * $Inch2mm;
+  $BotVOffset = 0.0 * $Inch2mm;
+  $BotRotation = 0;
+*/
+
+/*
+  //Start of lift
+  $ClimbSliderLength = 12 * $Inch2mm;
+  $ClimbSliderLocation = [0, 0, 12 * $Inch2mm];
+  $ClimbSliderRotation = -45;
+  $BotHOffset = -9.5 * $Inch2mm;
+  $BotVOffset = 1.0 * $Inch2mm;
+  $BotRotation = 5;
+*/
+
+/*
+  //Tip point
+  $ClimbSliderLength = 12 * $Inch2mm;
+  $ClimbSliderLocation = [0, 0, 12 * $Inch2mm];
+  $ClimbSliderRotation = -45;
+  $BotHOffset = -8.5 * $Inch2mm;
+  $BotVOffset = 4.0 * $Inch2mm;
+  $BotRotation = 10;
+*/
+
+/*
+  //Post tip point
+  $ClimbSliderLength = 12 * $Inch2mm;
+  $ClimbSliderLocation = [0, 0, 12 * $Inch2mm];
+  $ClimbSliderRotation = -45;
+  $BotHOffset = -1.5 * $Inch2mm;
+  $BotVOffset = 4.0 * $Inch2mm;
+  $BotRotation = -10;
+*/
+
+  //Full pull up stage 1
+  $ClimbSliderLength = 12 * $Inch2mm;
+  $ClimbSliderLocation = [0, 0, 12 * $Inch2mm];
+  $ClimbSliderRotation = -45;
+  $BotHOffset = -1.5 * $Inch2mm;
+  $BotVOffset = 8.0 * $Inch2mm;
+  $BotRotation = 5;
+
+module ClimbTest2()
+{ 
+  //Floor
+  cube([2000, 2000, 0.01], center = true);
+  
+  //Climb bars
+  color("blue")
+  {
+    translate([0, 0, 508])
+      rotate(90, [1, 0, 0])
+        cylinder(d = 26, h = 1000, center = true);
+    translate([0, 0, 914])
+      rotate(90, [1, 0, 0])
+        cylinder(d = 26, h = 1000, center = true);
+  }
+  
+  
+  translate([$BotHOffset, 0, $BotVOffset])
+  {
+    rotate($BotRotation, [0, 1, 0])
+    {
+      translate($ClimbSliderLocation)
+        rotate($ClimbSliderRotation, [0, 1, 0])
+          cube([$ClimbSliderLength, 1, 25]);
+//      translate([-$ClimbArmHOffset, 0, 0])
+        BotBase();
+      color([0.3, 0.1, 0.6, 0.1])
+        translate([1 * 25.4, 0, 9 * $Inch2mm])
+          cube([18 * $Inch2mm, 18 * $Inch2mm, 18 * $Inch2mm], center = true);
+    }
+  }
+}
+
+module BotBaseWheel()
+{
+  color("steelblue")
+    rotate(90, [1, 0, 0])
+      cylinder(d = 100, h = 20, center = true);
+}
+
+module BotBase()
+{
+  $BaseW = 14 * 25.4;
+  $BaseL = 425;
+  $WheelLOffset = 50;
+  $WheelWOffset = 14;
+  $BaseLSpacing = $BaseW - $WheelLOffset;
+  $BaseWSpacing = $BaseL - $WheelWOffset;
+
+  translate([$BaseLSpacing / 2, $BaseWSpacing / 2, 50])
+    BotBaseWheel();
+  translate([-$BaseLSpacing / 2, $BaseWSpacing / 2, 50])
+    BotBaseWheel();
+  translate([$BaseLSpacing / 2, -$BaseWSpacing / 2, 50])
+    BotBaseWheel();
+  translate([-$BaseLSpacing / 2, -$BaseWSpacing / 2, 50])
+    BotBaseWheel();
+  color("silver")
+  translate([0, 0, 100 / 2])
+  cube([$BaseW, $BaseL, 50], center = true);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //SampleGrabberArm();
 //SampleGrabberFrame();
-SampleGrabberLifterAttach();
+//SampleGrabberLifterAttach();
 
 //SampleGrabberMechanism($DoServo);
 
@@ -497,3 +608,4 @@ SampleGrabberLifterAttach();
 //cube([38, 38, 89], center = true);
 
 //ClimbTest();
+ClimbTest2();

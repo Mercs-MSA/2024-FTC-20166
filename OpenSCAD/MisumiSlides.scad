@@ -25,7 +25,36 @@ module RoundedBlockV2($XDim = 10, $YDim = 10, $ZDim = 10, $D1 = 0, $D2 = 0, $D3 
     
   }
 }
-module MisumiLiftSlideDrillTemplate()
+module MisumiLiftSlideDrillTemplate2($Stages = 1)
+{
+  $fn = 20;
+  $Clearance = 0.2;
+  $YOffset = 5 + ($Clearance / 2);
+  $XOffset = 12;//
+  $XHoleSpacing = 33;
+  $YSpacing = 16;
+  
+  difference()
+  {
+    RoundedBlockV2($XDim = 53, $YDim = ($Stages * $YSpacing) + 6, $ZDim = 27, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+    translate([-2, 0, 0])
+    {
+      cube([53, ($Stages * $YSpacing) + $Clearance, 20.2], center = true);
+      for (i = [0:$Stages - 1])
+      {
+        translate([(53 / 2) - $XOffset, (($Stages * $YSpacing) / 2) - $YOffset - (i * $YSpacing), 0])
+        {
+          cylinder(d = 2, h = 30, center = true);
+            translate([-$XHoleSpacing, 0, 0])
+              cylinder(d = 2, h = 30, center = true);
+        }
+      }
+    }
+  }
+  
+}
+
+module MisumiLiftSlideDrillTemplate1()
 {
   difference()
   {
@@ -121,6 +150,7 @@ module MisumiLiftSlideInnerFirst($Multi = false, $Bottom = 0)
 
 module MisumiLiftSlideSpringMount($MountD = 2.9)
 {
+  $fn = 20;
   $WidthAdder = 10;
   difference()
   {
@@ -133,8 +163,8 @@ module MisumiLiftSlideSpringMount($MountD = 2.9)
       translate([21 / 2, -(8 - 6) / 2, (8 + 6.5) / 2])
         RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8 + 6.5, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Spring blocker
-      translate([35, -(8 - 6) / 2, - 6])
-        RoundedBlockV2($XDim = 10, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+      translate([35, -(8 - 6) / 2, - 6 + ($WidthAdder) / 2])
+        RoundedBlockV2($XDim = 10, $YDim = 8 + 6, $ZDim = 8 + $WidthAdder, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     }
     //Slider alignment groove
     translate([0, (28 - 20.2) / 2, 7])
@@ -149,11 +179,16 @@ module MisumiLiftSlideSpringMount($MountD = 2.9)
     //Bearing cord guide
     translate([(21/2) + 9, -3, 13.5])
       cube([10, 2, 2], center = true);
-    //Spring mount hole
+    //Spring mount holes
     translate([35 + (10 / 2) + 45, 32, -6])
       rotate(90, [1, 0, 0])
         cylinder(d = 3, h = 50, $fn = 30);
-    //Spring cord opening
+    translate([35 + (10 / 2) + 45, 32, -0.5])
+      rotate(90, [1, 0, 0])
+        cylinder(d = 3, h = 50, $fn = 30);
+    //Spring cord opening2
+    translate([35, -5, -1])
+      cube([20, 10, 2], center = true);
     translate([35, -5, -6])
       cube([20, 10, 2], center = true);
     //Slider attach hole options
@@ -433,7 +468,8 @@ module MisumiSlide(length, position, showupper = true, showlower = true, pulleye
 //******************************************
 //******************************************
 //MisumiSliderSet($Sliders = 3);
-//MisumiLiftSlideSpringMount($MountD = 2.9);
+MisumiLiftSlideSpringMount($MountD = 2.9);
 //MisumiLiftSlideReturn($MountD = 2.9);
-//MisumiLiftSlideDrillTemplate();
-MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10, dopulleyguide = true);
+//MisumiLiftSlideDrillTemplate1();
+//MisumiLiftSlideDrillTemplate2();
+//MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10, dopulleyguide = true);
