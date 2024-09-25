@@ -62,6 +62,8 @@ module Servo()
     import("GoBildaServoLoRes.stl");
 }
 
+
+
 module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFaces, ThreadD)
 {
   difference()
@@ -87,6 +89,7 @@ module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFa
         cylinder(d = ThreadD, h = OuterD, center = true);
   }
 }
+
 
 module FTCLifterSpindle(Splitter = false)
 {  
@@ -597,6 +600,9 @@ module BotBase()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+//Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
+
+
 //SampleGrabberArm();
 //SampleGrabberFrame();
 //SampleGrabberLifterAttach();
@@ -608,4 +614,9 @@ module BotBase()
 //cube([38, 38, 89], center = true);
 
 //ClimbTest();
-ClimbTest2();
+//ClimbTest2();
+
+translate([0, 0, 9.5])
+  rotate(120, [0, 0, 1])
+  SpindleCore(InnerD = 40, OuterD = 50, Height = 10, RimHeight = 0.5, SlopeSpan = 3, ShaftD = 8 * $Hex2Circle, ShaftFaces = 6, ThreadD = 3);
+SpindleCore(InnerD = 40, OuterD = 50, Height = 10, RimHeight = 0.5, SlopeSpan = 3, ShaftD = 8 * $Hex2Circle, ShaftFaces = 6, ThreadD = 3);

@@ -163,7 +163,7 @@ module MisumiLiftSlideSpringMount($MountD = 2.9)
       translate([21 / 2, -(8 - 6) / 2, (8 + 6.5) / 2])
         RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8 + 6.5, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Spring blocker
-      translate([35, -(8 - 6) / 2, - 6 + ($WidthAdder) / 2])
+      translate([24, -(8 - 6) / 2, - 6 + ($WidthAdder) / 2])
         RoundedBlockV2($XDim = 10, $YDim = 8 + 6, $ZDim = 8 + $WidthAdder, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     }
     //Slider alignment groove
@@ -187,9 +187,9 @@ module MisumiLiftSlideSpringMount($MountD = 2.9)
       rotate(90, [1, 0, 0])
         cylinder(d = 3, h = 50, $fn = 30);
     //Spring cord opening2
-    translate([35, -5, -1])
+    translate([25, -5, -1])
       cube([20, 10, 2], center = true);
-    translate([35, -5, -6])
+    translate([25, -5, -6])
       cube([20, 10, 2], center = true);
     //Slider attach hole options
     //Pulley block flush with top
@@ -468,8 +468,8 @@ module MisumiSlide(length, position, showupper = true, showlower = true, pulleye
 //******************************************
 //******************************************
 //MisumiSliderSet($Sliders = 3);
-MisumiLiftSlideSpringMount($MountD = 2.9);
-//MisumiLiftSlideReturn($MountD = 2.9);
+//MisumiLiftSlideSpringMount($MountD = 2.9);
+//MisumiLiftSlideReturn($Stages = 3, $MountD = 2.9);
 //MisumiLiftSlideDrillTemplate1();
-//MisumiLiftSlideDrillTemplate2();
+MisumiLiftSlideDrillTemplate2($Stages = 3);
 //MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10, dopulleyguide = true);
