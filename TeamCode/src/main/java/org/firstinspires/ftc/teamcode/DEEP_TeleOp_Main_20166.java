@@ -18,14 +18,15 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private static final int ELEVATOR_BOTTOM_POSITION = 0;
-    private static final int ELEVATOR_TOP_POSITION = 0;
+    private static final int ELEVATOR_TOP_POSITION = -1400;
 
-    private static final int ELEVATOR_LOW_POSITION = 0;
+    private static final int ELEVATOR_LOW_POSITION = -200;
 
-    private static final int ELEVATOR_HIGH_POSITION = 0;
+    private static final int ELEVATOR_HIGH_POSITION = -500;
     private static final int ELEVATOR_TEST_CHANGE = 50;
-    private static final double GRABBER_OPEN_POSITION = 0.3;
-    private static final double GRABBER_CLOSE_POSITION = 0.7;
+    private static final double GRABBER_OPEN_POSITION = 0.7;
+    private static final double GRABBER_CLOSE_POSITION = 0.95;
+    private int elevatorMoveTo = 0;
     private double translateX;
     private double translateY;
     private double joy1RightX;
@@ -48,7 +49,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private IMU imu         = null;
 
     private SubSystemElevator robotElevator = null;
-    private SubSystemGrabber grabber = null;
+    private SubSystemGrabber robotGrabber = null;
 
     public void initializeDriveMotors()
     {
@@ -83,6 +84,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void initializeSubSystems() throws InterruptedException {
         robotElevator = new SubSystemElevator(hardwareMap);
+        robotGrabber = new SubSystemGrabber(hardwareMap);
     }
 
     private void initalizeEverything() throws InterruptedException {
@@ -159,6 +161,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
         telemetry.addLine("\n");
         telemetry.addData("Elevator Pos", robotElevator.getPosition());
+        telemetry.addData("Elevator moveto", elevatorMoveTo);
         telemetry.addData("left bumper", gamepad1.left_bumper);
         updateTelemetry(telemetry);
     }
@@ -211,18 +214,22 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         if (elevatorMoveBottom == true)
         {
             robotElevator.setPosition(ELEVATOR_BOTTOM_POSITION);
+            elevatorMoveTo = ELEVATOR_BOTTOM_POSITION;
         }
         else if (elevatorMoveTop == true)
         {
             robotElevator.setPosition(ELEVATOR_TOP_POSITION);
+            elevatorMoveTo = ELEVATOR_TOP_POSITION;
         }
         else if (elevatorMoveLow == true)
         {
             robotElevator.setPosition(ELEVATOR_LOW_POSITION);
+            elevatorMoveTo = ELEVATOR_LOW_POSITION;
         }
         else if (elevatorMoveHigh == true)
         {
             robotElevator.setPosition(ELEVATOR_HIGH_POSITION);
+            elevatorMoveTo = ELEVATOR_HIGH_POSITION;
         }
         else if (gamepad2.right_bumper == true)
         {
@@ -237,11 +244,11 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     {
        if (grabberOpen == true)
        {
-           grabber.setPosition(GRABBER_OPEN_POSITION);
+           robotGrabber.setPosition(GRABBER_OPEN_POSITION);
        }
        else if (grabberClose == true)
         {
-            grabber.setPosition(GRABBER_CLOSE_POSITION);
+            robotGrabber.setPosition(GRABBER_CLOSE_POSITION);
         }
     }
         public void runOpMode() throws InterruptedException {

@@ -16,6 +16,7 @@ public class SubSystemElevator {
         elevator = hardwareMap.get(DcMotorEx.class, "elevator");       //Sets the names of the hardware on the hardware map
         elevator.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         elevator.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        elevator.setTargetPosition(0);
         elevator.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         elevator.setPower(1);
     }
