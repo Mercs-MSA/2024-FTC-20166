@@ -6,6 +6,8 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
+import java.util.Vector;
+
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
@@ -23,10 +25,16 @@ public class MeepMeepTesting {
 //                                .turn(Math.toRadians(90))
 //                                .forward(30)
 //                                .turn(Math.toRadians(90))
-                                .splineTo(new Vector2d(15, 15), Math.toRadians(45))
-                                .splineTo(new Vector2d(37, 37), Math.toRadians(-32))
-                                .splineTo(new Vector2d(35, 15), Math.toRadians(-90))
-                                .splineTo(new Vector2d(0, 0), Math.toRadians(-180))
+                                .strafeTo(new Vector2d(36,0))
+                                .waitSeconds(1.5)
+                                .strafeTo(new Vector2d(36,36))
+                                .waitSeconds(1.5)
+                                .strafeTo(new Vector2d(60,60))
+                                .waitSeconds(1.5)
+                                .turn(Math.toRadians(-45), 3, 3)
+                                .splineTo(new Vector2d(30, 30), Math.toRadians(-90))
+                                .waitSeconds(3)
+                                .splineTo(new Vector2d(0,0), Math.toRadians(90))
                                 .build()
                 );
 

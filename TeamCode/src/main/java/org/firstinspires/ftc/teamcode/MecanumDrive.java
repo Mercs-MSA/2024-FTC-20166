@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -32,6 +34,7 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,6 +46,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
@@ -96,7 +100,7 @@ public final class MecanumDrive {
         //public double lateralGain = 7; //encoders
         public double lateralGain = 3; //odometry
         //public double headingGain = 6; // shared with turn (encoders)
-        public double headingGain = 5.5; //odometry
+        public double headingGain = 5; //odometry
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0;
@@ -124,8 +128,12 @@ public final class MecanumDrive {
 
     public final LazyImu lazyImu;
 
+    public SparkFunOTOS myOtos;
+
     public final Localizer localizer;
     public Pose2d pose;
+
+    public Pose2d poseOTOS = new Pose2d(0,0,0);
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
@@ -169,6 +177,7 @@ public final class MecanumDrive {
                     leftFrontPosVel, leftBackPosVel, rightBackPosVel, rightFrontPosVel, angles));
 
             Rotation2d heading = Rotation2d.exp(angles.getYaw(AngleUnit.RADIANS));
+            Rotation2d headingOTOS = Rotation2d.exp(myOtos.getPosition().h);
 
             if (!initialized) {
                 initialized = true;
@@ -251,6 +260,8 @@ public final class MecanumDrive {
         lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
+        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
+        configureOtos();
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);//DriveLocalizer();
@@ -459,6 +470,8 @@ public final class MecanumDrive {
     public PoseVelocity2d updatePoseEstimate() {
         Twist2dDual<Time> twist = localizer.update();
         pose = pose.plus(twist.value());
+        SparkFunOTOS.Pose2D tempPose = myOtos.getPosition();
+        poseOTOS = new Pose2d(tempPose.x, tempPose.y, tempPose.h);
 
         poseHistory.add(pose);
         while (poseHistory.size() > 100) {
@@ -502,26 +515,37 @@ public final class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
-//    @Autonomous(name="Testing Road Runner", group="")
-//    public class AutonTest extends LinearOpMode {
-//        public class Drive {
-//            public Action followTrajectory(Trajectory t) {
-//                return new FollowTrajectoryAction();
-//            }
-//        }
-//        Drive drive = new Drive();
+    private void configureOtos() {
+//        telemetry.addLine("Configuring OTOS...");
+//        telemetry.update();
+
+        // myOtos.setLinearUnit(DistanceUnit.METER);
+        myOtos.setLinearUnit(DistanceUnit.INCH);
+        // myOtos.setAngularUnit(AnguleUnit.RADIANS);
+        myOtos.setAngularUnit(AngleUnit.DEGREES);
+
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
+        myOtos.setOffset(offset);
+
+        myOtos.setLinearScalar(1.1252);
+        myOtos.setAngularScalar(.99355);
+
+        myOtos.calibrateImu();
+
+        myOtos.resetTracking();
+
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        myOtos.setPosition(currentPosition);
+
+        // Get the hardware and firmware version
+//        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+//        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+//        myOtos.getVersionInfo(hwVersion, fwVersion);
 //
-//        Trajectory myTrajectory = drive.trajectoryBuilder(new Pose2d())
-//                .strafeRight(10)
-//                .forward(5)
-//                .build();
-//
-//        public void runOpMode() {
-//
-//            waitForStart();
-//            if (opModeIsActive()) {
-//                com.acmerobotics.roadrunner.ftc.Actions.runBlocking(drive.followTrajectory(1));
-//            }
-//        }
-//    }
+//        telemetry.addLine("OTOS configured! Press start to get position data!");
+//        telemetry.addLine();
+//        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
+//        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
+//        telemetry.update();
+    }
 }
