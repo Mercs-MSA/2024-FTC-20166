@@ -614,9 +614,10 @@ module BotBase()
 //cube([38, 38, 89], center = true);
 
 //ClimbTest();
-//ClimbTest2();
-
+ClimbTest2();
+/*
 translate([0, 0, 9.5])
   rotate(120, [0, 0, 1])
   SpindleCore(InnerD = 40, OuterD = 50, Height = 10, RimHeight = 0.5, SlopeSpan = 3, ShaftD = 8 * $Hex2Circle, ShaftFaces = 6, ThreadD = 3);
 SpindleCore(InnerD = 40, OuterD = 50, Height = 10, RimHeight = 0.5, SlopeSpan = 3, ShaftD = 8 * $Hex2Circle, ShaftFaces = 6, ThreadD = 3);
+*/

@@ -18,11 +18,19 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private static final int ELEVATOR_BOTTOM_POSITION = 0;
-    private static final int ELEVATOR_TOP_POSITION = -1400;
+    private static final int ELEVATOR_TOP_RUNG_PLACE = -811;
 
-    private static final int ELEVATOR_LOW_POSITION = -200;
+    private static final int ELEVATOR_TOP_RUNG_RELEASE = -574;
 
-    private static final int ELEVATOR_HIGH_POSITION = -500;
+    private static final int ELEVATOR_BOTTOM_RUNG_PLACE = -400;
+
+    private static final int ELEVATOR_BOTTOM_RUNG_RELEASE = -225;
+
+    private static final int ELEVATOR_TOP_BASKET = -1401;
+
+    private static final int ELEVATOR_MIDDLE_BASKET = -896;
+
+    private static final int ELEVATOR_SPECIMEN_PICKUP = -263;
     private static final int ELEVATOR_TEST_CHANGE = 50;
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
@@ -85,6 +93,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private void initializeSubSystems() throws InterruptedException {
         robotElevator = new SubSystemElevator(hardwareMap);
         robotGrabber = new SubSystemGrabber(hardwareMap);
+        robotGrabber.setPosition(GRABBER_OPEN_POSITION);
     }
 
     private void initalizeEverything() throws InterruptedException {
@@ -218,18 +227,18 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         }
         else if (elevatorMoveTop == true)
         {
-            robotElevator.setPosition(ELEVATOR_TOP_POSITION);
-            elevatorMoveTo = ELEVATOR_TOP_POSITION;
+            robotElevator.setPosition(ELEVATOR_TOP_RUNG_PLACE);
+            elevatorMoveTo = ELEVATOR_TOP_RUNG_PLACE;
         }
         else if (elevatorMoveLow == true)
         {
-            robotElevator.setPosition(ELEVATOR_LOW_POSITION);
-            elevatorMoveTo = ELEVATOR_LOW_POSITION;
+            robotElevator.setPosition(ELEVATOR_SPECIMEN_PICKUP);
+            elevatorMoveTo = ELEVATOR_TOP_BASKET;
         }
         else if (elevatorMoveHigh == true)
         {
-            robotElevator.setPosition(ELEVATOR_HIGH_POSITION);
-            elevatorMoveTo = ELEVATOR_HIGH_POSITION;
+            robotElevator.setPosition(ELEVATOR_TOP_RUNG_RELEASE);
+            elevatorMoveTo = ELEVATOR_TOP_RUNG_RELEASE;
         }
         else if (gamepad2.right_bumper == true)
         {
