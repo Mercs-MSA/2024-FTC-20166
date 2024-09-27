@@ -62,9 +62,28 @@ module Servo()
     import("GoBildaServoLoRes.stl");
 }
 
+module DualSpindle()
+{
+  inner = 39;
+  outer = 46;
+  shaft = 8.2;
+  height = 10;
+  hub = 3;
+  
+  translate([0, 0, 0.5])
+    mirror([0, 0, 1])
+      rotate(120, [0, 0, 1])
+        SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 2.8, LockHead = 7, LockHeadD = 7);
+  SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 2.8, LockHead = 5, LockHeadD = 7);
+  translate([0, 0, 10])
+    difference()
+    {
+      cylinder(d = 10.5, h = hub);
+      cylinder(d = shaft, h = hub + .1, $fn = 6);
+    }
+}
 
-
-module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFaces, ThreadD)
+module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFaces, ThreadD, ThreadGuide = true, Locknut = false, LockHoleD = 2.8, LockHead = 5, LockHeadD = 7)
 {
   difference()
   {
@@ -83,10 +102,27 @@ module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFa
       translate([0, 0, Height - RimHeight - SlopeSpan])
         cylinder(d2 = OuterD, d1 = InnerD, h = SlopeSpan);
     }
-    cylinder(d = ShaftD, h = Height, $fn = ShaftFaces);
-    translate([InnerD / 4, 0, Height / 2])
+    if (ThreadGuide)
+    {
+      cylinder(d = ShaftD, h = Height, $fn = ShaftFaces);
+        rotate(30, [0, 0, 1])
+        translate([InnerD / 4, 0, Height / 2])
+          rotate(90, [1, 0, 0])
+            cylinder(d = ThreadD, h = OuterD, center = true);
+    }
+    //Locking hole
+    translate([0, 0, Height / 2])
       rotate(90, [1, 0, 0])
-        cylinder(d = ThreadD, h = OuterD, center = true);
+        cylinder(d = LockHoleD, h = OuterD);
+    //Locking hole head
+    translate([0, (-InnerD / 2) + LockHead, Height / 2])
+      rotate(90, [1, 0, 0])
+        cylinder(d = LockHeadD, h = OuterD);
+//    if (Locknut)
+    {
+      translate([-5.5 / 2, -(ShaftD / 2) - 2.0 - 2, (Height / 2) - (5.5 * $Hex2Circle / 2)])
+        cube([5.5, 2.6, Height]);
+    }
   }
 }
 
@@ -292,6 +328,8 @@ module ServoCutout($Height = 6)
 
 module SampleGrabberFrame()
 {
+  $FrameHeight = $SampleGrabberFrameThickness + $SampleGrabberFrameThickness + $SampleGrabberInsertWidth + $SampleGrabberHornClearanceAdjusted + 8.5;
+  $FrameZOffset = -($SampleGrabberInsertWidth / 2) - $SampleGrabberFrameThickness;
   //Top servo mount
   translate([0, 0, (($SampleGrabberInsertWidth + $SampleGrabberFrameThickness)/ 2) + $SampleGrabberHornClearanceAdjusted + 8.5])
   {
@@ -321,13 +359,13 @@ module SampleGrabberFrame()
     }
   }
   //Back support
-  translate([($SampleGrabberFrameThickness + $SampleGrabberInsertWidth + 1) / 2, 0, -($SampleGrabberInsertWidth / 2) - $SampleGrabberFrameThickness])
+  translate([($SampleGrabberFrameThickness + $SampleGrabberInsertWidth + 1) / 2, 0, $FrameZOffset])
   {
     difference()
     {
       //Core
       translate([-$SampleGrabberFrameThickness / 2, -$SampleGrabberFrameWidth / 2, 0])
-        cube([$SampleGrabberFrameThickness, $SampleGrabberFrameWidth, $SampleGrabberFrameThickness + $SampleGrabberFrameThickness + $SampleGrabberInsertWidth + $SampleGrabberHornClearanceAdjusted + 8.5]);
+        cube([$SampleGrabberFrameThickness, $SampleGrabberFrameWidth, $FrameHeight]);
       //Lifter attach bracket holes
       for (x = [-3:3])
         for (y = [0:2])
@@ -335,6 +373,16 @@ module SampleGrabberFrame()
             rotate(90, [0, 1, 0])
               cylinder(d = 2.9, h = $SampleGrabberFrameThickness + 1, center = true);
     }
+  }
+  //Supports
+  translate([-($SampleGrabberInsertWidth + 1)/ 2, -$SampleGrabberFrameThickness / 2, $FrameZOffset])
+  {
+    cube([$SampleGrabberInsertWidth + 1, $SampleGrabberFrameThickness, $FrameHeight]);
+    translate([0, ($SampleGrabberFrameWidth - $SampleGrabberFrameThickness) / 2, 0])
+      cube([$SampleGrabberInsertWidth + 1, $SampleGrabberFrameThickness, $FrameHeight]);
+    translate([0, -($SampleGrabberFrameWidth - $SampleGrabberFrameThickness) / 2, 0])
+      cube([$SampleGrabberInsertWidth + 1, $SampleGrabberFrameThickness, $FrameHeight]);
+
   }
 }
 
@@ -604,7 +652,7 @@ module BotBase()
 
 
 //SampleGrabberArm();
-//SampleGrabberFrame();
+SampleGrabberFrame();
 //SampleGrabberLifterAttach();
 
 //SampleGrabberMechanism($DoServo);
@@ -614,10 +662,5 @@ module BotBase()
 //cube([38, 38, 89], center = true);
 
 //ClimbTest();
-ClimbTest2();
-/*
-translate([0, 0, 9.5])
-  rotate(120, [0, 0, 1])
-  SpindleCore(InnerD = 40, OuterD = 50, Height = 10, RimHeight = 0.5, SlopeSpan = 3, ShaftD = 8 * $Hex2Circle, ShaftFaces = 6, ThreadD = 3);
-SpindleCore(InnerD = 40, OuterD = 50, Height = 10, RimHeight = 0.5, SlopeSpan = 3, ShaftD = 8 * $Hex2Circle, ShaftFaces = 6, ThreadD = 3);
-*/
+//ClimbTest2();
+//DualSpindle();
