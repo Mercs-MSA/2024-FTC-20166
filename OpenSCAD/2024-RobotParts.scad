@@ -66,20 +66,20 @@ module DualSpindle()
 {
   inner = 39;
   outer = 46;
-  shaft = 8.2;
+  shaft = 8.3;
   height = 10;
   hub = 3;
   
   translate([0, 0, 0.5])
     mirror([0, 0, 1])
       rotate(120, [0, 0, 1])
-        SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 2.8, LockHead = 7, LockHeadD = 7);
-  SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 2.8, LockHead = 5, LockHeadD = 7);
+        SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 0, LockHead = 0, LockHeadD = 0);
+  SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = true, LockHoleD = 2.8, LockHead = 5, LockHeadD = 7);
   translate([0, 0, 10])
     difference()
     {
       cylinder(d = 10.5, h = hub);
-      cylinder(d = shaft, h = hub + .1, $fn = 6);
+      cylinder(d = shaft + .1, h = hub + .1, $fn = 6);
     }
 }
 
@@ -118,7 +118,7 @@ module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFa
     translate([0, (-InnerD / 2) + LockHead, Height / 2])
       rotate(90, [1, 0, 0])
         cylinder(d = LockHeadD, h = OuterD);
-//    if (Locknut)
+    if (Locknut)
     {
       translate([-5.5 / 2, -(ShaftD / 2) - 2.0 - 2, (Height / 2) - (5.5 * $Hex2Circle / 2)])
         cube([5.5, 2.6, Height]);
@@ -386,11 +386,33 @@ module SampleGrabberFrame()
   }
 }
 
+module AttachHoleSet()
+{
+  //Pulley block flush with top
+  translate([14.5, 0, -15])
+    cylinder(d = $MountD, h = 30);
+  //Pulley flush with top
+  translate([14.5 + 12, 0, -15])
+    cylinder(d = $MountD, h = 30);
+  //Full travel clearance
+  translate([14.5 + 12 + 23, 0, -15])
+    cylinder(d = $MountD, h = 30);
+  //Return clearance location 1
+  translate([14.5 + 12 + 8, 0, -15])
+    cylinder(d = $MountD, h = 30);
+  //Return clearance location 2
+  translate([14.5 + 12 + 15, 0, -15])
+    cylinder(d = $MountD, h = 30);
+}
+
 module SampleGrabberLifterAttach()
 {
+  $MountD = 3.3;
+  $MountHeight = 60;
+  
   difference()
   {
-    cube([$SampleGrabberFrameThickness, 50, 50], center = true);
+    cube([$SampleGrabberFrameThickness, 50, $MountHeight], center = true);
     //Lifter attach bracket holes
     for (x = [0:1])
       for (y = [0:2])
@@ -401,11 +423,15 @@ module SampleGrabberLifterAttach()
   translate([(30 + $SampleGrabberFrameThickness)/ 2, -(50 - $SampleGrabberFrameThickness) / 2, 0])
     difference()
     {
-      cube([30, $SampleGrabberFrameThickness, 50], center = true);
-      translate([0, -$SampleGrabberFrameThickness + 0.6, 0])
-        cube([20.1, $SampleGrabberFrameThickness, 51], center = true);
-      rotate(90, [1, 0, 0])
-        cylinder(d = 3.5, h = $SampleGrabberFrameThickness + 1, center = true);
+      cube([30, $SampleGrabberFrameThickness, $MountHeight], center = true);
+//      translate([0, -$SampleGrabberFrameThickness + 0.6, 0])
+//        cube([20.1, $SampleGrabberFrameThickness, $MountHeight + 1], center = true);
+      translate([0, 0, 34.5])
+        rotate(90, [0, 0, 1])
+          rotate(90, [0, 1, 0])
+            AttachHoleSet();
+
+
     }
 }
 
@@ -652,8 +678,8 @@ module BotBase()
 
 
 //SampleGrabberArm();
-SampleGrabberFrame();
-//SampleGrabberLifterAttach();
+//SampleGrabberFrame();
+SampleGrabberLifterAttach();
 
 //SampleGrabberMechanism($DoServo);
 
