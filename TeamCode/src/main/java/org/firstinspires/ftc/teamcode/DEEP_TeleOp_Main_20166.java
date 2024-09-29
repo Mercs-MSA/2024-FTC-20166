@@ -6,9 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
@@ -59,6 +63,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private SubSystemElevator robotElevator = null;
     private SubSystemGrabber robotGrabber = null;
 
+    NormalizedColorSensor colorSensor;
+
     public void initializeDriveMotors()
     {
         frontLeftDrive = hardwareMap.get(DcMotorEx.class, "FL");
@@ -82,12 +88,16 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void initializeSensors()
     {
+        //Initialize gyro etc...
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
+
+        //Initialize the color sensor
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
     }
 
     private void initializeSubSystems() throws InterruptedException {
@@ -100,6 +110,29 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         initializeDriveMotors();
         initializeSensors();
         initializeSubSystems();
+    }
+
+    public String getSampleColor()
+    {
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM);
+        float maxsat = Math.max(Math.max(colors.red, colors.green), colors.blue);
+        float r = colors.red/maxsat;
+        float g = colors.green/maxsat;
+        float b = colors.blue/maxsat;
+
+        String sample = "Nothing";
+
+        if (distance < 3.0) {
+            if (r == 1.0) {
+                sample = "Red";
+            } else if (b == 1.00) {
+                sample = "Blue";
+            } else {
+                sample = "Yellow";
+            }
+        }
+        return sample;
     }
 
     public double getHeading() {
@@ -162,16 +195,18 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void updateDashboard()
     {
-        telemetry.addData("FL",frontLeftDrive.getVelocity());
-        telemetry.addData("FR",frontRightDrive.getVelocity());
-        telemetry.addData("BL",backLeftDrive.getVelocity());
-        telemetry.addData("BR",backRightDrive.getVelocity());
-        telemetry.addData("Heading", getHeading());
+//        telemetry.addData("FL",frontLeftDrive.getVelocity());
+//        telemetry.addData("FR",frontRightDrive.getVelocity());
+//        telemetry.addData("BL",backLeftDrive.getVelocity());
+//        telemetry.addData("BR",backRightDrive.getVelocity());
+//        telemetry.addData("Heading", getHeading());
 
         telemetry.addLine("\n");
         telemetry.addData("Elevator Pos", robotElevator.getPosition());
         telemetry.addData("Elevator moveto", elevatorMoveTo);
-        telemetry.addData("left bumper", gamepad1.left_bumper);
+
+        telemetry.addLine("\n");
+        telemetry.addData("Sample detected", getSampleColor());
         updateTelemetry(telemetry);
     }
     private void updateDrivebaseMotors(double FLMP, double FRMP, double BLMP, double BRMP)
