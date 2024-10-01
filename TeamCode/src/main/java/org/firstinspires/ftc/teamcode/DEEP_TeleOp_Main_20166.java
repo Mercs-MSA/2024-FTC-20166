@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,20 +22,20 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
-    private static final int ELEVATOR_BOTTOM_POSITION = 0;
-    private static final int ELEVATOR_TOP_RUNG_PLACE = -811;
+    private static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
+    private static final int ELEVATOR_TOP_RUNG_PLACE = -1990;//Upper rung starting position
 
-    private static final int ELEVATOR_TOP_RUNG_RELEASE = -574;
+    private static final int ELEVATOR_TOP_RUNG_RELEASE = -1450;//Upper rung pull down position
 
-    private static final int ELEVATOR_BOTTOM_RUNG_PLACE = -400;
+ //   private static final int ELEVATOR_BOTTOM_RUNG_PLACE = -400;
 
-    private static final int ELEVATOR_BOTTOM_RUNG_RELEASE = -225;
+ //   private static final int ELEVATOR_BOTTOM_RUNG_RELEASE = -225;
 
-    private static final int ELEVATOR_TOP_BASKET = -1401;
+ //   private static final int ELEVATOR_TOP_BASKET = -1401;
 
-    private static final int ELEVATOR_MIDDLE_BASKET = -896;
+ //   private static final int ELEVATOR_MIDDLE_BASKET = -896;
 
-    private static final int ELEVATOR_SPECIMEN_PICKUP = -263;
+    private static final int ELEVATOR_SPECIMEN_PICKUP = -658;
     private static final int ELEVATOR_TEST_CHANGE = 50;
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
@@ -64,6 +65,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private SubSystemGrabber robotGrabber = null;
 
     NormalizedColorSensor colorSensor;
+    RevBlinkinLedDriver blinkinLedDriver;
+
 
     public void initializeDriveMotors()
     {
@@ -106,10 +109,16 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotGrabber.setPosition(GRABBER_OPEN_POSITION);
     }
 
+    private void initializeLEDs(){
+        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
+    }
+
     private void initalizeEverything() throws InterruptedException {
         initializeDriveMotors();
         initializeSensors();
         initializeSubSystems();
+        initializeLEDs();
     }
 
     public String getSampleColor()
@@ -126,11 +135,17 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         if (distance < 3.0) {
             if (r == 1.0) {
                 sample = "Red";
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
             } else if (b == 1.00) {
                 sample = "Blue";
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             } else {
                 sample = "Yellow";
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
             }
+        }
+        else {
+            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
         }
         return sample;
     }
@@ -171,7 +186,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         joy1RightX = gamepad1.right_stick_x;
         joy1RightY = gamepad1.right_stick_y;
 
-        if (gamepad1.right_bumper){
+        if (gamepad1.right_bumper){//Switch to robot centric
             translateX = x;
             translateY = y;
         }
@@ -268,7 +283,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         else if (elevatorMoveLow == true)
         {
             robotElevator.setPosition(ELEVATOR_SPECIMEN_PICKUP);
-            elevatorMoveTo = ELEVATOR_TOP_BASKET;
+            elevatorMoveTo = ELEVATOR_SPECIMEN_PICKUP;
         }
         else if (elevatorMoveHigh == true)
         {
