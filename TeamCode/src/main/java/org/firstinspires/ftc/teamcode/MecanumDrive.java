@@ -128,12 +128,12 @@ public final class MecanumDrive {
 
     public final LazyImu lazyImu;
 
-    public SparkFunOTOS myOtos;
+    //public SparkFunOTOS myOtos;
 
     public final Localizer localizer;
     public Pose2d pose;
 
-    public Pose2d poseOTOS = new Pose2d(0,0,0);
+    //public Pose2d poseOTOS = new Pose2d(0,0,0);
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
@@ -177,7 +177,7 @@ public final class MecanumDrive {
                     leftFrontPosVel, leftBackPosVel, rightBackPosVel, rightFrontPosVel, angles));
 
             Rotation2d heading = Rotation2d.exp(angles.getYaw(AngleUnit.RADIANS));
-            Rotation2d headingOTOS = Rotation2d.exp(myOtos.getPosition().h);
+            //Rotation2d headingOTOS = Rotation2d.exp(myOtos.getPosition().h);
 
             if (!initialized) {
                 initialized = true;
@@ -260,8 +260,8 @@ public final class MecanumDrive {
         lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
-        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
-        configureOtos();
+        //myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
+        //configureOtos();
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);//DriveLocalizer();
@@ -470,8 +470,8 @@ public final class MecanumDrive {
     public PoseVelocity2d updatePoseEstimate() {
         Twist2dDual<Time> twist = localizer.update();
         pose = pose.plus(twist.value());
-        SparkFunOTOS.Pose2D tempPose = myOtos.getPosition();
-        poseOTOS = new Pose2d(tempPose.x, tempPose.y, tempPose.h);
+        //SparkFunOTOS.Pose2D tempPose = myOtos.getPosition();
+        //poseOTOS = new Pose2d(tempPose.x, tempPose.y, tempPose.h);
 
         poseHistory.add(pose);
         while (poseHistory.size() > 100) {
@@ -515,37 +515,37 @@ public final class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
-    private void configureOtos() {
-//        telemetry.addLine("Configuring OTOS...");
-//        telemetry.update();
-
-        // myOtos.setLinearUnit(DistanceUnit.METER);
-        myOtos.setLinearUnit(DistanceUnit.INCH);
-        // myOtos.setAngularUnit(AnguleUnit.RADIANS);
-        myOtos.setAngularUnit(AngleUnit.DEGREES);
-
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
-        myOtos.setOffset(offset);
-
-        myOtos.setLinearScalar(1.1252);
-        myOtos.setAngularScalar(.99355);
-
-        myOtos.calibrateImu();
-
-        myOtos.resetTracking();
-
-        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
-        myOtos.setPosition(currentPosition);
-
-        // Get the hardware and firmware version
-//        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
-//        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
-//        myOtos.getVersionInfo(hwVersion, fwVersion);
+//    private void configureOtos() {
+////        telemetry.addLine("Configuring OTOS...");
+////        telemetry.update();
 //
-//        telemetry.addLine("OTOS configured! Press start to get position data!");
-//        telemetry.addLine();
-//        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
-//        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
-//        telemetry.update();
-    }
+//        // myOtos.setLinearUnit(DistanceUnit.METER);
+//        myOtos.setLinearUnit(DistanceUnit.INCH);
+//        // myOtos.setAngularUnit(AnguleUnit.RADIANS);
+//        myOtos.setAngularUnit(AngleUnit.DEGREES);
+//
+//        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
+//        myOtos.setOffset(offset);
+//
+//        myOtos.setLinearScalar(1.1252);
+//        myOtos.setAngularScalar(.99355);
+//
+//        myOtos.calibrateImu();
+//
+//        myOtos.resetTracking();
+//
+//        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+//        myOtos.setPosition(currentPosition);
+//
+//        // Get the hardware and firmware version
+////        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+////        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+////        myOtos.getVersionInfo(hwVersion, fwVersion);
+////
+////        telemetry.addLine("OTOS configured! Press start to get position data!");
+////        telemetry.addLine();
+////        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
+////        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
+////        telemetry.update();
+//    }
 }
