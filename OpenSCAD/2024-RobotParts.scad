@@ -38,6 +38,8 @@ $SampleGrabberDropDistance = 20;
 $SampleGrabberArmLength = 60;
 //Sample grabber open/close rotation
 $SampleGrabberArmRotation = -20;
+//Hopper height adjustment above the servo
+$HopperHeightAdjust = 0;
 
 module _block_customizer(){}
 
@@ -64,23 +66,25 @@ module Servo()
 
 module DualSpindle()
 {
-  inner = 39;
+  inner = 36;
   outer = 46;
-  shaft = 8.3;
+  shaft = 8.4;
   height = 10;
   hub = 3;
   
-  translate([0, 0, 0.5])
+  translate([0, 0, 1])
     mirror([0, 0, 1])
       rotate(120, [0, 0, 1])
-        SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 0, LockHead = 0, LockHeadD = 0);
-  SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 0.5, SlopeSpan = 3, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = true, LockHoleD = 2.8, LockHead = 5, LockHeadD = 7);
+        SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 1, SlopeSpan = 0, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = false, LockHoleD = 0, LockHead = 0, LockHeadD = 0);
+  SpindleCore(InnerD = inner, OuterD = outer, Height = height, RimHeight = 1, SlopeSpan = 0, ShaftD = shaft, ShaftFaces = 6, ThreadD = 3, ThreadGuide = true, Locknut = true, LockHoleD = 2.8, LockHead = 6, LockHeadD = 7);
+/*  
   translate([0, 0, 10])
     difference()
     {
       cylinder(d = 10.5, h = hub);
       cylinder(d = shaft + .1, h = hub + .1, $fn = 6);
     }
+  */
 }
 
 module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFaces, ThreadD, ThreadGuide = true, Locknut = false, LockHoleD = 2.8, LockHead = 5, LockHeadD = 7)
@@ -288,6 +292,7 @@ module SampleGrabberArm()
   }
   if ($DoHopper)
   {
+    /*
     $HopperDepth = 50;
     translate([-$SampleGrabberArmLength + ($HopperDepth / 2), (-($SampleServoMountDiameter - $InsertDepth) / 2) - $SampleGrabberPushoutDistance, 50])
     {
@@ -299,11 +304,44 @@ module SampleGrabberArm()
           translate([0, 0, (40 / 2)])
             cube([$HopperDepth, $InsertDepth, 40], center = true);
       }
-      translate([22, -20, 0])
+      translate([22, -20, 20])
         rotate(40, [0, 1, 0])
-          cube([$InsertDepth, 30, 55]);
+          cube([$InsertDepth, 30, 45]);
+    }
+    */
+    $HopperDepth = 75;
+    translate([-60, -26, 0])
+    {
+      cube([40, $InsertDepth, 130 + $HopperHeightAdjust]);
+      translate([40 - $InsertDepth, -18, 130 - 50 + $HopperHeightAdjust])
+        cube([$InsertDepth, 50, 50]);
     }
   }
+}
+
+module HopperIntake()
+{
+  translate([0, 0, $HopperHeightAdjust / 2])
+    cube([5, 110, 40 + $HopperHeightAdjust], center = true);
+  translate([-1.2, 0, 18 + $HopperHeightAdjust])
+    rotate(60, [0, 1, 0])
+      translate([0, 0, 25])
+        cube([5, 110, 50], center = true);
+  translate([30 / 2, 0, -(40 - 5) / 2])
+    difference()
+    {
+      cube ([30, 40, 5], center = true);
+      translate([0, -10, 0])
+        cylinder(d = 4.2, h = 20, center = true);
+      translate([0, 10, 0])
+        cylinder(d = 4.2, h = 20, center = true);
+    }
+  translate([12.0, (110 - 6) / 2, 45 + $HopperHeightAdjust])
+    rotate(90, [1, 0, 0])
+      cylinder(d = 58, h = 6, $fn = 3, center = true);
+  translate([12.0, -(110 - 6) / 2, 45 + $HopperHeightAdjust])
+    rotate(90, [1, 0, 0])
+      cylinder(d = 58, h = 6, $fn = 3, center = true);
 }
 
 module ServoCutout($Height = 6)
@@ -343,6 +381,12 @@ module SampleGrabberFrame()
       mirror([0, 1, 0])
         translate([0, ($SampleGrabberSpacing / 2), 0])
           ServoCutout();
+      //Hopper mount holes
+      translate([0, -10, 0])
+        cylinder(d = 4.2, h = 20, center = true);
+      translate([0, 10, 0])
+        cylinder(d = 4.2, h = 20, center = true);
+      
     }
   }
   //Lower gripper support
@@ -426,7 +470,7 @@ module SampleGrabberLifterAttach()
       cube([30, $SampleGrabberFrameThickness, $MountHeight], center = true);
 //      translate([0, -$SampleGrabberFrameThickness + 0.6, 0])
 //        cube([20.1, $SampleGrabberFrameThickness, $MountHeight + 1], center = true);
-      translate([0, 0, 34.5])
+      translate([0, 0, 34.5 - 4])
         rotate(90, [0, 0, 1])
           rotate(90, [0, 1, 0])
             AttachHoleSet();
@@ -457,6 +501,8 @@ module SampleGrabberMechanism($Servo)
               Servo();
     }
   }
+  translate([-15, 0, 56.3])
+    HopperIntake();
 }
 
 module BotBaseWheel()
@@ -670,16 +716,17 @@ module BotBase()
     BotBaseWheel();
   color("silver")
   translate([0, 0, 100 / 2])
-  cube([$BaseW, $BaseL, 50], center = true);
+    cube([$BaseW, $BaseL, 50], center = true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
 
 
-//SampleGrabberArm();
+//SampleGrabberArm($DoHopper = true);
 //SampleGrabberFrame();
-SampleGrabberLifterAttach();
+//SampleGrabberLifterAttach();
+//HopperIntake();
 
 //SampleGrabberMechanism($DoServo);
 
@@ -690,3 +737,6 @@ SampleGrabberLifterAttach();
 //ClimbTest();
 //ClimbTest2();
 //DualSpindle();
+cube([10, 60, 1.0]);
+cube([10, 10, 5]);
+
