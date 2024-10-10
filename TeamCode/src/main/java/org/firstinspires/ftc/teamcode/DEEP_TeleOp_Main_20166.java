@@ -384,54 +384,106 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             return true;
         }
     }
-    private static final int STATE_WAIT = 0;
-    private static final int STATE_FACE_WALL = 1;
-    private static final int STATE_DRIVE_TO_WALL_1 = 2;
-    private static final int STATE_WAIT_RELEASE = 3;
-    private static final int STATE_STRAFE_TO_WALL = 4;
+    private DRIVER_ASSIST_STATE currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT;
+    private DRIVER_ASSIST_STATE returnDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT;
+    private enum DRIVER_ASSIST_STATE {STATE_WAIT, STATE_FACE_WALL, STATE_DRIVE_TO_WALL_1, STATE_WAIT_RELEASE, STATE_STRAFE_TO_WALL, STATE_CLOSE_AND_TURN};
+    private void processStateWait()
+    {
+        if (driverAssistPickup)
+        {
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_FACE_WALL;
+        }
+    }
+    private void processStateFaceWall()
+    {
+        boolean done = rotateRobotToHeading(180.0);
+        if (done)
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_DRIVE_TO_WALL_1;
 
-    private int currentDriverAssistState = STATE_WAIT;
+    }
+    private void processStateDriveToWall()
+    {
+        boolean done = driveRobotToDistanceFrom(120.0);
+        if (done)
+        {
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_STRAFE_TO_WALL;
+            setGrabberServo(true);
+            setElevator(ELEVATOR_SPECIMEN_PICKUP);
+        }
+    }
+    private void processStateWaitRelease()
+    {
+        if (!driverAssistPickup)
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT;
+    }
+    private void processStateToWall()
+    {
+        boolean done = true;
+        if (done)
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT_RELEASE;
+    }
+    private void processStateCloseAndTurn()
+    {
+        boolean done = true;
+        if (done)
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT_RELEASE;
+    }
+    private void processStateStrafeToWall()
+    {
+        boolean done = true;
+        if (done)
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT_RELEASE;
+    }
+    private void processStateDelay()
+    {
+        boolean done = true;
+        if (done)
+            currentDriverAssistState = returnDriverAssistState;
+    }
+
+
+
+
+
 
     private void processStateMachine()
     {
         boolean done = false;
-        if (currentDriverAssistState == STATE_WAIT)
+        if (!driverAssistPickup)
         {
-            if (driverAssistPickup)
-            {
-                currentDriverAssistState = STATE_FACE_WALL;
+            currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT;
+
+        }
+        else
+        {
+            switch (currentDriverAssistState) {
+                case STATE_WAIT:
+                    processStateWait();
+                    break;
+                case STATE_FACE_WALL:
+                    processStateFaceWall();
+                    break;
+                case STATE_DRIVE_TO_WALL_1:
+                    processStateDriveToWall();
+                    break;
+                case STATE_STRAFE_TO_WALL:
+                    processStateStrafeToWall();
+                    break;
+                case STATE_CLOSE_AND_TURN:
+                    processStateCloseAndTurn();
+                    break;
+                case STATE_WAIT_RELEASE:
+                    processStateWaitRelease();
+                    break;
             }
+
         }
-        else if (currentDriverAssistState == STATE_FACE_WALL)
-        {
-            done = rotateRobotToHeading(180.0);
-            if (done)
-                currentDriverAssistState = STATE_DRIVE_TO_WALL_1;
-        }
-        else if (currentDriverAssistState == STATE_DRIVE_TO_WALL_1)
-        {
-            done = driveRobotToDistanceFrom(120.0);
-            if (done)
-            {
-                currentDriverAssistState = STATE_STRAFE_TO_WALL;
-                setGrabberServo(true);
-                setElevator(ELEVATOR_SPECIMEN_PICKUP);
-            }
-        }
-        else if (currentDriverAssistState == STATE_WAIT_RELEASE)
-        {
-            if (!driverAssistPickup)
-                currentDriverAssistState = STATE_WAIT;
-        }
-        else if (currentDriverAssistState == STATE_STRAFE_TO_WALL)
-        {
-            done = true;
-            if (done)
-                currentDriverAssistState = STATE_WAIT_RELEASE;
-        }
+
+
     }
 
-        public void runOpMode() throws InterruptedException {
+        public void runOpMode() throws InterruptedException
+        {
         initalizeEverything();
 
         waitForStart();
@@ -440,7 +492,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         {
             updateJoysticks();
             calculateDrivebaseSpeed();
-            if (currentDriverAssistState == STATE_WAIT)
+            if (currentDriverAssistState == DRIVER_ASSIST_STATE.STATE_WAIT)
             {
                 updateDrivebaseMotors(FLMP, FRMP, BLMP, BRMP);
                 updateElevator();
