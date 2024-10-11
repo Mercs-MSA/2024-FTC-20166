@@ -1,6 +1,15 @@
+$fn = 50;
 
+$PlateThickness = 0.125 * 25.4;
 
-module RoundedBlockV2($XDim = 10, $YDim = 10, $ZDim = 10, $D1 = 0, $D2 = 0, $D3 = 0, $D4 = 0, $D5 = 0, $D6 = 0, $D7 = 0, $D8 = 0)
+module PulleyBearing(Type = 0, Outer = 12, Inner = 4)
+{
+  if (Type == 0)
+  {
+  }
+}
+
+module RoundedBlock($XDim = 10, $YDim = 10, $ZDim = 10, $D1 = 0, $D2 = 0, $D3 = 0, $D4 = 0, $D5 = 0, $D6 = 0, $D7 = 0, $D8 = 0)
 {
   $fn = 20;
   hull()
@@ -25,6 +34,23 @@ module RoundedBlockV2($XDim = 10, $YDim = 10, $ZDim = 10, $D1 = 0, $D2 = 0, $D3 
     
   }
 }
+
+module RoundedPlate($XDim = 10, $YDim = 10, $ZDim = 10, $D1 = 0, $D2 = 0, $D3 = 0, $D4 = 0)
+{
+  $fn = 20;
+  hull()
+  {
+    translate([($XDim - $D1) / 2, ($YDim - $D1) / 2, -$ZDim / 2])
+      cylinder(d = $D1, h = $ZDim);
+    translate([-($XDim - $D2) / 2, ($YDim - $D2) / 2, -$ZDim / 2])
+      cylinder(d = $D2, h = $ZDim);
+    translate([-($XDim - $D3) / 2, -($YDim - $D3) / 2, -$ZDim / 2])
+      cylinder(d = $D3, h = $ZDim);
+    translate([($XDim - $D4) / 2, -($YDim - $D4) / 2, -$ZDim / 2])
+      cylinder(d = $D4, h = $ZDim);
+  }
+}
+
 module MisumiLiftSlideDrillTemplate2($Stages = 1)
 {
   $fn = 20;
@@ -36,7 +62,7 @@ module MisumiLiftSlideDrillTemplate2($Stages = 1)
   
   difference()
   {
-    RoundedBlockV2($XDim = 53, $YDim = ($Stages * $YSpacing) + 6, $ZDim = 27, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+    RoundedBlock($XDim = 53, $YDim = ($Stages * $YSpacing) + 6, $ZDim = 27, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     translate([-2, 0, 0])
     {
       cube([53, ($Stages * $YSpacing) + $Clearance, 20.2], center = true);
@@ -54,6 +80,16 @@ module MisumiLiftSlideDrillTemplate2($Stages = 1)
   
 }
 
+module PulleyMountHoles()
+{
+  translate([10, 0, (16 / 2) - 3])
+    rotate(90, [1, 0, 0])
+      cylinder(d = 2, h = 50, $fn = 30, center = true);
+  translate([-23, 0, (16 / 2) - 3])
+    rotate(90, [1, 0, 0])
+      cylinder(d = 2, h = 50, $fn = 30, center = true);
+}
+
 module MisumiLiftSlideDrillTemplate1()
 {
   difference()
@@ -66,20 +102,15 @@ module MisumiLiftSlideDrillTemplate1()
         {
           //Main body
           translate([0, 0, 0])
-            RoundedBlockV2($XDim = 53, $YDim = 28, $ZDim = 17, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+            RoundedBlock($XDim = 53, $YDim = 28, $ZDim = 17, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
         }
         //Double slide coupling
         translate([- 4, 0, 0])    
           cube([60 - 8, 20.5, 15.4], center = true);
         translate([- 4, 0, 0])    
           cube([60 - 8, 19.5, 20], center = true);
-        //Slide mount holes
-        translate([10, 0, (16 / 2) - 3])
-          rotate(90, [1, 0, 0])
-            cylinder(d = 2, h = 50, $fn = 30, center = true);
-        translate([-23, 0, (16 / 2) - 3])
-          rotate(90, [1, 0, 0])
-            cylinder(d = 2, h = 50, $fn = 30, center = true);
+        //Pulley mount holes
+        PulleyMountHoles();
       }
     }
   }
@@ -97,10 +128,10 @@ module MisumiLiftSlideInnerFirst($Multi = false, $Bottom = 0)
         {
           //Main body
           translate([2.75, 0, 0])
-            RoundedBlockV2($XDim = 65.5, $YDim = 28, $ZDim = 17, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+            RoundedBlock($XDim = 65.5, $YDim = 28, $ZDim = 17, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
           //Pulley block
           translate([30 - 5, -16, 2])
-            RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+            RoundedBlock($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
         }
         //Double slide coupling
         translate([- 4, 0, 0])    
@@ -158,13 +189,13 @@ module MisumiLiftSlideSpringMount($MountD = 2.9)
     {
       //Main block
       translate([90 / 2, 28 / 2 , (8 - $WidthAdder) / 2])
-        RoundedBlockV2($XDim = 90, $YDim = 28, $ZDim = 8 + $WidthAdder, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8 + $WidthAdder, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Attach/pulley block
       translate([21 / 2, -(8 - 6) / 2, (8 + 6.5) / 2])
-        RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8 + 6.5, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 21, $YDim = 8 + 6, $ZDim = 8 + 6.5, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Spring blocker
       translate([24, -(8 - 6) / 2, - 6 + ($WidthAdder) / 2])
-        RoundedBlockV2($XDim = 10, $YDim = 8 + 6, $ZDim = 8 + $WidthAdder, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 10, $YDim = 8 + 6, $ZDim = 8 + $WidthAdder, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     }
     //Slider alignment groove
     translate([0, (28 - 20.2) / 2, 7])
@@ -218,16 +249,16 @@ module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
     {
       //Main block
       translate([90 / 2, -28 / 2, 8 / 2])
-        RoundedBlockV2($XDim = 90, $YDim = 28, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Return support block
       translate([21 / 2, -28 / 2, ((8 + ($Stages * 16) + 5) / 2)])
-        RoundedBlockV2($XDim = 21, $YDim = 28, $ZDim = 8 + ($Stages * 16) + 5, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 21, $YDim = 28, $ZDim = 8 + ($Stages * 16) + 5, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Pulley block
       translate([21 / 2, (8 - 6) / 2, 8 / 2])
-        RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Pulley return block
       translate([21 / 2, (8 - 6) / 2, (8 / 2) + (16 * $Stages) + 5])
-        RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     }
     //Slider alignment groove
     translate([21, -(28 + 20.5) / 2, 7])
@@ -259,9 +290,9 @@ module MisumiLiftSlideOuterFirst($MountD = 2.9)
     union()
     {
       translate([90 / 2, 28 / 2, 8 / 2])
-        RoundedBlockV2($XDim = 90, $YDim = 28, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       translate([21 / 2, -(8 - 6) / 2, 8 / 2])
-        RoundedBlockV2($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+        RoundedBlock($XDim = 21, $YDim = 8 + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     }
     //Slider alignment groove
     translate([0, (28 - 20.2) / 2, 7])
@@ -333,9 +364,10 @@ module MisumiSliderSet($Sliders = 3)
   }
 }
 
-module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition, channelholes, offsetholes, dopulleyguide)
+module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition, channelholes, offsetholes, dopulleyguide, includespacers = true)
 {
   hoffset = support1 ? 15 : 0;
+  railoffset = includespacers ? 15 : 0;
   //Return style 0 = Return cord lines up with edge of outer slide
   //Return style 1 = Return cord lines up with pull up pulley
 //  returnextension = (returnstyle == 0) ? ((15/2) + (stages * 16) + (hoffset * (stages - 1)) - 3) :
@@ -343,17 +375,18 @@ module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, 
  
   for (i = [0:(stages - 1)])
   {
-    translate([0, (i * (16 + 15)) + hoffset - 15, (i * offset * 2) + (i * (position / stages))])
+    translate([0, (i * (16.1 + railoffset)) + hoffset - 15, (i * offset * 2) + (i * (position / stages))])
     {
-      if (!(!support1 && (i == 0)))
+//      if (!(!support1 && (i == 0)) && (includespacers))
+      if ((support1 && (i == 0)) || includespacers)
         translate([0, (15/2), 0])
           Extrusion15mm(length = length);
       if (i == stages - 1)
         translate([0, 15 , offset])
-          MisumiSlide(length = length, position = (position / stages), showupper = true, showlower = true, pulleyextension = 5, showpulley = true, offset = offset);
+          MisumiSlide(length = length, position = (position / stages), showupper = 0, showlower = 0, showpulley = 0, offset = offset);
       else
         translate([0, 15 , offset])
-          MisumiSlide(length = length, position = (position / stages), showupper = true, showlower = true, pulleyextension = 0, showpulley = true, offset = offset);
+          MisumiSlide(length = length, position = (position / stages), showupper = 0, showlower = 0, showpulley = 0, offset = offset);
     }
   }
   //Pulley return plate
@@ -378,7 +411,7 @@ module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, 
   }
 }
 
-module MisumiSlideRail(length = 300)
+module MisumiSlideRail(length = 300, domountholes = true)
 {
   difference()
   {
@@ -395,6 +428,14 @@ module MisumiSlideRail(length = 300)
       translate([0, -length / 2, -0.1])
         cylinder(d = 3.1, h = 10);
     }
+    translate([0, 10.1, 10 + 11.9])
+      rotate(90, [0, 1, 0])
+        rotate(90, [1, 0, 0])
+          PulleyMountHoles();
+    translate([0, 10.1, length - 23 - 11.9])
+      rotate(90, [0, 1, 0])
+        rotate(90, [1, 0, 0])
+          PulleyMountHoles();
   }
 }
  
@@ -420,29 +461,87 @@ module MotorAndFrame(ChannelHoles, Rx, Ry, Rz, OffsetHoles = 0)
   translate([0, 0, -20])
     color("silver")
       cylinder(d = 8, h = 20, $fn = 6);
-  //Need to update
-  /*
-  if (ChannelHoles > 0)
-  {
-    translate([0, 0, - (24 * OffsetHoles)])
-      CChannelCentered(Holes = ChannelHoles, Depth = 48, Rx = Rx, Ry = Ry, Rz = Rz);
-  }
-  */
+  //Mounting plate
+  translate([0, 0, -4])
+    rotate(180, [1, 0, 0])
+      MotorPlate($Type = 1);
+  //Support plate
+  translate([0, 0, -4 + 15 + $PlateThickness])
+    rotate(180, [1, 0, 0])
+      MotorPlate($Type = 1);
+  //Pulley
+  translate([0, 0, -16 - $PlateThickness - 1])
+    cylinder(d = 42, h = 14);
+  //Pulley belt guides
+    translate([22, 14, -19])
+      cylinder(d = 10, h = 12);
+    translate([-22, 14, -19])
+      cylinder(d = 10, h = 12);
 }
 
-module MisumiSlide(length, position, showupper = true, showlower = true, pulleyextension, showpulley = true, offset)
+module MisumiSlide(length, position, showupper = 0, showlower = 0, showpulley = 0, offset, mountholes = true)
 {
   color("silver")
   {
-    MisumiSlideRail(length = length);
+    MisumiSlideRail(length = length, domountholes = mountholes);
     translate([0, 16, position])
       mirror([0, 1, 0])
-        MisumiSlideRail(length = length);
+        MisumiSlideRail(length = length, domountholes = mountholes);
   }
   color("darkgray")
     translate([-8, 2, position / 2])
       cube([16, 12, length]);   
-  //Need to update these to new pulley guides
+}
+
+module MotorPlate()
+{
+  $CornerD = 5;
+  $MotorEffectiveD = 41;
+  $InterfaceWidth = 14;
+  
+  difference()
+  {
+    hull()
+    {
+      cylinder(d = 50, h = $PlateThickness, center = true);
+      translate([0, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
+        RoundedPlate($XDim = 70, $YDim = $InterfaceWidth, $ZDim = $PlateThickness, $D1 = $CornerD, $D2 = $CornerD, $D3 = $CornerD, $D4 = $CornerD);
+    }
+    //Rail mount holes
+    translate([-24, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
+      cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
+    translate([24, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
+      cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
+    translate([0, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
+      cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
+    //Retained bearing holes
+    translate([22, -14, 0])
+      cylinder(d = 3.1, h = 12, center = true);
+    translate([-22, -14, 0])
+      cylinder(d = 3.1, h = 12, center = true);
+    if ($Type == 0)
+      //Motor opening
+      cylinder(d = 37, h = $PlateThickness + 0.01, center = true);
+    else if ($Type == 1)
+    {
+      //Motor shaft opening
+      cylinder(d = 10, h = $PlateThickness + 0.01, center = true);
+      //Motor mount holes
+      translate([8, 8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      translate([-8, 8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      translate([8, -8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      translate([-8, -8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+    }
+  }
+}
+
+module PulleyPlate()
+{
+  RoundedPlate($XDim = 70, $YDim = $InterfaceWidth, $ZDim = $PlateThickness, $D1 = $CornerD, $D2 = $CornerD, $D3 = $CornerD, $D4 = $CornerD);
 }
 
 
@@ -471,5 +570,12 @@ module MisumiSlide(length, position, showupper = true, showlower = true, pulleye
 //MisumiLiftSlideSpringMount($MountD = 2.9);
 //MisumiLiftSlideReturn($Stages = 3, $MountD = 2.9);
 //MisumiLiftSlideDrillTemplate1();
-MisumiLiftSlideDrillTemplate2($Stages = 3);
+//MisumiLiftSlideDrillTemplate2($Stages = 1);
 //MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10, dopulleyguide = true);
+projection()
+MotorPlate($Type = 1);
+
+
+//MisumiSlide(length = 300, position = 0, showupper = true, showlower = true, pulleyextension = 0, showpulley = true, offset = 0);
+//MisumiRailSet(support1 = true, length = 300, stages = 3, position = 100, offset = 0, motorposition = 100, channelholes = 0, offsetholes = 0, dopulleyguide = false, includespacers = false);
+
