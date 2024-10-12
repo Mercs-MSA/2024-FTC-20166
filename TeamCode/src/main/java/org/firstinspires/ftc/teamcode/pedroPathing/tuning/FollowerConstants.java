@@ -23,10 +23,10 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.KalmanFilterParameters;
 public class FollowerConstants {
 
     // This section is for configuring your motors
-    public static String leftFrontMotorName = "leftFront";
-    public static String leftRearMotorName = "leftRear";
-    public static String rightFrontMotorName = "rightFront";
-    public static String rightRearMotorName = "rightRear";
+    public static String leftFrontMotorName = "FL";
+    public static String leftRearMotorName = "BL";
+    public static String rightFrontMotorName = "FR";
+    public static String rightRearMotorName = "BR";
 
     // This section is for setting the actual drive vector for the front left wheel, if the robot
     // is facing a heading of 0 radians with the wheel centered at (0,0)
@@ -83,7 +83,8 @@ public class FollowerConstants {
 
 
     // Mass of robot in kilograms
-    public static double mass = 10.65942;
+//    public static double mass = 10.65942;
+    public static double mass = 3.0;
 
     // Centripetal force to power scaling
     public static double centripetalScaling = 0.0005;
@@ -104,7 +105,8 @@ public class FollowerConstants {
     // Decreasing this will cause the deceleration at the end of the Path to be slower, making the
     // robot slower but reducing risk of end-of-path overshoots or localization slippage.
     // This can be set individually for each Path, but this is the default.
-    public static double zeroPowerAccelerationMultiplier = 4;
+//    public static double zeroPowerAccelerationMultiplier = 4;
+    public static double zeroPowerAccelerationMultiplier = 3;
 
 
     // When the robot is at the end of its current Path or PathChain and the velocity goes below
@@ -130,7 +132,8 @@ public class FollowerConstants {
     // When the Path is considered at its end parametrically, then the Follower has this many
     // milliseconds to further correct by default.
     // This can be custom set for each Path.
-    public static double pathEndTimeoutConstraint = 500;
+//    public static double pathEndTimeoutConstraint = 500;
+    public static double pathEndTimeoutConstraint = 200;
 
     // This is how many steps the BezierCurve class uses to approximate the length of a BezierCurve.
     public static int APPROXIMATION_STEPS = 1000;

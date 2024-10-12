@@ -1,4 +1,17 @@
 package org.firstinspires.ftc.teamcode;
+// Fl                        control            Motor 0                 frontLeft Drive motor
+// FR                        control            Motor 1                 frontRight Drive motor
+// BL                        control            Motor 2                 backLeft Drive motor
+// BR                        control            Motor 3                 backRight Drive motor
+// grabberLeft               control            servo 0                 grabberLeft servo
+// grabberRight              control            servo 1                 grabberRight servo
+// blinkIn                   control            servo 2                 ledDriver
+// elevator                  expansion          motor 0                 elevator motor
+// imu                       control            i2cBus 0                revInternalIMU
+// leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
+// colorSensor               control            i2Bus 2                 color sensor
+// frontDistanceSensor       control            i2cBus 3                frontDistance sensor
+
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;

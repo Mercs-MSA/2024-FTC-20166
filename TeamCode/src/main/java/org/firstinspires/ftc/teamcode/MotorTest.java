@@ -7,8 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
+
 @TeleOp
-@Disabled
+//@Disabled
 public class MotorTest extends LinearOpMode {
 
     //Motor demo variables
@@ -16,7 +18,9 @@ public class MotorTest extends LinearOpMode {
     private DcMotorEx frontRightDrive = null;
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
-
+    private SubSystemGrabber robotGrabber = null;
+    private static final double GRABBER_OPEN_POSITION = 0.7;
+    private static final double GRABBER_CLOSE_POSITION = 0.95;
     public void initializeDriveMotors()
     {
         frontLeftDrive = hardwareMap.get(DcMotorEx.class, "FL");
@@ -37,9 +41,23 @@ public class MotorTest extends LinearOpMode {
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+private void initalizeGrabber() throws InterruptedException
+{
+    robotGrabber = new SubSystemGrabber(hardwareMap);
+    robotGrabber.setPosition(GRABBER_OPEN_POSITION);
+}
+    private void setGrabberServo (boolean state)
+    {
+        if (state)
+            robotGrabber.setPosition(GRABBER_OPEN_POSITION);
+        else
+            robotGrabber.setPosition(GRABBER_CLOSE_POSITION);
+    }
 
-    public void runOpMode()  {
+    public void runOpMode() throws InterruptedException {
         initializeDriveMotors();
+        initalizeGrabber();
+
 
         waitForStart();
         while (opModeIsActive())
@@ -69,6 +87,12 @@ public class MotorTest extends LinearOpMode {
                 backRightDrive.setPower(-gamepad1.left_stick_y);
             else
                 backRightDrive.setPower(0);
+            if (gamepad1.dpad_left)
+                setGrabberServo(true);
+            if (gamepad1.dpad_right)
+                setGrabberServo(false);
+
+
         }
     }
 }
