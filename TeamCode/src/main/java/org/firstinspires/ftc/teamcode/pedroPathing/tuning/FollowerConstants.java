@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.tuning;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.CustomFilteredPIDFCoefficients;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.CustomPIDFCoefficients;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
@@ -21,6 +22,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.KalmanFilterParameters;
  */
 @Config
 public class FollowerConstants {
+
+    public static Pose startingPose = new Pose(16, -62, Math.toRadians(90));
 
     // This section is for configuring your motors
     public static String leftFrontMotorName = "FL";

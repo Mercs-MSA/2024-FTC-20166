@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
@@ -30,37 +31,37 @@ public class Autotest20166 extends OpMode {
     private Path subermersibleToSpike1;
 
     private Path spike1ToDropOff;
-    private Path forwards;
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
 private AUTON_STATE nextAutonomousState = AUTON_STATE.AUTON_START_STATE;
-    private Point startPoint = new Point(0, 0, Point.CARTESIAN);
-    private Point submersibleDropPoint = new Point(32.1996 - 8, 18.5629, Point.CARTESIAN);
-    private Point spikeOneMidPoint = new Point(11.2458, -7.4492, Point.CARTESIAN);
-    private Point spikeOne = new Point(28.948, -32.5841, Point.CARTESIAN);
-    private Point spikeOneBackOffOne = new Point(22.9362, -14.8503, Point.CARTESIAN);
-    private Point spikeOneBackOffTwo = new Point(15.6673, -39.0241, Point.CARTESIAN);
-    private Point dropOff = new Point(4.7699, -42.1719, Point.CARTESIAN);
-    private Point prePickupSpecimenPoint = new Point(13.3244, -32.2717, Point.CARTESIAN);
-    private Point pickUpSpecimen = new Point(-0.0601, -30.6497, Point.CARTESIAN);
-    private Point preSubmersibleDropPoint2 = new Point(17.5056, -11.5702, Point.CARTESIAN);
-    private Point submersibleDropPoint2 = new Point(30.6377, 16.256, Point.CARTESIAN);
-    private Point spikeTwoMidPoint = new Point(11.2458, -7.4492, Point.CARTESIAN);
-    private Point spikeTwo = new Point(27.4778, -41.1026, Point.CARTESIAN);
-    private Point dropOffTwo = new Point(4.7699, -42.1719, Point.CARTESIAN);
-    private Point prePickupSpecimenPointTwo = new Point(13.3244, -32.2717, Point.CARTESIAN);
-    private Point pickUpSpecimenTwo = new Point(-0.0601, -30.6497, Point.CARTESIAN);
-    private Point preSubmersibleDropPoint3 = new Point(17.5056, -11.5702, Point.CARTESIAN);
-    private Point submersibleDropPoint3 = new Point(30.4815,11.9667, Point.CARTESIAN);
-    private Point spikeThreeMidPoint = new Point(11.2458, -7.4492, Point.CARTESIAN);
-    private Point spikeThree = new Point(28.8115, -46.4973, Point.CARTESIAN);
-    private Point dropOffThree = new Point(4.7699, -42.171, Point.CARTESIAN);
-    private Point prePickupSpecimenPointThree = new Point(13.3244, -32.2717, Point.CARTESIAN);
-    private Point pickUpSpecimenThree = new Point(-0.0601, -30.6497, Point.CARTESIAN);
-    private Point preSubmersibleDropPoint4 = new Point(17.5056, -11.5702, Point.CARTESIAN);
-    private Point submersibleDropPoint4 = new Point(31.3586, 8.8549, Point.CARTESIAN);
+    private final Point startPoint = new Point(0, 0, Point.CARTESIAN);
+    private final Point submersibleDropPoint = new Point(32.1996 - 8, 18.5629, Point.CARTESIAN);
+    private final Point spikeOneMidPoint = new Point(11.2458, -7.4492, Point.CARTESIAN);
+    private final Point spikeOne = new Point(28.948, -32.5841, Point.CARTESIAN);
+    private final Point spikeOneBackOffOne = new Point(22.9362, -14.8503, Point.CARTESIAN);
+    private final Point spikeOneBackOffTwo = new Point(15.6673, -39.0241, Point.CARTESIAN);
+    private final Point dropOff = new Point(4.7699, -42.1719, Point.CARTESIAN);
+    private final Point prePickupSpecimenPoint = new Point(13.3244, -32.2717, Point.CARTESIAN);
+    private final Point pickUpSpecimen = new Point(-0.0601, -30.6497, Point.CARTESIAN);
+    private final Point preSubmersibleDropPoint2 = new Point(17.5056, -11.5702, Point.CARTESIAN);
+    private final Point submersibleDropPoint2 = new Point(30.6377, 16.256, Point.CARTESIAN);
+    private final Point spikeTwoMidPoint = new Point(11.2458, -7.4492, Point.CARTESIAN);
+    private final Point spikeTwo = new Point(27.4778, -41.1026, Point.CARTESIAN);
+    private final Point dropOffTwo = new Point(4.7699, -42.1719, Point.CARTESIAN);
+    private final Point prePickupSpecimenPointTwo = new Point(13.3244, -32.2717, Point.CARTESIAN);
+    private final Point pickUpSpecimenTwo = new Point(-0.0601, -30.6497, Point.CARTESIAN);
+    private final Point preSubmersibleDropPoint3 = new Point(17.5056, -11.5702, Point.CARTESIAN);
+    private final Point submersibleDropPoint3 = new Point(30.4815,11.9667, Point.CARTESIAN);
+    private final Point spikeThreeMidPoint = new Point(11.2458, -7.4492, Point.CARTESIAN);
+    private final Point spikeThree = new Point(28.8115, -46.4973, Point.CARTESIAN);
+    private final Point dropOffThree = new Point(4.7699, -42.171, Point.CARTESIAN);
+    private final Point prePickupSpecimenPointThree = new Point(13.3244, -32.2717, Point.CARTESIAN);
+    private final Point pickUpSpecimenThree = new Point(-0.0601, -30.6497, Point.CARTESIAN);
+    private final Point preSubmersibleDropPoint4 = new Point(17.5056, -11.5702, Point.CARTESIAN);
+    private final Point submersibleDropPoint4 = new Point(31.3586, 8.8549, Point.CARTESIAN);
 
-
+//    private Pose startingPose = new Pose(16, -60, 0);
+    private Pose startingPose = new Pose(0, 0, 0);
 
     /**
      * This initializes the Follower and creates the forward and backward Paths. Additionally, this
@@ -69,14 +70,14 @@ private AUTON_STATE nextAutonomousState = AUTON_STATE.AUTON_START_STATE;
     @Override
     public void init() {
         follower = new Follower(hardwareMap);
-
-        forwards = new Path(new BezierCurve(new Point(0,0, Point.CARTESIAN), new Point(Math.abs(DISTANCE),0, Point.CARTESIAN), new Point(Math.abs(DISTANCE),DISTANCE, Point.CARTESIAN)));
-//        backwards = new Path(new BezierCurve(new Point(Math.abs(DISTANCE),DISTANCE, Point.CARTESIAN), new Point(Math.abs(DISTANCE),0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN)));
-
+        follower.setStartingPose(startingPose);
+        follower.setMaxPower(0.5);
 
         startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
+        startToSubmersible.setConstantHeadingInterpolation(0);
 
         subermersibleToSpike1 = new Path(new BezierCurve(submersibleDropPoint, spikeOneMidPoint, spikeOne));
+
 
         spike1ToDropOff = new Path(new BezierCurve(spikeOne, spikeOneBackOffOne, spikeOneBackOffTwo, dropOff));
 
@@ -172,17 +173,6 @@ private AUTON_STATE nextAutonomousState = AUTON_STATE.AUTON_START_STATE;
         processStateMachine();
         follower.update();
 
-//        if (!follower.isBusy()) {
-//            if (forward) {
-//                forward = false;
-//                follower.followPath(backwards);
-//            } else {
-//                forward = true;
-//                follower.followPath(forwards);
-//            }
-//        }
-
-//        telemetryA.addData("going forward", forward);
         follower.telemetryDebug(telemetryA);
     }
 }
