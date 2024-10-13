@@ -1,1 +1,0 @@
-FTC Vertical Battery holder by eXtremeRobot on Thingiverse: https://www.thingiverse.com/thing:3321645

@@ -1,1 +1,0 @@
-Vertical Tetrix battery holder mount for Actobotics by Rattler_Robotics on Thingiverse: https://www.thingiverse.com/thing:5855901
