@@ -106,9 +106,9 @@ module SpindleCore(InnerD, OuterD, Height, RimHeight, SlopeSpan, ShaftD, ShaftFa
       translate([0, 0, Height - RimHeight - SlopeSpan])
         cylinder(d2 = OuterD, d1 = InnerD, h = SlopeSpan);
     }
+    cylinder(d = ShaftD, h = Height, $fn = ShaftFaces);
     if (ThreadGuide)
     {
-      cylinder(d = ShaftD, h = Height, $fn = ShaftFaces);
         rotate(30, [0, 0, 1])
         translate([InnerD / 4, 0, Height / 2])
           rotate(90, [1, 0, 0])
@@ -752,14 +752,20 @@ module BotBase()
     cube([$BaseW, $BaseL, 50], center = true);
 }
 
+module IntakeSpindle()
+{
+  SpindleCore(InnerD = 16, OuterD = 23, Height = 10, RimHeight = .4, SlopeSpan = 2, ShaftD = 8.4, ShaftFaces = 6, ThreadD = 3, ThreadGuide = false, Locknut = false, LockHoleD = 0, LockHead = 0, LockHeadD = 0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
 
+IntakeSpindle();
 
 //SampleGrabberArm($DoHopper = true);
 //SampleGrabberFrame();
 //SampleGrabberLifterAttach();
-SampleGrabberLifterAttachMGN9H();
+//SampleGrabberLifterAttachMGN9H();
 //HopperIntake();
 
 //SampleGrabberMechanism($DoServo);

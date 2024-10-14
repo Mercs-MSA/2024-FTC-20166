@@ -659,7 +659,7 @@ module PulleyPlate(TopMount = false)
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
 //******************************************
 //******************************************
-PrintMisumiSliderSet($Sliders = 3);
+PrintMisumiSliderSet($Sliders = 1);
 //*MisumiLiftSlideBelt($MountD = 2.9);
 //*MisumiLiftSlideReturn($Stages = 3, $MountD = 2.9);
 //MisumiLiftSlideDrillTemplate1();
