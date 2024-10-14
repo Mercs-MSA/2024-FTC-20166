@@ -6,11 +6,13 @@ package org.firstinspires.ftc.teamcode;
 // grabberLeft               control            servo 0                 grabberLeft servo
 // grabberRight              control            servo 1                 grabberRight servo
 // blinkIn                   control            servo 2                 ledDriver
+// driveServo                control            servo 3                 driveIntakeServo servo
 // elevator                  expansion          motor 0                 elevator motor
 // imu                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
 // frontDistanceSensor       control            i2cBus 3                frontDistance sensor
+
 
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
@@ -31,6 +33,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
+import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPose;
+
 
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
@@ -70,6 +75,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private boolean grabberOpen;
     private boolean grabberClose;
 
+    private double intakeSpeed;
+
     //Motor demo variables
     private DcMotorEx frontLeftDrive = null;
     private DcMotorEx frontRightDrive = null;
@@ -79,7 +86,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private SubSystemElevator robotElevator = null;
     private SubSystemGrabber robotGrabber = null;
-
+    private SubSystemIntake robotIntake = null;
     NormalizedColorSensor colorSensor;
     RevBlinkinLedDriver blinkinLedDriver;
     Rev2mDistanceSensor leftDistanceSensor;
@@ -131,6 +138,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotElevator = new SubSystemElevator(hardwareMap);
         robotGrabber = new SubSystemGrabber(hardwareMap);
         robotGrabber.setPosition(GRABBER_OPEN_POSITION);
+        robotIntake = new SubSystemIntake(hardwareMap);
     }
 
     private void initializeLEDs(){
@@ -237,6 +245,12 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         else
             driverAssistPickup = false;
 
+        if (gamepad2.right_bumper)
+            intakeSpeed = 1;
+        else if (gamepad2.left_bumper)
+            intakeSpeed = -1;
+        else
+            intakeSpeed = 0;
         //buttons
 
         //if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
@@ -458,7 +472,6 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
 
 
-
     private void processStateMachine()
     {
         boolean done = false;
@@ -495,6 +508,13 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     }
 
+    private void updateIntake()
+    {
+        robotIntake.setSpeed(intakeSpeed);
+        telemetry.addData("intakeServo", intakeSpeed);
+
+    }
+
         public void runOpMode() throws InterruptedException
         {
         initalizeEverything();
@@ -510,6 +530,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
                 updateDrivebaseMotors(FLMP, FRMP, BLMP, BRMP);
                 updateElevator();
                 updateGrabber();
+                updateIntake();
             }
             processStateMachine();
             updateDashboard();
