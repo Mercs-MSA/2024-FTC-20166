@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roadRunnerActions;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad2;
+import static org.firstinspires.ftc.teamcode.Constants.slideTickPerIn;
 
 import androidx.annotation.NonNull;
 
@@ -18,20 +19,31 @@ public class Lift {
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public class LiftExtend implements Action {
+    public class LiftHighBasket implements Action {
         private boolean initialized = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                liftMotor.setTargetPosition(100);
+                liftMotor.setPower(.5);
+                liftMotor.setTargetPosition((int)(31 * slideTickPerIn));
                 initialized = true;
             }
             return true;
         }
     }
 
-    public Action liftExtend() {
-        return new LiftExtend();
+    public Action liftHighBasket() {
+        return new LiftHighBasket();
+    }
+
+    public class LiftHighSpec implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {}
+            return true;
+        }
     }
 }
