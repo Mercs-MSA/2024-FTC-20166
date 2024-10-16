@@ -379,12 +379,9 @@ module PrintMisumiSliderSet($Sliders = 3)
       translate([10, ($i * (37 + $BearingHeight)) + 23, 8.5])
         rotate(180, [1, 0, 0])
           MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 0);//Top inner pulley
-      translate([-10, ($i * (37 + $BearingHeight)) + 13, 8.5])
-        rotate(180, [1, 0, 0])
-          mirror([1, 0, 0])
-            MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 0);//Bottom inner pulley
-  //      rotate(180, [0, 1, 0])
-  //        MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
+      translate([-10, ($i * (37 + $BearingHeight)) + 13, 6.012])
+          rotate(180, [0, 1, 0])
+            MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
     }
   }
   translate([63, 55 + ($Sliders * 16), 28])
@@ -659,7 +656,7 @@ module PulleyPlate(TopMount = false)
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
 //******************************************
 //******************************************
-PrintMisumiSliderSet($Sliders = 1);
+PrintMisumiSliderSet($Sliders = 2);
 //*MisumiLiftSlideBelt($MountD = 2.9);
 //*MisumiLiftSlideReturn($Stages = 3, $MountD = 2.9);
 //MisumiLiftSlideDrillTemplate1();
