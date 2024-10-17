@@ -7,6 +7,8 @@ package org.firstinspires.ftc.teamcode;
 // grabberRight              control            servo 1                 grabberRight servo
 // blinkIn                   control            servo 2                 ledDriver
 // driveServo                control            servo 3                 driveIntakeServo servo
+// leftIntakeServo           control            servo 4                 leftIntakeArmServo servo
+// rightIntakeServo          control            servo 5                 rightIntakeArmServo servo
 // elevator                  expansion          motor 0                 elevator motor
 // imu                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
@@ -34,6 +36,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPose;
 
 
@@ -41,7 +45,7 @@ import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstan
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
-    private static final int ELEVATOR_TOP_RUNG_PLACE = -1990;//Upper rung starting position
+    private static final int ELEVATOR_TOP_RUNG_PLACE = -2075;//Upper rung starting position
 
     private static final int ELEVATOR_TOP_RUNG_RELEASE = -1450;//Upper rung pull down position
 
@@ -53,12 +57,14 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
  //   private static final int ELEVATOR_MIDDLE_BASKET = -896;
 
-    private static final int ELEVATOR_SPECIMEN_PICKUP = -658;
+    private static final int ELEVATOR_SPECIMEN_PICKUP = -725;
     private static final int ELEVATOR_TEST_CHANGE = 50;
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
     private static final int OBSERVATION_PICKUP_LEFT_DISTANCE = 500;
     private static final int OBSERVATION_PICKUP_FRONT_DISTANCE = 45;
+    private static final double INTAKE_ARM_UP_POSITION = 0.6;
+    private static final double INTAKE_ARM_DOWN_POSITION = 1;
 
     private int elevatorMoveTo = 0;
     private double translateX;
@@ -75,8 +81,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private boolean grabberOpen;
     private boolean grabberClose;
 
-    private double intakeSpeed;
-
+    private double intakeSpeed = 0;
+private double intakeArmPosition = 0;
     //Motor demo variables
     private DcMotorEx frontLeftDrive = null;
     private DcMotorEx frontRightDrive = null;
@@ -86,6 +92,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private SubSystemElevator robotElevator = null;
     private SubSystemGrabber robotGrabber = null;
+    private SubSystemIntakeArm robotIntakeArm = null;
     private SubSystemIntake robotIntake = null;
     NormalizedColorSensor colorSensor;
     RevBlinkinLedDriver blinkinLedDriver;
@@ -139,6 +146,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotGrabber = new SubSystemGrabber(hardwareMap);
         robotGrabber.setPosition(GRABBER_OPEN_POSITION);
         robotIntake = new SubSystemIntake(hardwareMap);
+        robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
     }
 
     private void initializeLEDs(){
@@ -214,6 +222,37 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void updateJoysticks()
     {
+        //GAMEPAD1:
+        //dpad up - Moving intake arm up
+        //dpad down - Moving intake arm down
+        //dpad left -
+        //dpad right -
+        //a -
+        //b -
+        //y -
+        //x - Driver Assist
+        //left bumper (lb) -
+        //right bumper (rb) - Switch to robot centric
+        //left trigger (lt) -
+        //right trigger (rt) -
+        //left joystick - Translate robot
+        //right joystick x - Rotating robot
+        //right joystick y -
+        //GAMEPAD2:
+        //dpad up - elevatorMoveTop
+        //dpad down - elevatorMoveBottom
+        //dpad left - elevatorMoveLow
+        //dpad right - elevatorMoveHigh
+        //a -
+        //b - grabberClose
+        //y -
+        //x - grabberOpen
+        //left bumper (lb) - INTAKE (NEED TO SEE WHICH WAY IT TURNS)
+        //right bumper (rb) - INTAKE (NEED TO SEE WHICH WAY IT TURNS)
+        //left trigger (lt) -
+        //right trigger (rt) -
+        //left joystick -
+        //right joystick -
         //driving
         double x, y, heading;
         heading = getHeading();
@@ -252,6 +291,11 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         else
             intakeSpeed = 0;
         //buttons
+
+        if (gamepad1.dpad_up)
+            intakeArmPosition = INTAKE_ARM_UP_POSITION;
+        else if (gamepad1.dpad_down)
+            intakeArmPosition = INTAKE_ARM_DOWN_POSITION;
 
         //if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
     }
@@ -514,6 +558,11 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         telemetry.addData("intakeServo", intakeSpeed);
 
     }
+    private void updateIntakeArm()
+    {
+        robotIntakeArm.setPosition(intakeArmPosition);
+
+    }
 
         public void runOpMode() throws InterruptedException
         {
@@ -531,6 +580,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
                 updateElevator();
                 updateGrabber();
                 updateIntake();
+                updateIntakeArm();
             }
             processStateMachine();
             updateDashboard();

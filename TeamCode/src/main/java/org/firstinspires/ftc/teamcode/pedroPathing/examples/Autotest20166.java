@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPose;
+import static org.firstinspires.ftc.teamcode.wayPoints.*;
+
 
 
 /**
@@ -35,40 +37,7 @@ public class Autotest20166 extends OpMode {
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
     private AUTON_STATE nextAutonomousState = AUTON_STATE.AUTON_START_STATE;
-    private final Point startPoint = new Point (startingPose.getX(), startingPose.getY(), Point.CARTESIAN);
-    private final Point submersibleDropPoint = new Point(4.5, -32.1, Point.CARTESIAN); //Heading 1.542 (90)
-    private final double submersibleDropPointHeading = Math.toRadians(90);
-    private final Point spikeOneMidPoint = new Point(13, -49.4, Point.CARTESIAN); //Heading 0.811 (45)
-    private final double spikeOneMidPointHeading = Math.toRadians(45);
-    private final Point spikeOne = new Point(53, -37.2, Point.CARTESIAN); //Heading 1.493 (90)
-    private final double spikeOneHeading = Math.toRadians(90);
-    private final Point spikeOneBackOffOne = new Point(52.3, -44.7, Point.CARTESIAN); //Heading 1.493 (90)
-    private final double spikeOneBackOffOneHeading = 90;
-    private final Point dropOff = new Point(57.4, -57.6, Point.CARTESIAN); //Heading 4.659 (266)
-    private final double dropOffHeading = Math.toRadians(266);
-    private final Point pickupSpecimenMid = new Point(34.9, -58.3, Point.CARTESIAN); //Heading 4.669 (266)
-    private final Point pickUpSpecimen = new Point(34.6, -62.9, Point.CARTESIAN); //Heading 4.648 (268)
-    private double pickUpSpecimenHeading = Math.toRadians(266);
-    private final Point submersibleDropPoint2 = new Point(5, -29.4, Point.CARTESIAN); //Heading 1.454 (83)
-    private final Point spikeTwoMidPoint = new Point(38.1, -51.3, Point.CARTESIAN); //Heading 1.031 (60)
-    private final Point spikeTwo = new Point(61.5, -37.4, Point.CARTESIAN); //Heading 1.481 (90)
-    private final Point dropOffTwo = new Point(49.8, -60.7, Point.CARTESIAN); //Heading 4.751 (268)
-    private final Point prePickupSpecimenPointTwo = new Point(43.9, -53.9, Point.CARTESIAN); //Heading 4.701 (270)
-    private final Point pickUpSpecimenTwo = new Point(34.6, -62.9, Point.CARTESIAN); //Heading 4.648 (266)
-    //private final Point preSubmersibleDropPoint3 = new Point(17.5056, -11.5702, Point.CARTESIAN);
-    private final Point submersibleDropPoint3 = new Point(2.1,-31.4, Point.CARTESIAN); //Heading 1.511 (90)
-    private final Point spikeThreeMidPoint = new Point(38.8, -49.3, Point.CARTESIAN); //Heading 0.747 (42)
-    private final Point spikeThree = new Point(62.5, -29.6, Point.CARTESIAN); //Heading 6.213 (355)
-    private final Point dropOffThree = new Point(49.8, -60.7, Point.CARTESIAN); //Heading 4.751 (272)
-    private final Point prePickupSpecimenPointThree = new Point(43.9, -53.9, Point.CARTESIAN); //Heading 4.701 (270)
-    private final Point pickUpSpecimenThree = new Point(34.6, -62.9, Point.CARTESIAN); //Heading 4.648 (270)
-    //private final Point preSubmersibleDropPoint4 = new Point(17.5056, -11.5702, Point.CARTESIAN);
-    private final Point submersibleDropPoint4 = new Point(2.4, -28.2, Point.CARTESIAN); //Heading 1.473 (90)
-    private final Point pickUpSpecimenFour = new Point(34.6, -62.9, Point.CARTESIAN); //Heading 4.648 (266)
 
-    private final Point submersibleDropPoint5 = new Point(-0.4, -29, Point.CARTESIAN); //Heading 1.485 (90)
-    private final Point prePark = new Point (16.4, -38.9, Point.CARTESIAN); //Heading 1.972 (112)
-    private final Point park = new Point(18.3, -30.4, Point.CARTESIAN); //Heading 2.06 (118)
     /**
      * This initializes the Follower and creates the forward and backward Paths. Additionally, this
      * initializes the FTC Dashboard telemetry.
