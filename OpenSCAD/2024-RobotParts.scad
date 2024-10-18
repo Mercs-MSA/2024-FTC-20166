@@ -281,13 +281,13 @@ module SampleGrabberArm()
       cylinder(d = 4, h = $SampleGrabberInsertWidth + 1, center = true);
       //Horn mount holes
       translate([12, 0, 0])
-        cylinder(d = 4, h = $SampleGrabberInsertWidth + 1, center = true);
+        cylinder(d = 3.8, h = $SampleGrabberInsertWidth + 1, center = true);
       translate([-12, 0, 0])
-        cylinder(d = 4, h = $SampleGrabberInsertWidth + 1, center = true);
+        cylinder(d = 3.8, h = $SampleGrabberInsertWidth + 1, center = true);
       translate([0, 12, 0])
-        cylinder(d = 4, h = $SampleGrabberInsertWidth + 1, center = true);
+        cylinder(d = 3.8, h = $SampleGrabberInsertWidth + 1, center = true);
       translate([0, -12, 0])
-        cylinder(d = 4, h = $SampleGrabberInsertWidth + 1, center = true);
+        cylinder(d = 3.8, h = $SampleGrabberInsertWidth + 1, center = true);
     }
   }
   if ($DoHopper)
@@ -760,20 +760,13 @@ module IntakeSpindle()
 ///////////////////////////////////////////////////////////////////////////////////////
 //Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
 
-IntakeSpindle();
-
-//SampleGrabberArm($DoHopper = true);
+//IntakeSpindle();
+SampleGrabberArm($DoHopper = true);
 //SampleGrabberFrame();
 //SampleGrabberLifterAttach();
 //SampleGrabberLifterAttachMGN9H();
 //HopperIntake();
-
 //SampleGrabberMechanism($DoServo);
-
-//color([0.7, 0, 0.2, 0.7])
-//translate([-53, 0, 5])
-//cube([38, 38, 89], center = true);
-
 //ClimbTest();
 //ClimbTest2();
 //DualSpindle();
