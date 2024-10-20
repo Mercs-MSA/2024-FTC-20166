@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class SubSystemElevator {
     // Instantiate the drivetrain motor variables
     private DcMotorEx elevator;
+    private double multiplier;
 
-
-    public SubSystemElevator(HardwareMap hardwareMap) throws InterruptedException {                 // Motor Mapping
+    public SubSystemElevator(HardwareMap hardwareMap, double multiplier) throws InterruptedException {                 // Motor Mapping
         // Initialize the motor hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -19,13 +19,15 @@ public class SubSystemElevator {
         elevator.setTargetPosition(0);
         elevator.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         elevator.setPower(1);
+        this.multiplier = multiplier;
     }
 
+
     public void setPosition(int encoderPosition) {
-        elevator.setTargetPosition(encoderPosition);
+        elevator.setTargetPosition((int) (multiplier * encoderPosition));
     }
 
     public int getPosition() {
-        return elevator.getCurrentPosition();
+        return -elevator.getCurrentPosition();
     }
 }

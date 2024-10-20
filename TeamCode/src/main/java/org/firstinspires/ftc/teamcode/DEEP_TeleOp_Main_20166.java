@@ -43,7 +43,7 @@ import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstan
 
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
-
+    private double elevatorMultiplier = -1.2;//Bot A = 1.0, Bot B = -1.2
     private static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
     private static final int ELEVATOR_TOP_RUNG_PLACE = -2075;//Upper rung starting position
 
@@ -142,7 +142,7 @@ private double intakeArmPosition = 0;
     }
 
     private void initializeSubSystems() throws InterruptedException {
-        robotElevator = new SubSystemElevator(hardwareMap);
+        robotElevator = new SubSystemElevator(hardwareMap, elevatorMultiplier);
         robotGrabber = new SubSystemGrabber(hardwareMap);
         robotGrabber.setPosition(GRABBER_OPEN_POSITION);
         robotIntake = new SubSystemIntake(hardwareMap);
@@ -564,8 +564,7 @@ private double intakeArmPosition = 0;
 
     }
 
-        public void runOpMode() throws InterruptedException
-        {
+    public void runOpMode() throws InterruptedException {
         initalizeEverything();
 
         waitForStart();
