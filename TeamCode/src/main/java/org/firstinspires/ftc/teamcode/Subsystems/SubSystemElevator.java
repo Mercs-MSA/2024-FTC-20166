@@ -1,13 +1,18 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.ELEVATOR_MULTIPLIER;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.RobotConstants;
 
 public class SubSystemElevator {
     // Instantiate the drivetrain motor variables
     private DcMotorEx elevator;
     private double multiplier;
+
 
     public SubSystemElevator(HardwareMap hardwareMap, double multiplier) throws InterruptedException {                 // Motor Mapping
         // Initialize the motor hardware variables. Note that the strings used here as parameters
@@ -28,6 +33,6 @@ public class SubSystemElevator {
     }
 
     public int getPosition() {
-        return -elevator.getCurrentPosition();
+        return (int)(RobotConstants.ELEVATOR_MULTIPLIER * elevator.getCurrentPosition());
     }
 }

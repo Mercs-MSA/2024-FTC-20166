@@ -87,7 +87,7 @@ public class FollowerConstants {
 
     // Mass of robot in kilograms
 //    public static double mass = 10.65942;
-    public static double mass = 8.0;
+    public static double mass = 9.0;
 
     // Centripetal force to power scaling
     public static double centripetalScaling = 0.0005;
@@ -109,7 +109,7 @@ public class FollowerConstants {
     // robot slower but reducing risk of end-of-path overshoots or localization slippage.
     // This can be set individually for each Path, but this is the default.
 //    public static double zeroPowerAccelerationMultiplier = 4;
-    public static double zeroPowerAccelerationMultiplier = 2;
+    public static double zeroPowerAccelerationMultiplier = 3;
 
 
     // When the robot is at the end of its current Path or PathChain and the velocity goes below

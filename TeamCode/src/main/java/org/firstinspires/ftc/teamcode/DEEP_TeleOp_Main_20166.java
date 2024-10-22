@@ -38,34 +38,11 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPose;
-
 
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
-    private double elevatorMultiplier = -1.2;//Bot A = 1.0, Bot B = -1.2
-    private static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
-    private static final int ELEVATOR_TOP_RUNG_PLACE = -2075;//Upper rung starting position
 
-    private static final int ELEVATOR_TOP_RUNG_RELEASE = -1450;//Upper rung pull down position
-
- //   private static final int ELEVATOR_BOTTOM_RUNG_PLACE = -400;
-
- //   private static final int ELEVATOR_BOTTOM_RUNG_RELEASE = -225;
-
- //   private static final int ELEVATOR_TOP_BASKET = -1401;
-
- //   private static final int ELEVATOR_MIDDLE_BASKET = -896;
-
-    private static final int ELEVATOR_SPECIMEN_PICKUP = -725;
-    private static final int ELEVATOR_TEST_CHANGE = 50;
-    private static final double GRABBER_OPEN_POSITION = 0.7;
-    private static final double GRABBER_CLOSE_POSITION = 0.95;
-    private static final int OBSERVATION_PICKUP_LEFT_DISTANCE = 500;
-    private static final int OBSERVATION_PICKUP_FRONT_DISTANCE = 45;
-    private static final double INTAKE_ARM_UP_POSITION = 0.6;
-    private static final double INTAKE_ARM_DOWN_POSITION = 1;
-
+    private RobotConstants constants = new RobotConstants();
     private int elevatorMoveTo = 0;
     private double translateX;
     private double translateY;
@@ -142,9 +119,9 @@ private double intakeArmPosition = 0;
     }
 
     private void initializeSubSystems() throws InterruptedException {
-        robotElevator = new SubSystemElevator(hardwareMap, elevatorMultiplier);
+        robotElevator = new SubSystemElevator(hardwareMap, constants.ELEVATOR_MULTIPLIER);
         robotGrabber = new SubSystemGrabber(hardwareMap);
-        robotGrabber.setPosition(GRABBER_OPEN_POSITION);
+        robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
     }
@@ -293,9 +270,9 @@ private double intakeArmPosition = 0;
         //buttons
 
         if (gamepad1.dpad_up)
-            intakeArmPosition = INTAKE_ARM_UP_POSITION;
+            intakeArmPosition = constants.INTAKE_ARM_UP_POSITION;
         else if (gamepad1.dpad_down)
-            intakeArmPosition = INTAKE_ARM_DOWN_POSITION;
+            intakeArmPosition = constants.INTAKE_ARM_DOWN_POSITION;
 
         //if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
     }
@@ -372,35 +349,35 @@ private double intakeArmPosition = 0;
     {
         if (elevatorMoveBottom == true)
         {
-            setElevator(ELEVATOR_BOTTOM_POSITION);
+            setElevator(constants.ELEVATOR_BOTTOM_POSITION);
         }
         else if (elevatorMoveTop == true)
         {
-            setElevator(ELEVATOR_TOP_RUNG_PLACE);
+            setElevator(constants.ELEVATOR_TOP_RUNG_PLACE);
         }
         else if (elevatorMoveLow == true)
         {
-            setElevator(ELEVATOR_SPECIMEN_PICKUP);
+            setElevator(constants.ELEVATOR_SPECIMEN_PICKUP);
         }
         else if (elevatorMoveHigh == true)
         {
-            setElevator(ELEVATOR_TOP_RUNG_RELEASE);
+            setElevator(constants.ELEVATOR_TOP_RUNG_RELEASE);
         }
         else if (gamepad2.right_bumper == true)
         {
-            setElevator(robotElevator.getPosition() + ELEVATOR_TEST_CHANGE);
+            setElevator(robotElevator.getPosition() + constants.ELEVATOR_TEST_CHANGE);
         }
         else if (gamepad2.left_bumper == true)
         {
-            setElevator(robotElevator.getPosition() - ELEVATOR_TEST_CHANGE);
+            setElevator(robotElevator.getPosition() - constants.ELEVATOR_TEST_CHANGE);
         }
     }
     private void setGrabberServo (boolean state)
     {
         if (state)
-            robotGrabber.setPosition(GRABBER_OPEN_POSITION);
+            robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
         else
-            robotGrabber.setPosition(GRABBER_CLOSE_POSITION);
+            robotGrabber.setPosition(constants.GRABBER_CLOSE_POSITION);
     }
     public void updateGrabber()
     {
@@ -479,7 +456,7 @@ private double intakeArmPosition = 0;
         {
             currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_STRAFE_TO_WALL;
             setGrabberServo(true);
-            setElevator(ELEVATOR_SPECIMEN_PICKUP);
+            setElevator(constants.ELEVATOR_SPECIMEN_PICKUP);
         }
     }
     private void processStateWaitRelease()

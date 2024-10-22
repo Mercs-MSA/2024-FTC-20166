@@ -8,12 +8,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.pathDescriptor;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.wayPoints;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPose;
 /*
@@ -38,18 +40,32 @@ import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1Headin
 public class Autotest20166 extends OpMode {
     private Telemetry telemetryA;
 
+    private RobotConstants constants = new RobotConstants();
  //   private wayPoints myWayPoints = new wayPoints();
+    private SubSystemGrabber robotGrabber;
+    private SubSystemElevator robotElevator;
 
     public double botHeading = startingPose.getHeading();
 
-    private enum AUTON_STATE {AUTON_START_STATE, CLOSE_GRIPPER_STATE, LIFT_ELEVATOR_STATE, LOWER_ATTACH_ELEVATOR_SUBMERSIBLE, GO_TO_SPIKES_STATE, LOWER_ELEVATOR_STATE, OPEN_GRIPPER_STATE, GO_TO_SAMPLE_ONE_STATE, PICK_UP_SAMPLE_ONE_STATE, SPIKE_ONE_TO_DROP_OFF, DROP_SAMPLE_STATE, GRAB_SECOND_SAMPLE_STATE, LIFT_ELEVATOR_TO_POSITION_STATE, GO_TO_SUBMERSIBLE_ZONE_STATE, WAIT_DONE_STATE, WAIT_PATH_DONE_STATE, MOVE_SPIKE_ONE}
+    private enum AUTON_STATE
+    {
+        AUTON_START_STATE,
+        LOWER_ELEVATOR_STATE,
+        SPIKE_ONE_TO_DROP_OFF,
+        GRAB_SECOND_SAMPLE_STATE,
+        WAIT_AUTO_FINISHED,
+        WAIT_PATH_DONE_STATE,
+        MOVE_SPIKE_ONE,
+        PUSH_SAMPLES_STATE,
+    }
     private Follower follower;
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
-    private AUTON_STATE nextAutonomousState = AUTON_STATE.AUTON_START_STATE;
+    private AUTON_STATE waitPathDoneNextState = AUTON_STATE.AUTON_START_STATE;
+    private AUTON_STATE lowerElevatorNextState = AUTON_STATE.AUTON_START_STATE;
 
     public static final Point startPoint = new Point (startingPose.getX(), startingPose.getY(), Point.CARTESIAN);
-    public static final Point submersibleDropPoint = new Point(4.5, -50, Point.CARTESIAN); //Heading 1.542 (90)
+    public static final Point submersibleDropPoint = new Point(2.4, -32.6, Point.CARTESIAN); //Heading 1.542 (90)
     public static final Point spikeOneMidPoint = new Point(13, -49.4, Point.CARTESIAN); //Heading 0.811 (45)
     public static final Point spikeOne = new Point(53, -37.2, Point.CARTESIAN); //Heading 1.493 (90)
     public static final Point spikeOneBackOffOne = new Point(52.3, -44.7, Point.CARTESIAN); //Heading 1.493 (90)
@@ -78,11 +94,37 @@ public class Autotest20166 extends OpMode {
     public static  final Point prePark = new Point (16.4, -38.9, Point.CARTESIAN); //Heading 1.972 (112)
     public static  final Point park = new Point(18.3, -30.4, Point.CARTESIAN); //Heading 2.06 (118)
 
+    //New Points for submersible to spikes ready to push into human player area
+    public static final Point submersibleToSpike1 = new Point(25.3,-52 , Point.CARTESIAN);
+    public static final Point submersibleToSpike2 = new Point(33.4,-48.8 , Point.CARTESIAN);
+    public static final Point submersibleToSpike3 = new Point(33.4,-15.0 , Point.CARTESIAN);
+    public static final Point submersibleToSpike4 = new Point(38.5,-14.8 , Point.CARTESIAN);
+    public static final Point submersibleToSpike5 = new Point(38.4,-17.8 , Point.CARTESIAN);
+
+        //ready to push sample one
+
+    public static final Point submersibleToSpike6 = new Point(47.5,-55.1 , Point.CARTESIAN); //deposited sample 1
+
+    public static final Point submersibleToSpike7 = new Point(43.1,-12 , Point.CARTESIAN);
+    public static final Point submersibleToSpike8 = new Point(55.3,-11.5 , Point.CARTESIAN);
+    public static final Point submersibleToSpike9 = new Point(56.3,-16.7 , Point.CARTESIAN);
+
+        //ready to push sample 2
+    public static final Point submersibleToSpike10 = new Point(55,-56.1 , Point.CARTESIAN); //deposited sample 2
+    public static final Point submersibleToSpike11 = new Point(54.8,-15.3 , Point.CARTESIAN);
+    public static final Point submersibleToSpike12 = new Point(61.6,-15.2 , Point.CARTESIAN);
+    public static final Point submersibleToSpike13 = new Point(61.6,-18 , Point.CARTESIAN);
+        //ready to push sample 3
+    public static final Point submersibleToSpike14 = new Point(57.8,-57.4 , Point.CARTESIAN); //deposited sample 3
+
     //Paths
+//    public static final Path submersibleToSpikePath = new Path(new BezierCurve(submersibleToSpike1, submersibleToSpike2, submersibleToSpike3, submersibleToSpike4, submersibleToSpike5, submersibleToSpike6, submersibleToSpike7, submersibleToSpike8, submersibleToSpike9, submersibleToSpike10, submersibleToSpike11, submersibleToSpike12,submersibleToSpike13, submersibleToSpike14));
+    public static final Path submersibleToSpikePath = new Path(new BezierCurve(submersibleToSpike1, submersibleToSpike2, submersibleToSpike3, submersibleToSpike4));
+    public static final double submersibleToSpikePathHeading = Math.toRadians(90);
     public static  final Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
     public static final double startToSubmersibleHeading = Math.toRadians(90);
 
-    public static  final Path submersibleToSpike1 = new Path(new BezierCurve(submersibleDropPoint, spikeOneMidPoint, spikeOne));
+    public static  final Path submersibleToSample1 = new Path(new BezierCurve(submersibleDropPoint, spikeOneMidPoint, spikeOne));
     public static final double submersibleToSpike1Heading = Math.toRadians(90);
 
     public static  final Path spike1ToDropOff = new Path(new BezierCurve(spikeOne, spikeOneBackOffOne, dropOff));
@@ -96,24 +138,40 @@ public class Autotest20166 extends OpMode {
     public static final pathDescriptor specimenPickUpToSubmersible2Set = new pathDescriptor(specimenPickUpToSubmersible2, specimenPickUpToSubmersible2Heading);
     public static final pathDescriptor dropOffToSpecimenPickUpSet = new pathDescriptor(dropOffToSpecimenPickup, dropOffToSpecimenPickupHeading);
     public static final pathDescriptor spike1ToDropOffSet = new pathDescriptor(spike1ToDropOff, spike1ToDropOffHeading);
-    public static final pathDescriptor submersibleToSpike1Set = new pathDescriptor(submersibleToSpike1, submersibleToSpike1Heading);
+    public static final pathDescriptor submersibleToSpike1Set = new pathDescriptor(submersibleToSample1, submersibleToSpike1Heading);
 
     /**
      * This initializes the Follower and creates the forward and backward Paths. Additionally, this
      * initializes the FTC Dashboard telemetry.
      */
     @Override
-
-    public void init() {
+    public void init()
+    {
         follower = new Follower(hardwareMap);
-        sleep(1000);
         follower.setStartingPose(startingPose);
         follower.setMaxPower(0.7);
+        try {
+            initializeSubSystems();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
     }
+    private void initializeSubSystems() throws InterruptedException {
+        robotElevator = new SubSystemElevator(hardwareMap, constants.ELEVATOR_MULTIPLIER);
+
+        robotGrabber = new SubSystemGrabber(hardwareMap);
+        robotGrabber.setPosition(constants.GRABBER_CLOSE_POSITION);
+
+        //robotIntake = new SubSystemIntake(hardwareMap);
+
+        //robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
+    }
+
+
     public final void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -160,15 +218,26 @@ public class Autotest20166 extends OpMode {
     private void processStateStart()
     {
         setupPath(startToSubmersible, startToSubmersibleHeading);
+        robotElevator.setPosition(constants.ELEVATOR_TOP_RUNG_PLACE);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        nextAutonomousState = AUTON_STATE.MOVE_SPIKE_ONE;
-        //nextAutonomousState = AUTON_STATE.WAIT_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_STATE;
+        lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
+    }
+
+    private void processLowerElevatorState() {
+        robotElevator.setPosition(constants.ELEVATOR_TOP_RUNG_RELEASE);
+        if(Math.abs(robotElevator.getPosition() - constants.ELEVATOR_TOP_RUNG_RELEASE) < 20) {
+            robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
+            currentAutonomousState = lowerElevatorNextState;
+            robotElevator.setPosition(constants.ELEVATOR_BOTTOM_POSITION);
+        }
+
     }
 
     private void processWaitPathDone()
     {
         if (!follower.isBusy())
-            currentAutonomousState = nextAutonomousState;
+            currentAutonomousState = waitPathDoneNextState;
     }
     private void processWaitDoneState()
     {
@@ -178,23 +247,30 @@ public class Autotest20166 extends OpMode {
    private void processMoveSpikeOne()
     {
         //pathDescriptor newPath = new pathDescriptor(startToSubmersible, startToSubmersibleHeading);
-        setupPath(submersibleToSpike1, submersibleToSpike1Heading);
+        setupPath(submersibleToSample1, submersibleToSpike1Heading);
         //setupPath(newPath);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        nextAutonomousState = AUTON_STATE.SPIKE_ONE_TO_DROP_OFF;
+        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
+    }
+
+    private void processPushSampleToObservation()
+    {
+        setupPath(submersibleToSpikePath, submersibleToSpikePathHeading);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
     }
 
     private void processSpikeOneToDropOff()
     {
         setupPath(spike1ToDropOff, spike1ToDropOffHeading);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        nextAutonomousState = AUTON_STATE.GRAB_SECOND_SAMPLE_STATE;
+        waitPathDoneNextState = AUTON_STATE.GRAB_SECOND_SAMPLE_STATE;
     }
     private void processDropOffToSpecimenPickUp()
     {
         setupPath(dropOffToSpecimenPickup, dropOffToSpecimenPickupHeading);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        nextAutonomousState = AUTON_STATE.WAIT_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
     }
     private void processSpecimenPickUpToSubmersible()
     {
@@ -225,11 +301,15 @@ public class Autotest20166 extends OpMode {
 //                case STATE_WAIT_RELEASE:
 //                    processStateWaitRelease();
 //                    break;
-                case WAIT_DONE_STATE:
+                case WAIT_AUTO_FINISHED:
                     processWaitDoneState();
                     break;
-
-
+                case LOWER_ELEVATOR_STATE:
+                    processLowerElevatorState();
+                    break;
+                case PUSH_SAMPLES_STATE:
+                        processPushSampleToObservation();
+                        break;
         }
 
     }
