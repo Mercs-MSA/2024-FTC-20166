@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.pathDescriptor;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
@@ -98,8 +99,8 @@ public class Autotest20166 extends OpMode {
     public static final Point submersibleToSpike1 = new Point(25.3,-52 , Point.CARTESIAN);
     public static final Point submersibleToSpike2 = new Point(33.4,-48.8 , Point.CARTESIAN);
     public static final Point submersibleToSpike3 = new Point(33.4,-15.0 , Point.CARTESIAN);
-    public static final Point submersibleToSpike4 = new Point(38.5,-14.8 , Point.CARTESIAN);
-    public static final Point submersibleToSpike5 = new Point(38.4,-17.8 , Point.CARTESIAN);
+    public static final Point submersibleToSpike4 = new Point(42.5,-12.8 , Point.CARTESIAN);
+    public static final Point submersibleToSpike5 = new Point(42.4,-17.8 , Point.CARTESIAN);
 
         //ready to push sample one
 
@@ -119,7 +120,17 @@ public class Autotest20166 extends OpMode {
 
     //Paths
 //    public static final Path submersibleToSpikePath = new Path(new BezierCurve(submersibleToSpike1, submersibleToSpike2, submersibleToSpike3, submersibleToSpike4, submersibleToSpike5, submersibleToSpike6, submersibleToSpike7, submersibleToSpike8, submersibleToSpike9, submersibleToSpike10, submersibleToSpike11, submersibleToSpike12,submersibleToSpike13, submersibleToSpike14));
-    public static final Path submersibleToSpikePath = new Path(new BezierCurve(submersibleToSpike1, submersibleToSpike2, submersibleToSpike3, submersibleToSpike4));
+    public static final Path submersibleToSpikePathSegment1 = new Path(new BezierCurve(submersibleDropPoint, submersibleToSpike1, submersibleToSpike2));
+    public static final Path submersibleToSpikePathSegment2 = new Path(new BezierCurve(submersibleToSpike2, submersibleToSpike3));
+    public static final Path submersibleToSpikePathSegment3 = new Path(new BezierCurve(submersibleToSpike3, submersibleToSpike4));
+    public static final Path submersibleToSpikePathSegment4 = new Path(new BezierCurve(submersibleToSpike4, submersibleToSpike5, submersibleToSpike6));
+    public static final Path submersibleToSpikePathSegment5 = new Path(new BezierCurve(submersibleToSpike6, submersibleToSpike7));
+    public static final Path submersibleToSpikePathSegment6 = new Path(new BezierCurve(submersibleToSpike7, submersibleToSpike8));
+    public static final Path submersibleToSpikePathSegment7 = new Path(new BezierCurve(submersibleToSpike8, submersibleToSpike9));
+
+    public static final PathChain submersibleToSpikeOneChain = new PathChain(submersibleToSpikePathSegment1, submersibleToSpikePathSegment2, submersibleToSpikePathSegment3, submersibleToSpikePathSegment4, submersibleToSpikePathSegment5, submersibleToSpikePathSegment6, submersibleToSpikePathSegment7);
+
+
     public static final double submersibleToSpikePathHeading = Math.toRadians(90);
     public static  final Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
     public static final double startToSubmersibleHeading = Math.toRadians(90);
@@ -140,6 +151,8 @@ public class Autotest20166 extends OpMode {
     public static final pathDescriptor spike1ToDropOffSet = new pathDescriptor(spike1ToDropOff, spike1ToDropOffHeading);
     public static final pathDescriptor submersibleToSpike1Set = new pathDescriptor(submersibleToSample1, submersibleToSpike1Heading);
 
+    public static int didItWork = 0;
+
     /**
      * This initializes the Follower and creates the forward and backward Paths. Additionally, this
      * initializes the FTC Dashboard telemetry.
@@ -155,10 +168,21 @@ public class Autotest20166 extends OpMode {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        initalizePathHeadings();
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
+    }
+    private void initalizePathHeadings()
+    {
+        submersibleToSpikePathSegment1.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        submersibleToSpikePathSegment2.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        submersibleToSpikePathSegment3.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        submersibleToSpikePathSegment4.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        submersibleToSpikePathSegment5.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        submersibleToSpikePathSegment6.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        submersibleToSpikePathSegment7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
     }
     private void initializeSubSystems() throws InterruptedException {
         robotElevator = new SubSystemElevator(hardwareMap, constants.ELEVATOR_MULTIPLIER);
@@ -214,6 +238,20 @@ public class Autotest20166 extends OpMode {
         pathToFollow.setLinearHeadingInterpolation(currentHeading, endHeading);
         botHeading = endHeading;
     }
+    private void setupPathChain(PathChain pathChainToFollow, double endHeading)
+    {
+        double currentHeading = botHeading;
+        //Path toFollowPath = startToSubmersibleSet.pathChainToFollow;
+        //Path toFollowPath = pathSetToFollow.pathChainToFollow;
+        //double endHeading = startToSubmersibleHeading;
+        //toFollowPath.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+        //follower.followPath(pathChainToFollow);
+        follower.followPath(pathChainToFollow);
+        //submersibleToSpikePathSegment1.setLinearHeadingInterpolation(currentHeading, endHeading);
+        botHeading = endHeading;
+        didItWork++;
+    }
+
 
     private void processStateStart()
     {
@@ -230,6 +268,7 @@ public class Autotest20166 extends OpMode {
             robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
             currentAutonomousState = lowerElevatorNextState;
             robotElevator.setPosition(constants.ELEVATOR_BOTTOM_POSITION);
+            follower.setMaxPower(1.0);
         }
 
     }
@@ -247,7 +286,7 @@ public class Autotest20166 extends OpMode {
    private void processMoveSpikeOne()
     {
         //pathDescriptor newPath = new pathDescriptor(startToSubmersible, startToSubmersibleHeading);
-        setupPath(submersibleToSample1, submersibleToSpike1Heading);
+        //setupPath(submersibleToSample1, submersibleToSpike1Heading);
         //setupPath(newPath);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
@@ -255,7 +294,8 @@ public class Autotest20166 extends OpMode {
 
     private void processPushSampleToObservation()
     {
-        setupPath(submersibleToSpikePath, submersibleToSpikePathHeading);
+        //setupPath(submersibleToSpikePath, submersibleToSpikePathHeading);
+        setupPathChain(submersibleToSpikeOneChain, submersibleToSpike1Heading);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
     }
@@ -316,6 +356,8 @@ public class Autotest20166 extends OpMode {
     public void loop() {
         processStateMachine();
         follower.update();
+        telemetryA.addData("Did it work? ", didItWork);
+        telemetryA.update();
 
         follower.telemetryDebug(telemetryA);
     }
