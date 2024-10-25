@@ -20,12 +20,11 @@ public class RobotConstants
     public static final int ELEVATOR_TEST_CHANGE = 50;
     public static final double GRABBER_OPEN_POSITION = 0.7;
     public static final double GRABBER_CLOSE_POSITION = 0.95;
-    public static final int OBSERVATION_PICKUP_LEFT_DISTANCE = 500;
-    public static final int OBSERVATION_PICKUP_FRONT_DISTANCE = 45;
     public static final double INTAKE_ARM_UP_POSITION = 0.6;
     public static final double INTAKE_ARM_DOWN_POSITION = 1;
 
-
+    public static final double START_TO_SUBMERSIBLE_SPEED = 0.7;
+    public static final double SUBMERSIBLE_TO_PUSH_SPEED = 1.0;
 
 
 }
