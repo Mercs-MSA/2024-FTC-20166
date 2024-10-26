@@ -10,6 +10,7 @@ package org.firstinspires.ftc.teamcode;
 // leftIntakeServo           control            servo 4                 leftIntakeArmServo servo
 // rightIntakeServo          control            servo 5                 rightIntakeArmServo servo
 // elevator                  expansion          motor 0                 elevator motor
+// intakeslide               expansion          motor 3                 intake slide
 // imu                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
@@ -37,6 +38,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 
 
 @TeleOp
@@ -54,6 +56,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private boolean elevatorMoveTop = false;
     private boolean elevatorMoveLow = false;
     private boolean elevatorMoveHigh = false;
+    private boolean elevatorMode = false;
 
     private boolean grabberOpen;
     private boolean grabberClose;
@@ -71,12 +74,15 @@ private double intakeArmPosition = 0;
     private SubSystemGrabber robotGrabber = null;
     private SubSystemIntakeArm robotIntakeArm = null;
     private SubSystemIntake robotIntake = null;
+    private SubSystemIntakeSlide robotIntakeSlide = null;
     NormalizedColorSensor colorSensor;
     RevBlinkinLedDriver blinkinLedDriver;
     Rev2mDistanceSensor leftDistanceSensor;
     Rev2mDistanceSensor frontDistanceSensor;
 
     private boolean driverAssistPickup = false;
+    private float intakeIn;
+    private float intakeOut;
 
     public void initializeDriveMotors()
     {
@@ -124,6 +130,7 @@ private double intakeArmPosition = 0;
         robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
+        robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
     }
 
     private void initializeLEDs(){
@@ -252,29 +259,34 @@ private double intakeArmPosition = 0;
         elevatorMoveTop = gamepad2.dpad_up;
         elevatorMoveLow = gamepad2.dpad_left;
         elevatorMoveHigh = gamepad2.dpad_right;
+        elevatorMode = gamepad2.left_bumper;
 
         grabberOpen = gamepad2.x;
         grabberClose = gamepad2.b;
 
-        if (gamepad1.x)
-            driverAssistPickup = true;
-        else
-            driverAssistPickup = false;
 
-        if (gamepad2.right_bumper)
-            intakeSpeed = 1;
-        else if (gamepad2.left_bumper)
-            intakeSpeed = -1;
+        if (gamepad2.y)
+            intakeSpeed = constants.INTAKE_ROLLER_OUT_SPEED;
+        else if (gamepad2.a)
+            intakeSpeed = constants.INTAKE_ROLLER_IN_SPEED;
         else
-            intakeSpeed = 0;
+            intakeSpeed = constants.INTAKE_ROLLER_HOLD_SPEED;
         //buttons
 
-        if (gamepad1.dpad_up)
-            intakeArmPosition = constants.INTAKE_ARM_UP_POSITION;
-        else if (gamepad1.dpad_down)
+        intakeOut = gamepad2.right_trigger;
+        intakeIn = gamepad2.left_trigger;
+
+        //Spatula
+        if (gamepad1.right_bumper)
             intakeArmPosition = constants.INTAKE_ARM_DOWN_POSITION;
+        else
+            intakeArmPosition = constants.INTAKE_ARM_UP_POSITION;
 
         //if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
+    }
+
+    private void updateIntakeSlide() {
+        robotIntakeSlide.movePosition(intakeIn, intakeOut);
     }
 
     private void updateDashboard()
@@ -347,29 +359,29 @@ private double intakeArmPosition = 0;
     }
     public void updateElevator()
     {
-        if (elevatorMoveBottom == true)
+        if (elevatorMode) //Basket mode
         {
-            setElevator(constants.ELEVATOR_BOTTOM_POSITION);
+            if (elevatorMoveBottom == true) {
+                setElevator(constants.ELEVATOR_BOTTOM_POSITION);
+            } else if (elevatorMoveTop == true) {
+                setElevator(constants.ELEVATOR_TOP_BASKET);
+            } else if (elevatorMoveLow == true) {
+                setElevator(constants.ELEVATOR_LOW_BASKET);
+            } else if (elevatorMoveHigh == true) {
+                setElevator(constants.ELEVATOR_LOW_BASKET);
+            }
         }
-        else if (elevatorMoveTop == true)
+        else //Observation mode
         {
-            setElevator(constants.ELEVATOR_TOP_RUNG_PLACE);
-        }
-        else if (elevatorMoveLow == true)
-        {
-            setElevator(constants.ELEVATOR_SPECIMEN_PICKUP);
-        }
-        else if (elevatorMoveHigh == true)
-        {
-            setElevator(constants.ELEVATOR_TOP_RUNG_RELEASE);
-        }
-        else if (gamepad2.right_bumper == true)
-        {
-            setElevator(robotElevator.getPosition() + constants.ELEVATOR_TEST_CHANGE);
-        }
-        else if (gamepad2.left_bumper == true)
-        {
-            setElevator(robotElevator.getPosition() - constants.ELEVATOR_TEST_CHANGE);
+            if (elevatorMoveBottom == true) {
+                setElevator(constants.ELEVATOR_BOTTOM_POSITION);
+            } else if (elevatorMoveTop == true) {
+                setElevator(constants.ELEVATOR_TOP_RUNG_PLACE);
+            } else if (elevatorMoveLow == true) {
+                setElevator(constants.ELEVATOR_SPECIMEN_PICKUP);
+            } else if (elevatorMoveHigh == true) {
+                setElevator(constants.ELEVATOR_TOP_RUNG_RELEASE);
+            }
         }
     }
     private void setGrabberServo (boolean state)
@@ -557,6 +569,7 @@ private double intakeArmPosition = 0;
                 updateGrabber();
                 updateIntake();
                 updateIntakeArm();
+                updateIntakeSlide();
             }
             processStateMachine();
             updateDashboard();
