@@ -7,8 +7,8 @@ package org.firstinspires.ftc.teamcode;
 // grabberRight              control            servo 1                 grabberRight servo
 // blinkIn                   control            servo 2                 ledDriver
 // driveServo                control            servo 3                 driveIntakeServo servo
-// leftIntakeServo           control            servo 4                 leftIntakeArmServo servo
-// rightIntakeServo          control            servo 5                 rightIntakeArmServo servo
+// leftIntakeArmServo           control            servo 4                 leftIntakeArmServo servo
+// rightIntakeArmServo          control            servo 5                 rightIntakeArmServo servo
 // elevator                  expansion          motor 0                 elevator motor
 // intakeslide               expansion          motor 3                 intake slide
 // imu                       control            i2cBus 0                revInternalIMU
@@ -44,7 +44,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
-    private RobotConstants constants = new RobotConstants();
+    private RobotConstants robotConstants = new RobotConstants();
     private int elevatorMoveTo = 0;
     private double translateX;
     private double translateY;
@@ -113,7 +113,7 @@ private double intakeArmPosition = 0;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
+        //imu.resetYaw();
 
         //Initialize the color sensor
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
@@ -125,9 +125,9 @@ private double intakeArmPosition = 0;
     }
 
     private void initializeSubSystems() throws InterruptedException {
-        robotElevator = new SubSystemElevator(hardwareMap, constants.ELEVATOR_MULTIPLIER);
+        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
         robotGrabber = new SubSystemGrabber(hardwareMap);
-        robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
+        robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
@@ -266,11 +266,11 @@ private double intakeArmPosition = 0;
 
 
         if (gamepad2.y)
-            intakeSpeed = constants.INTAKE_ROLLER_OUT_SPEED;
+            intakeSpeed = robotConstants.INTAKE_ROLLER_OUT_SPEED;
         else if (gamepad2.a)
-            intakeSpeed = constants.INTAKE_ROLLER_IN_SPEED;
+            intakeSpeed = robotConstants.INTAKE_ROLLER_IN_SPEED;
         else
-            intakeSpeed = constants.INTAKE_ROLLER_HOLD_SPEED;
+            intakeSpeed = robotConstants.INTAKE_ROLLER_HOLD_SPEED;
         //buttons
 
         intakeOut = gamepad2.right_trigger;
@@ -278,11 +278,10 @@ private double intakeArmPosition = 0;
 
         //Spatula
         if (gamepad1.right_bumper)
-            intakeArmPosition = constants.INTAKE_ARM_DOWN_POSITION;
+            intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
         else
-            intakeArmPosition = constants.INTAKE_ARM_UP_POSITION;
+            intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
 
-        //if(gamepad1.left_bumper) arm.setPosition(-786); else arm.setPosition(0);
     }
 
     private void updateIntakeSlide() {
@@ -306,6 +305,9 @@ private double intakeArmPosition = 0;
 
         telemetry.addData("Left distance", leftDistanceSensor.getDistance(DistanceUnit.MM));
         telemetry.addData("Front distance", frontDistanceSensor.getDistance(DistanceUnit.MM));
+        telemetry.addLine("\n");
+        telemetry.addData("Left Grabber Servo Position: ", robotGrabber.getLeftPosition());
+        telemetry.addData("Right Grabber Servo Position: ", robotGrabber.getRightPosition());
         updateTelemetry(telemetry);
     }
     private void updateDrivebaseMotors(double FLMP, double FRMP, double BLMP, double BRMP)
@@ -362,34 +364,34 @@ private double intakeArmPosition = 0;
         if (elevatorMode) //Basket mode
         {
             if (elevatorMoveBottom == true) {
-                setElevator(constants.ELEVATOR_BOTTOM_POSITION);
+                setElevator(robotConstants.ELEVATOR_BOTTOM_POSITION);
             } else if (elevatorMoveTop == true) {
-                setElevator(constants.ELEVATOR_TOP_BASKET);
+                setElevator(robotConstants.ELEVATOR_TOP_BASKET);
             } else if (elevatorMoveLow == true) {
-                setElevator(constants.ELEVATOR_LOW_BASKET);
+                setElevator(robotConstants.ELEVATOR_LOW_BASKET);
             } else if (elevatorMoveHigh == true) {
-                setElevator(constants.ELEVATOR_LOW_BASKET);
+                setElevator(robotConstants.ELEVATOR_LOW_BASKET);
             }
         }
         else //Observation mode
         {
             if (elevatorMoveBottom == true) {
-                setElevator(constants.ELEVATOR_BOTTOM_POSITION);
+                setElevator(robotConstants.ELEVATOR_BOTTOM_POSITION);
             } else if (elevatorMoveTop == true) {
-                setElevator(constants.ELEVATOR_TOP_RUNG_PLACE);
+                setElevator(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
             } else if (elevatorMoveLow == true) {
-                setElevator(constants.ELEVATOR_SPECIMEN_PICKUP);
+                setElevator(robotConstants.ELEVATOR_SPECIMEN_PICKUP);
             } else if (elevatorMoveHigh == true) {
-                setElevator(constants.ELEVATOR_TOP_RUNG_RELEASE);
+                setElevator(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
             }
         }
     }
     private void setGrabberServo (boolean state)
     {
         if (state)
-            robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
+            robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
         else
-            robotGrabber.setPosition(constants.GRABBER_CLOSE_POSITION);
+            robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
     }
     public void updateGrabber()
     {
@@ -468,7 +470,7 @@ private double intakeArmPosition = 0;
         {
             currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_STRAFE_TO_WALL;
             setGrabberServo(true);
-            setElevator(constants.ELEVATOR_SPECIMEN_PICKUP);
+            setElevator(robotConstants.ELEVATOR_SPECIMEN_PICKUP);
         }
     }
     private void processStateWaitRelease()

@@ -22,4 +22,11 @@ public class SubSystemGrabber {
         grabberRight.setPosition(1.0 - position);
     }
 
+    public double getLeftPosition() {
+        return grabberLeft.getPosition();
+    }
+    public double getRightPosition() {
+        return grabberRight.getPosition();
+    }
+
 }

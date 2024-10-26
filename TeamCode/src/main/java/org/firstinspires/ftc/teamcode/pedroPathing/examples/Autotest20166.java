@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.pathDescriptor;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
@@ -41,13 +41,14 @@ import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1Headin
 @Config
 @Autonomous
 public class Autotest20166 extends OpMode {
-    private RobotConstants constants = new RobotConstants();
+    private RobotConstants robotConstants = new RobotConstants();
     private Telemetry telemetryA;
     private SubSystemGrabber robotGrabber;
     private SubSystemElevator robotElevator;
 
     public double botHeading = startingPose.getHeading();
     private Follower follower;
+    private SubSystemIntakeArm robotIntakeArm;
 
     private enum AUTON_STATE
     {
@@ -116,7 +117,7 @@ public class Autotest20166 extends OpMode {
     {
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startingPose);
-        follower.setMaxPower(constants.START_TO_SUBMERSIBLE_SPEED);
+        follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
         try {
             initializeSubSystems();
         } catch (InterruptedException e) {
@@ -144,14 +145,14 @@ public class Autotest20166 extends OpMode {
         submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
     }
     private void initializeSubSystems() throws InterruptedException {
-        robotElevator = new SubSystemElevator(hardwareMap, constants.ELEVATOR_MULTIPLIER);
+        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
         robotGrabber = new SubSystemGrabber(hardwareMap);
-        robotGrabber.setPosition(constants.GRABBER_CLOSE_POSITION);
+        robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
 
         //robotIntake = new SubSystemIntake(hardwareMap);
 
-        //robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
+        robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
     }
 
 
@@ -235,7 +236,7 @@ public class Autotest20166 extends OpMode {
     {
         setupPath(startToSubmersible, startToSubmersibleHeading);
         restartTimeout(20000);
-        robotElevator.setPosition(constants.ELEVATOR_TOP_RUNG_PLACE);
+        robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
         lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
@@ -243,18 +244,18 @@ public class Autotest20166 extends OpMode {
 
     private void processLowerElevatorSetupState()
     {
-        robotElevator.setPosition(constants.ELEVATOR_TOP_RUNG_RELEASE);
+        robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
         restartTimeout(1000);
         currentAutonomousState =AUTON_STATE.LOWER_ELEVATOR_STATE;
     }
     private void processLowerElevatorState()
     {
-        if((Math.abs(robotElevator.getPosition() - constants.ELEVATOR_TOP_RUNG_RELEASE) < 20) || hasTimededout())
+        if((Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TOP_RUNG_RELEASE) < 20) || hasTimededout())
         {
-            robotGrabber.setPosition(constants.GRABBER_OPEN_POSITION);
+            robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
             currentAutonomousState = lowerElevatorNextState;
-            robotElevator.setPosition(constants.ELEVATOR_SPECIMEN_PICKUP);
-            follower.setMaxPower(constants.SUBMERSIBLE_TO_PUSH_SPEED);
+            robotElevator.setPosition(robotConstants.ELEVATOR_SPECIMEN_PICKUP);
+            follower.setMaxPower(robotConstants.SUBMERSIBLE_TO_PUSH_SPEED);
         }
     }
 

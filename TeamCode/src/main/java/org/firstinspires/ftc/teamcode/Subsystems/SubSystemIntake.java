@@ -12,7 +12,7 @@ public class SubSystemIntake {
 
     public SubSystemIntake(HardwareMap hardwareMap) throws InterruptedException {
          driveIntakeServo = hardwareMap.get(Servo.class, "driveIntakeServo");
-         }
+     }
 
     public void setSpeed(double speed)
     {

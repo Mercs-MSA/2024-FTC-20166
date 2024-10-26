@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 
 @TeleOp
 //@Disabled
@@ -19,6 +20,8 @@ public class MotorTest extends LinearOpMode {
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
     private SubSystemGrabber robotGrabber = null;
+    private SubSystemIntakeSlide robotIntakeSlide = null;
+
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
     public void initializeDriveMotors()
@@ -54,10 +57,17 @@ private void initalizeGrabber() throws InterruptedException
             robotGrabber.setPosition(GRABBER_CLOSE_POSITION);
     }
 
+    private void inttializeIntakeSlide() throws InterruptedException
+    {
+        robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
+
+    }
+
+
     public void runOpMode() throws InterruptedException {
         initializeDriveMotors();
         initalizeGrabber();
-
+        inttializeIntakeSlide();
 
         waitForStart();
         while (opModeIsActive())
@@ -66,6 +76,7 @@ private void initalizeGrabber() throws InterruptedException
             telemetry.addData("FR (1)", frontRightDrive.getCurrentPosition());
             telemetry.addData("BL (2)", backLeftDrive.getCurrentPosition());
             telemetry.addData("BR (3)", backRightDrive.getCurrentPosition());
+            telemetry.addData("Intake Slide", robotIntakeSlide.getPosition());
             updateTelemetry(telemetry);
 
             if(gamepad1.x)
@@ -92,6 +103,7 @@ private void initalizeGrabber() throws InterruptedException
             if (gamepad1.dpad_right)
                 setGrabberServo(false);
 
+            robotIntakeSlide.movePosition(gamepad1.left_trigger, gamepad1.right_trigger);
 
         }
     }
