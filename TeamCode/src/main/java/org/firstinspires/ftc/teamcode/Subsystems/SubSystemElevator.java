@@ -35,4 +35,8 @@ public class SubSystemElevator {
     public int getPosition() {
         return (int)(RobotConstants.ELEVATOR_MULTIPLIER * elevator.getCurrentPosition());
     }
+
+    public void setPower(double power) {
+        elevator.setPower(power);
+    }
 }

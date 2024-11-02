@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.examples;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPose;
+import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPoseLeft;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -41,14 +42,16 @@ import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1Headin
 @Config
 @Autonomous
 public class LeftAutotest20166 extends OpMode {
-    private RobotConstants robotConstants = new RobotConstants();
+    private RobotConstants robotConstants;
     private Telemetry telemetryA;
     private SubSystemGrabber robotGrabber;
     private SubSystemElevator robotElevator;
 
-    public double botHeading = startingPose.getHeading();
+    public double botHeading = startingPoseLeft.getHeading();
     private Follower follower;
     private SubSystemIntakeArm robotIntakeArm;
+    private int robotId;
+    private DigitalChannel limitSwitch;
 
     private enum AUTON_STATE
     {
@@ -58,6 +61,8 @@ public class LeftAutotest20166 extends OpMode {
         WAIT_AUTO_FINISHED,
         WAIT_PATH_DONE_STATE,
         PUSH_SAMPLES_STATE,
+        MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE,
+        MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
@@ -67,7 +72,7 @@ public class LeftAutotest20166 extends OpMode {
     private static ElapsedTime timeoutTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int timeoutPeriod = 0;
 
-    public static final Point startPoint = new Point (startingPose.getX(), startingPose.getY(), Point.CARTESIAN);
+    public static final Point startPoint = new Point (startingPoseLeft.getX(), startingPoseLeft.getY(), Point.CARTESIAN);
     public static final Point submersibleDropPoint = new Point(2.4, -32.6, Point.CARTESIAN);
 
     //New Points for submersible to spikes ready to push into human player area
@@ -99,8 +104,8 @@ public class LeftAutotest20166 extends OpMode {
     public static final Path submersibleToSpikePathSegment12 = new Path(new BezierCurve(submersibleToSpike12, submersibleToSpike13));
 
     public Path driveToSpecimenPickUp;
-    public Point pickUpStartPoint;
-    public Point pickUpEndPoint;
+    public Point pickUpStartPoint = new Point(49.5,-55  , Point.CARTESIAN); //GET POINT
+    public Point pickUpEndPoint = new Point(49.5,-59  , Point.CARTESIAN);
     public Point submersibleDepositPoint; //This is the drop off point for the specimens after the initial specimen.
     public static final PathChain submersibleToSpikeOneChain = new PathChain(submersibleToSpikePathSegment1, submersibleToSpikePathSegment2, submersibleToSpikePathSegment3, submersibleToSpikePathSegment4, submersibleToSpikePathSegment5, submersibleToSpikePathSegment6, submersibleToSpikePathSegment7, submersibleToSpikePathSegment8, submersibleToSpikePathSegment9,submersibleToSpikePathSegment10, submersibleToSpikePathSegment11, submersibleToSpikePathSegment12);
     public static  final Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
@@ -116,7 +121,7 @@ public class LeftAutotest20166 extends OpMode {
     public void init()
     {
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(startingPose);
+        follower.setStartingPose(startingPoseLeft);
         follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
         try {
             initializeSubSystems();
@@ -147,8 +152,9 @@ public class LeftAutotest20166 extends OpMode {
     private void initializeSubSystems() throws InterruptedException {
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
-        robotGrabber = new SubSystemGrabber(hardwareMap);
-        robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
+        robotGrabber = new SubSystemGrabber(hardwareMap, false);
+        if(limitSwitch.getState()) robotId = 0; else robotId = 1;
+        robotConstants = new RobotConstants(robotId);
 
         //robotIntake = new SubSystemIntake(hardwareMap);
 
@@ -238,7 +244,7 @@ public class LeftAutotest20166 extends OpMode {
         restartTimeout(20000);
         robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
+        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;//LOWER_ELEVATOR_SETUP_STATE;
         lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
     }
 
@@ -250,7 +256,7 @@ public class LeftAutotest20166 extends OpMode {
     }
     private void processLowerElevatorState()
     {
-        if((Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TOP_RUNG_RELEASE) < 20) || hasTimededout())
+        if((Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TOP_RUNG_RELEASE) < 5) || hasTimededout())
         {
             robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
             currentAutonomousState = lowerElevatorNextState;
@@ -267,6 +273,7 @@ public class LeftAutotest20166 extends OpMode {
     private void processWaitAutonDoneState()
     {
         follower.holdPoint(new BezierPoint(submersibleToSpike13), Math.toRadians(270));
+        robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
     }
 
     private void processPushSampleToObservation()
@@ -275,10 +282,19 @@ public class LeftAutotest20166 extends OpMode {
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
     }
-    private void processSetUpSpecimenPickUpState()
+
+    private void processMoveToSampleFromObservationZoneState()
     {
         driveToSpecimenPickUp = new Path(new BezierCurve(pickUpStartPoint, pickUpEndPoint));
-        follower.followPath(driveToSpecimenPickUp);
+        setupPath(driveToSpecimenPickUp, 270);
+        robotGrabber.setPosition(RobotConstants.GRABBER_CLOSE_POSITION);
+        //robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+        robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+    }
+
+    private void processMoveFromPickupToSubmersibleState()
+    {
+
     }
 
     private void processStateMachine()
@@ -303,9 +319,18 @@ public class LeftAutotest20166 extends OpMode {
             case PUSH_SAMPLES_STATE:
                 processPushSampleToObservation();
                 break;
+            case MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE:
+                processMoveToSampleFromObservationZoneState();
+                break;
+            case MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE:
+                processMoveFromPickupToSubmersibleState();
         }
 
     }
+
+
+
+
     public void loop() {
         processStateMachine();
         follower.update();

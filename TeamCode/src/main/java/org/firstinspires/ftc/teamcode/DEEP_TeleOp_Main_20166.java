@@ -10,7 +10,7 @@ package org.firstinspires.ftc.teamcode;
 // leftIntakeArmServo           control            servo 4                 leftIntakeArmServo servo
 // rightIntakeArmServo          control            servo 5                 rightIntakeArmServo servo
 // elevator                  expansion          motor 0                 elevator motor
-// intakeslide               expansion          motor 3                 intake slide
+// intakeSlide               expansion          motor 3                 intake slide
 // imu                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
@@ -18,7 +18,6 @@ package org.firstinspires.ftc.teamcode;
 
 
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,13 +25,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
@@ -44,7 +40,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
-    private RobotConstants robotConstants = new RobotConstants();
+    private RobotConstants robotConstants;
     private int elevatorMoveTo = 0;
     private double translateX;
     private double translateY;
@@ -75,14 +71,20 @@ private double intakeArmPosition = 0;
     private SubSystemIntakeArm robotIntakeArm = null;
     private SubSystemIntake robotIntake = null;
     private SubSystemIntakeSlide robotIntakeSlide = null;
-    NormalizedColorSensor colorSensor;
+
+
+
     RevBlinkinLedDriver blinkinLedDriver;
-    Rev2mDistanceSensor leftDistanceSensor;
-    Rev2mDistanceSensor frontDistanceSensor;
+    private DigitalChannel limitSwitch;
+
 
     private boolean driverAssistPickup = false;
     private float intakeIn;
     private float intakeOut;
+    private boolean spatulaMoveDown = false;
+    private float elevatorNetSpeed;
+
+    private int robotId = 0;
 
     public void initializeDriveMotors()
     {
@@ -114,23 +116,32 @@ private double intakeArmPosition = 0;
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         //imu.resetYaw();
+        //rev magnet thing
 
         //Initialize the color sensor
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+
 
         //Initialize distance sensors
-        leftDistanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "leftDistanceSensor");
-        frontDistanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistanceSensor");
+
 
     }
 
     private void initializeSubSystems() throws InterruptedException {
+
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
-        robotGrabber = new SubSystemGrabber(hardwareMap);
-        robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
+        robotGrabber = new SubSystemGrabber(hardwareMap, true);
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
+
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        if(limitSwitch.getState()){
+            robotId = 0;
+        } else {
+            robotId = 1;
+        }
+        robotConstants = new RobotConstants(robotId);
     }
 
     private void initializeLEDs(){
@@ -147,31 +158,31 @@ private double intakeArmPosition = 0;
 
     public String getSampleColor()
     {
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM);
-        float maxsat = Math.max(Math.max(colors.red, colors.green), colors.blue);
-        float r = colors.red/maxsat;
-        float g = colors.green/maxsat;
-        float b = colors.blue/maxsat;
-
-        String sample = "Nothing";
-
-        if (distance < 3.0) {
-            if (r == 1.0) {
-                sample = "Red";
-                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-            } else if (b == 1.00) {
-                sample = "Blue";
-                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-            } else {
-                sample = "Yellow";
-                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-            }
-        }
-        else {
-            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
-        }
-        return sample;
+//        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+//        double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM);
+//        float maxsat = Math.max(Math.max(colors.red, colors.green), colors.blue);
+//        float r = colors.red/maxsat;
+//        float g = colors.green/maxsat;
+//        float b = colors.blue/maxsat;
+//
+//        String sample = "Nothing";
+//
+//        if (distance < 3.0) {
+//            if (r == 1.0) {
+//                sample = "Red";
+//                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+//            } else if (b == 1.00) {
+//                sample = "Blue";
+//                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+//            } else {
+//                sample = "Yellow";
+//                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+//            }
+//        }
+//        else {
+//            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
+//        }
+        return "";
     }
 
     public double getHeading() {
@@ -264,6 +275,7 @@ private double intakeArmPosition = 0;
         grabberOpen = gamepad2.x;
         grabberClose = gamepad2.b;
 
+        elevatorNetSpeed = gamepad1.right_trigger - gamepad1.left_trigger;
 
         if (gamepad2.y)
             intakeSpeed = robotConstants.INTAKE_ROLLER_OUT_SPEED;
@@ -272,17 +284,24 @@ private double intakeArmPosition = 0;
         else
             intakeSpeed = robotConstants.INTAKE_ROLLER_HOLD_SPEED;
         //buttons
+        if(gamepad1.guide && gamepad2.guide) {
+            imu.resetYaw();
+        }
 
         intakeOut = gamepad2.right_trigger;
         intakeIn = gamepad2.left_trigger;
 
         //Spatula
-        if (gamepad1.right_bumper)
+        spatulaMoveDown = gamepad2.right_bumper;
+        if (spatulaMoveDown)
             intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
+        else if (Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION) < 5)
+            intakeArmPosition = robotConstants.INTAKE_ARM_TRANSFER_SAMPLE_POSITION;
         else
             intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
-
     }
+
+
 
     private void updateIntakeSlide() {
         robotIntakeSlide.movePosition(intakeIn, intakeOut);
@@ -303,11 +322,22 @@ private double intakeArmPosition = 0;
         telemetry.addLine("\n");
         telemetry.addData("Sample detected", getSampleColor());
 
-        telemetry.addData("Left distance", leftDistanceSensor.getDistance(DistanceUnit.MM));
-        telemetry.addData("Front distance", frontDistanceSensor.getDistance(DistanceUnit.MM));
+
         telemetry.addLine("\n");
         telemetry.addData("Left Grabber Servo Position: ", robotGrabber.getLeftPosition());
         telemetry.addData("Right Grabber Servo Position: ", robotGrabber.getRightPosition());
+
+        telemetry.addLine("\n");
+        telemetry.addData("Spatula moving down?: ", spatulaMoveDown);
+        telemetry.addData("Spatula position: ", robotIntakeArm.getPosition());
+
+        telemetry.addLine("\n");
+        telemetry.addData("Gamepad Guide gamepad 1: ", gamepad1.guide);
+        telemetry.addData("Gamepad Guide gamepad 2: ", gamepad2.guide);
+
+        telemetry.addLine("\n");
+        telemetry.addData("Robot Id: ", robotId);
+
         updateTelemetry(telemetry);
     }
     private void updateDrivebaseMotors(double FLMP, double FRMP, double BLMP, double BRMP)
@@ -370,7 +400,7 @@ private double intakeArmPosition = 0;
             } else if (elevatorMoveLow == true) {
                 setElevator(robotConstants.ELEVATOR_LOW_BASKET);
             } else if (elevatorMoveHigh == true) {
-                setElevator(robotConstants.ELEVATOR_LOW_BASKET);
+                setElevator(robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION);
             }
         }
         else //Observation mode
@@ -384,6 +414,18 @@ private double intakeArmPosition = 0;
             } else if (elevatorMoveHigh == true) {
                 setElevator(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
             }
+        }
+
+        if ((elevatorNetSpeed > 0.1) && (robotElevator.getPosition() < robotConstants.ELEVATOR_TOP_BASKET * robotConstants.ELEVATOR_MULTIPLIER)){
+            robotElevator.setPower(elevatorNetSpeed);
+            robotElevator.setPosition(robotElevator.getPosition() + 150);
+        }
+        else if ((elevatorNetSpeed < -0.1) && (robotElevator.getPosition() > robotConstants.ELEVATOR_BOTTOM_POSITION * robotConstants.ELEVATOR_MULTIPLIER)){
+            robotElevator.setPower(elevatorNetSpeed);
+            robotElevator.setPosition(robotElevator.getPosition() - 150);
+        }
+        else {
+            robotElevator.setPower(1);//Hold the current position at half power
         }
     }
     private void setGrabberServo (boolean state)
@@ -432,19 +474,19 @@ private double intakeArmPosition = 0;
     }
     private boolean driveRobotToDistanceFrom (double distance)
     {
-        double currentDistance = frontDistanceSensor.getDistance(DistanceUnit.MM);
-        double driveSpeed = -0.25;
-        if (currentDistance > distance)
-        {
-            updateDrivebaseMotors(driveSpeed, driveSpeed, driveSpeed, driveSpeed);
-            return false;
-
-        }
-            else
-        {
-            updateDrivebaseMotors(0, 0, 0, 0);
+//        double currentDistance = frontDistanceSensor.getDistance(DistanceUnit.MM);
+//        double driveSpeed = -0.25;
+//        if (currentDistance > distance)
+//        {
+//            updateDrivebaseMotors(driveSpeed, driveSpeed, driveSpeed, driveSpeed);
+//            return false;
+//
+//        }
+//            else
+//        {
+//            updateDrivebaseMotors(0, 0, 0, 0);
             return true;
-        }
+//        }
     }
     private DRIVER_ASSIST_STATE currentDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT;
     private DRIVER_ASSIST_STATE returnDriverAssistState = DRIVER_ASSIST_STATE.STATE_WAIT;

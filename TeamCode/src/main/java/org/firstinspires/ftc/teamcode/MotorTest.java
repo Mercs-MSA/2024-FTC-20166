@@ -46,7 +46,7 @@ public class MotorTest extends LinearOpMode {
     }
 private void initalizeGrabber() throws InterruptedException
 {
-    robotGrabber = new SubSystemGrabber(hardwareMap);
+    robotGrabber = new SubSystemGrabber(hardwareMap, true);
     robotGrabber.setPosition(GRABBER_OPEN_POSITION);
 }
     private void setGrabberServo (boolean state)
