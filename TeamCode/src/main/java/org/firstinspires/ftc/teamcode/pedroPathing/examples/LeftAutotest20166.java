@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
@@ -50,8 +51,10 @@ public class LeftAutotest20166 extends OpMode {
     public double botHeading = startingPoseLeft.getHeading();
     private Follower follower;
     private SubSystemIntakeArm robotIntakeArm;
-    private int robotId;
-    private DigitalChannel limitSwitch;
+    private int robotID;
+    private SubSystemRobotID robotRobotID = null;
+
+
 
     private enum AUTON_STATE
     {
@@ -122,12 +125,13 @@ public class LeftAutotest20166 extends OpMode {
     {
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startingPoseLeft);
-        follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
         try {
             initializeSubSystems();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
+
         //initalizePathHeadings();
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -150,11 +154,14 @@ public class LeftAutotest20166 extends OpMode {
         submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
     }
     private void initializeSubSystems() throws InterruptedException {
+        robotRobotID = new SubSystemRobotID(hardwareMap);
+        robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
+
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
         robotGrabber = new SubSystemGrabber(hardwareMap, false);
-        if(limitSwitch.getState()) robotId = 0; else robotId = 1;
-        robotConstants = new RobotConstants(robotId);
+
 
         //robotIntake = new SubSystemIntake(hardwareMap);
 

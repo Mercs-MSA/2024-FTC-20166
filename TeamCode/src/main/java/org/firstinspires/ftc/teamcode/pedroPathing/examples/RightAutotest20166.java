@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
@@ -42,16 +43,17 @@ import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1Headin
 @Config
 @Autonomous
 public class RightAutotest20166 extends OpMode {
-    private RobotConstants robotConstants;
+    private RobotConstants robotConstants = null;
     private Telemetry telemetryA;
     private SubSystemGrabber robotGrabber;
     private SubSystemElevator robotElevator;
+    private SubSystemRobotID robotRobotID = null;
+
 
     public double botHeading = startingPoseRight.getHeading();
     private Follower follower;
     private SubSystemIntakeArm robotIntakeArm;
-    private int robotId;
-    private DigitalChannel limitSwitch;
+    private int robotID;
 
     private enum AUTON_STATE
     {
@@ -122,12 +124,15 @@ public class RightAutotest20166 extends OpMode {
     {
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startingPoseRight);
-        follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
+
+
         try {
             initializeSubSystems();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
+
         //initalizePathHeadings();
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -150,11 +155,14 @@ public class RightAutotest20166 extends OpMode {
         submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
     }
     private void initializeSubSystems() throws InterruptedException {
+        robotRobotID = new SubSystemRobotID(hardwareMap);
+        robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
+
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
         robotGrabber = new SubSystemGrabber(hardwareMap, false);
-        if(limitSwitch.getState()) robotId = 0; else robotId = 1;
-        robotConstants = new RobotConstants(robotId);
+
 
         //robotIntake = new SubSystemIntake(hardwareMap);
 

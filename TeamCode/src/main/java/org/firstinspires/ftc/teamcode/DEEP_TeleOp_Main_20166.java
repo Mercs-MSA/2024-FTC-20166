@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+//config name                hub                slot                    description
 // Fl                        control            Motor 0                 frontLeft Drive motor
 // FR                        control            Motor 1                 frontRight Drive motor
 // BL                        control            Motor 2                 backLeft Drive motor
@@ -6,15 +7,16 @@ package org.firstinspires.ftc.teamcode;
 // grabberLeft               control            servo 0                 grabberLeft servo
 // grabberRight              control            servo 1                 grabberRight servo
 // blinkIn                   control            servo 2                 ledDriver
-// driveServo                control            servo 3                 driveIntakeServo servo
-// leftIntakeArmServo           control            servo 4                 leftIntakeArmServo servo
-// rightIntakeArmServo          control            servo 5                 rightIntakeArmServo servo
+// driveIntakeServo          control            servo 3                 driveIntakeServo servo
+// leftIntakeArmServo        control            servo 4                 leftIntakeArmServo servo
+// rightIntakeArmServo       control            servo 5                 rightIntakeArmServo servo
 // elevator                  expansion          motor 0                 elevator motor
 // intakeSlide               expansion          motor 3                 intake slide
 // imu                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
 // frontDistanceSensor       control            i2cBus 3                frontDistance sensor
+// limitSwitch               expansion          digital 0               limitSwitch digital channel
 
 
 
@@ -25,7 +27,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -35,6 +36,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 
 
 @TeleOp
@@ -58,7 +60,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private boolean grabberClose;
 
     private double intakeSpeed = 0;
-private double intakeArmPosition = 0;
+    private double intakeArmPosition = 0;
     //Motor demo variables
     private DcMotorEx frontLeftDrive = null;
     private DcMotorEx frontRightDrive = null;
@@ -71,11 +73,11 @@ private double intakeArmPosition = 0;
     private SubSystemIntakeArm robotIntakeArm = null;
     private SubSystemIntake robotIntake = null;
     private SubSystemIntakeSlide robotIntakeSlide = null;
+    private SubSystemRobotID robotRobotID = null;
 
 
 
     RevBlinkinLedDriver blinkinLedDriver;
-    private DigitalChannel limitSwitch;
 
 
     private boolean driverAssistPickup = false;
@@ -84,7 +86,7 @@ private double intakeArmPosition = 0;
     private boolean spatulaMoveDown = false;
     private float elevatorNetSpeed;
 
-    private int robotId = 0;
+    private int robotID = 0;
 
     public void initializeDriveMotors()
     {
@@ -133,15 +135,11 @@ private double intakeArmPosition = 0;
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
+        robotRobotID = new SubSystemRobotID(hardwareMap);
+        robotID = robotRobotID.getRobotID();
 
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
-        if(limitSwitch.getState()){
-            robotId = 0;
-        } else {
-            robotId = 1;
-        }
-        robotConstants = new RobotConstants(robotId);
+
+        robotConstants = new RobotConstants(robotID);
     }
 
     private void initializeLEDs(){
@@ -336,7 +334,7 @@ private double intakeArmPosition = 0;
         telemetry.addData("Gamepad Guide gamepad 2: ", gamepad2.guide);
 
         telemetry.addLine("\n");
-        telemetry.addData("Robot Id: ", robotId);
+        telemetry.addData("Robot ID: ", robotID);
 
         updateTelemetry(telemetry);
     }
