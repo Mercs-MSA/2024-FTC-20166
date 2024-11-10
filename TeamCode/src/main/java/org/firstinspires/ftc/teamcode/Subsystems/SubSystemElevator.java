@@ -12,6 +12,7 @@ public class SubSystemElevator {
     // Instantiate the drivetrain motor variables
     private DcMotorEx elevator;
     private double multiplier;
+    private int targetPosition;
 
 
     public SubSystemElevator(HardwareMap hardwareMap, double multiplier) throws InterruptedException {                 // Motor Mapping
@@ -27,8 +28,20 @@ public class SubSystemElevator {
         this.multiplier = multiplier;
     }
 
+    public boolean atTargetYet(int accuracy)
+    {
 
-    public void setPosition(int encoderPosition) {
+        int error = Math.abs(targetPosition - getPosition());
+        if (error > accuracy)
+            return false;
+        else
+            return true;
+    }
+
+
+    public void setPosition(int encoderPosition)
+    {
+        targetPosition = encoderPosition;
         elevator.setTargetPosition((int) (multiplier * encoderPosition));
     }
 

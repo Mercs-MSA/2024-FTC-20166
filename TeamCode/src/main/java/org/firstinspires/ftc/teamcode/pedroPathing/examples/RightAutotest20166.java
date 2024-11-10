@@ -64,12 +64,18 @@ public class RightAutotest20166 extends OpMode {
         WAIT_PATH_DONE_STATE,
         PUSH_SAMPLES_STATE,
         MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE,
-        MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE
+        PICKUP_SPECIMEN_STATE,
+        WAIT_TIMER_DONE_STATE,
+        ELEVATOR_PICK_UP_SAMPLE,
+        DO_NOTHING,
+
+
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
     private AUTON_STATE waitPathDoneNextState = AUTON_STATE.AUTON_START_STATE;
     private AUTON_STATE lowerElevatorNextState = AUTON_STATE.AUTON_START_STATE;
+    private AUTON_STATE waitTimerDoneNextState = AUTON_STATE.AUTON_START_STATE;
 
     private static ElapsedTime timeoutTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int timeoutPeriod = 0;
@@ -90,7 +96,7 @@ public class RightAutotest20166 extends OpMode {
     public static final Point submersibleToSpike10 = new Point(59.5,-12.8 , Point.CARTESIAN);//Aligned behind third sample
     public static final Point submersibleToSpike11 = new Point(61,-48  , Point.CARTESIAN);//Observation drop 'push to' location for third sample
     public static final Point submersibleToSpike12 = new Point(60,-40  , Point.CARTESIAN);//Back out of Observation zone
-    public static final Point submersibleToSpike13 = new Point(49.5,-55  , Point.CARTESIAN);//Move into grabbing position
+    public static final Point submersibleToSpike13 = new Point(49.5,-59.5  , Point.CARTESIAN);//Move into grabbing position
     //Paths
     public static final Path submersibleToSpikePathSegment1 = new Path(new BezierCurve(submersibleDropPoint, submersibleToSpike1, submersibleToSpike2));
     public static final Path submersibleToSpikePathSegment2 = new Path(new BezierCurve(submersibleToSpike2, submersibleToSpike3));
@@ -106,13 +112,19 @@ public class RightAutotest20166 extends OpMode {
     public static final Path submersibleToSpikePathSegment12 = new Path(new BezierCurve(submersibleToSpike12, submersibleToSpike13));
 
     public Path driveToSpecimenPickUp;
-    public Point pickUpStartPoint = new Point(49.5,-55  , Point.CARTESIAN); //GET POINT
+    public Point pickUpStartPoint = new Point(49.5,-46  , Point.CARTESIAN); //GET POINT
     public Point pickUpEndPoint = new Point(49.5,-59  , Point.CARTESIAN);
     public Point submersibleDepositPoint; //This is the drop off point for the specimens after the initial specimen.
     public static final PathChain submersibleToSpikeOneChain = new PathChain(submersibleToSpikePathSegment1, submersibleToSpikePathSegment2, submersibleToSpikePathSegment3, submersibleToSpikePathSegment4, submersibleToSpikePathSegment5, submersibleToSpikePathSegment6, submersibleToSpikePathSegment7, submersibleToSpikePathSegment8, submersibleToSpikePathSegment9,submersibleToSpikePathSegment10, submersibleToSpikePathSegment11, submersibleToSpikePathSegment12);
     public static  final Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
     public static final double startToSubmersibleHeading = Math.toRadians(90);
     public static final double submersibleToSpike1Heading = Math.toRadians(90);
+
+
+    //
+    public static Point specimenTwoStartPoint = new Point(49.5,-59  , Point.CARTESIAN);
+    public static Point specimenTwoClipOn = new Point(7.4, -32.6, Point.CARTESIAN);
+    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenTwoStartPoint, specimenTwoClipOn));
 
 
     /**
@@ -205,7 +217,7 @@ public class RightAutotest20166 extends OpMode {
     {
         double currentHeading = botHeading;
         follower.followPath(pathToFollow);
-        pathToFollow.setLinearHeadingInterpolation(currentHeading, endHeading);
+        pathToFollow.setLinearHeadingInterpolation(currentHeading, endHeading, 0.7);
         botHeading = endHeading;
     }
     private void setupPathChain(PathChain pathChainToFollow, double endHeading)
@@ -236,6 +248,7 @@ public class RightAutotest20166 extends OpMode {
         //else
           //  return false;
         return follower.isBusy();
+        //return !hasTimededout();
     }
 
     private boolean hasTimededout()
@@ -249,7 +262,7 @@ public class RightAutotest20166 extends OpMode {
     private void processStateStart()
     {
         setupPath(startToSubmersible, startToSubmersibleHeading);
-        restartTimeout(20000);
+        restartTimeout(8000);
         robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
@@ -260,11 +273,12 @@ public class RightAutotest20166 extends OpMode {
     {
         robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
         restartTimeout(1000);
-        currentAutonomousState =AUTON_STATE.LOWER_ELEVATOR_STATE;
+        currentAutonomousState = AUTON_STATE.LOWER_ELEVATOR_STATE;
     }
     private void processLowerElevatorState()
     {
-        if((Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TOP_RUNG_RELEASE) < 5) || hasTimededout())
+//        if((Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TOP_RUNG_RELEASE) < 5) || hasTimededout())
+        if(robotElevator.atTargetYet(5))
         {
             robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
             currentAutonomousState = lowerElevatorNextState;
@@ -287,8 +301,9 @@ public class RightAutotest20166 extends OpMode {
     private void processPushSampleToObservation()
     {
         setupPathChain(submersibleToSpikeOneChain, submersibleToSpike1Heading);
+        restartTimeout(8000);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
+        waitPathDoneNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
     }
 
     private void processMoveToSampleFromObservationZoneState()
@@ -300,11 +315,41 @@ public class RightAutotest20166 extends OpMode {
         robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
     }
 
-    private void processMoveFromPickupToSubmersibleState()
+    private void processPickupSpecimenState()
     {
-
+        //close gripper
+        robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
+        restartTimeout(300);
+        currentAutonomousState = AUTON_STATE.WAIT_TIMER_DONE_STATE;
+        waitTimerDoneNextState = AUTON_STATE.ELEVATOR_PICK_UP_SAMPLE;
+    }
+    private void waitTimerDone()
+    {
+        if (hasTimededout())
+        {
+            currentAutonomousState = waitTimerDoneNextState;
+        }
     }
 
+    private void processElevatorPickUpSample()
+    {
+        robotElevator.setPosition(robotConstants.ELEVATOR_SPECIMEN_PICK_UP_LIFT_POSITION);
+        //if (timeoutTimer.time() > 3000)
+        if (robotElevator.atTargetYet(5))
+        {
+            restartTimeout(8000);
+            setupPath(specimenTwoToSubmersible, 90);
+            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
+            lowerElevatorNextState = AUTON_STATE.DO_NOTHING;
+        }
+
+    }
+    private void doNothing()
+    {
+        //follower.holdPoint(new BezierPoint(specimenTwoClipOn), Math.toRadians(90));
+    }
     private void processStateMachine()
     {
         switch (currentAutonomousState)
@@ -330,8 +375,21 @@ public class RightAutotest20166 extends OpMode {
             case MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE:
                 processMoveToSampleFromObservationZoneState();
                 break;
-            case MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE:
-                processMoveFromPickupToSubmersibleState();
+            case PICKUP_SPECIMEN_STATE:
+                processPickupSpecimenState();
+                break;
+            case WAIT_TIMER_DONE_STATE:
+                waitTimerDone();
+                break;
+            case ELEVATOR_PICK_UP_SAMPLE:
+                processElevatorPickUpSample();
+                break;
+            case DO_NOTHING:
+                doNothing();
+                break;
+
+
+
         }
 
     }
@@ -343,6 +401,7 @@ public class RightAutotest20166 extends OpMode {
         processStateMachine();
         follower.update();
 
+        telemetryA.addData("Timer", timeoutTimer.time());
         follower.telemetryDebug(telemetryA);
     }
 }

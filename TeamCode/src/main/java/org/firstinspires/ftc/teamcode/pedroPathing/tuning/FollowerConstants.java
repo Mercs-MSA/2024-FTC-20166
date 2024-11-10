@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.KalmanFilterParameters;
 public class FollowerConstants {
 
     public static Pose startingPoseRight = new Pose(16, -62, Math.toRadians(90));
-    public static Pose startingPoseLeft = new Pose(-16, -62, Math.toRadians(90));
+    public static Pose startingPoseLeft = new Pose(-13, -62, Math.toRadians(90));
 
     // This section is for configuring your motors
     public static String leftFrontMotorName = "FL";
@@ -110,7 +110,7 @@ public class FollowerConstants {
     // robot slower but reducing risk of end-of-path overshoots or localization slippage.
     // This can be set individually for each Path, but this is the default.
 //    public static double zeroPowerAccelerationMultiplier = 4;
-    public static double zeroPowerAccelerationMultiplier = 3;
+    public static double zeroPowerAccelerationMultiplier = 2;
 
 
     // When the robot is at the end of its current Path or PathChain and the velocity goes below

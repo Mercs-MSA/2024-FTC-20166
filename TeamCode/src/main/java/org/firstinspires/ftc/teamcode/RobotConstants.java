@@ -15,6 +15,7 @@ public class RobotConstants
     public static final int ELEVATOR_LOW_BASKET = -2550;//Low basket location
     public static final int ELEVATOR_TRANSFER_SAMPLE_POSITION = -705;//Low basket location
 
+
     //   private static final int ELEVATOR_BOTTOM_RUNG_PLACE = -400;
 
     //   private static final int ELEVATOR_BOTTOM_RUNG_RELEASE = -225;
@@ -23,6 +24,7 @@ public class RobotConstants
 
     //   private static final int ELEVATOR_MIDDLE_BASKET = -896;
 
+    public static final int ELEVATOR_SPECIMEN_PICK_UP_LIFT_POSITION = -1100;
     public static final int ELEVATOR_SPECIMEN_PICKUP = -830;
     public static final double GRABBER_OPEN_POSITION = 0.7;
     public static final double GRABBER_CLOSE_POSITION = 0.95;

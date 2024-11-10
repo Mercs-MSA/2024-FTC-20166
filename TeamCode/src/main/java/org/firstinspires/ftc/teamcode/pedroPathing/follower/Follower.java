@@ -942,8 +942,8 @@ public class Follower {
         //telemetry.addData("drive vector heading", driveVector.getTheta());
         telemetry.addData("x", getPose().getX());
         telemetry.addData("y", getPose().getY());
-        telemetry.addData("heading", getPose().getHeading());
-        telemetry.addData("total heading", poseUpdater.getTotalHeading());
+        telemetry.addData("heading", Math.toDegrees(getPose().getHeading()));
+        telemetry.addData("total heading", Math.toDegrees(poseUpdater.getTotalHeading()));
         //telemetry.addData("velocity magnitude", getVelocity().getMagnitude());
         //telemetry.addData("velocity heading", getVelocity().getTheta());
         driveKalmanFilter.debug(telemetry);

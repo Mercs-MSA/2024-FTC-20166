@@ -65,7 +65,10 @@ public class LeftAutotest20166 extends OpMode {
         WAIT_PATH_DONE_STATE,
         PUSH_SAMPLES_STATE,
         MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE,
-        MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE
+        MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE,
+
+        PICKUP_SPECIMEN_STATE,
+        DROPOFF_SPECIMEN_STATE
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
@@ -74,24 +77,24 @@ public class LeftAutotest20166 extends OpMode {
 
     private static ElapsedTime timeoutTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int timeoutPeriod = 0;
-
+private static final int xOffset = 6;
     public static final Point startPoint = new Point (startingPoseLeft.getX(), startingPoseLeft.getY(), Point.CARTESIAN);
-    public static final Point submersibleDropPoint = new Point(2.4, -32.6, Point.CARTESIAN);
+    public static final Point submersibleDropPoint = new Point(-2.4+xOffset, -32.6, Point.CARTESIAN);
 
     //New Points for submersible to spikes ready to push into human player area
-    public static final Point submersibleToSpike1 = new Point(27,-52 , Point.CARTESIAN);//First point to move away from sub
-    public static final Point submersibleToSpike2 = new Point(33.4,-48.8 , Point.CARTESIAN);//Slide right ready to move behind samples
-    public static final Point submersibleToSpike3 = new Point(33.4,-12.8 , Point.CARTESIAN);//Drive forward so behind samples
-    public static final Point submersibleToSpike4 = new Point(42,-12.8 , Point.CARTESIAN);//Slide right until directly behind first sample
-    public static final Point submersibleToSpike5 = new Point(42,-48 , Point.CARTESIAN);//Observation drop 'push to' location
-    public static final Point submersibleToSpike6 = new Point(41.5,-12.8 , Point.CARTESIAN); //Back behind the samples
-    public static final Point submersibleToSpike7 = new Point(52,-12.8 , Point.CARTESIAN);//Aligned behind second sample
-    public static final Point submersibleToSpike8 = new Point(52,-48 , Point.CARTESIAN);//Observation drop 'push to' location for second sample
-    public static final Point submersibleToSpike9 = new Point(46,-12.8 , Point.CARTESIAN);//Back behind samples
-    public static final Point submersibleToSpike10 = new Point(59.5,-12.8 , Point.CARTESIAN);//Aligned behind third sample
-    public static final Point submersibleToSpike11 = new Point(61,-48  , Point.CARTESIAN);//Observation drop 'push to' location for third sample
-    public static final Point submersibleToSpike12 = new Point(60,-40  , Point.CARTESIAN);//Back out of Observation zone
-    public static final Point submersibleToSpike13 = new Point(49.5,-55  , Point.CARTESIAN);//Move into grabbing position
+    public static final Point submersibleToSpike1 = new Point(-27+xOffset,-52 , Point.CARTESIAN);//First point to move away from sub
+    public static final Point submersibleToSpike2 = new Point(-33.4+xOffset,-48.8 , Point.CARTESIAN);//Slide right ready to move behind samples
+    public static final Point submersibleToSpike3 = new Point(-33.4+xOffset,-12.8 , Point.CARTESIAN);//Drive forward so behind samples
+    public static final Point submersibleToSpike4 = new Point(-42+xOffset,-12.8 , Point.CARTESIAN);//Slide right until directly behind first sample
+    public static final Point submersibleToSpike5 = new Point(-42+xOffset,-48 , Point.CARTESIAN);//Observation drop 'push to' location
+    public static final Point submersibleToSpike6 = new Point(-41.5+xOffset,-12.8 , Point.CARTESIAN); //Back behind the samples
+    public static final Point submersibleToSpike7 = new Point(-52+xOffset,-12.8 , Point.CARTESIAN);//Aligned behind second sample
+    public static final Point submersibleToSpike8 = new Point(-52+xOffset,-48 , Point.CARTESIAN);//Observation drop 'push to' location for second sample
+    public static final Point submersibleToSpike9 = new Point(-46+xOffset,-12.8 , Point.CARTESIAN);//Back behind samples
+    public static final Point submersibleToSpike10 = new Point(-59.5+xOffset,-12.8 , Point.CARTESIAN);//Aligned behind third sample
+    public static final Point submersibleToSpike11 = new Point(-61+xOffset,-48  , Point.CARTESIAN);//Observation drop 'push to' location for third sample
+    public static final Point submersibleToSpike12 = new Point(-60+xOffset,-40  , Point.CARTESIAN);//Back out of Observation zone
+    public static final Point submersibleToSpike13 = new Point(-49.5+xOffset,-55  , Point.CARTESIAN);//Move into grabbing position
     //Paths
     public static final Path submersibleToSpikePathSegment1 = new Path(new BezierCurve(submersibleDropPoint, submersibleToSpike1, submersibleToSpike2));
     public static final Path submersibleToSpikePathSegment2 = new Path(new BezierCurve(submersibleToSpike2, submersibleToSpike3));
@@ -251,7 +254,7 @@ public class LeftAutotest20166 extends OpMode {
         restartTimeout(20000);
         robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;//LOWER_ELEVATOR_SETUP_STATE;
+        waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
         lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
     }
 
@@ -288,6 +291,7 @@ public class LeftAutotest20166 extends OpMode {
         setupPathChain(submersibleToSpikeOneChain, submersibleToSpike1Heading);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
+
     }
 
     private void processMoveToSampleFromObservationZoneState()
@@ -331,10 +335,11 @@ public class LeftAutotest20166 extends OpMode {
                 break;
             case MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE:
                 processMoveFromPickupToSubmersibleState();
+
+
         }
 
     }
-
 
 
 
