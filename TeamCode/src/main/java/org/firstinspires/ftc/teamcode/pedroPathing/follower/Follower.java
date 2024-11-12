@@ -927,7 +927,7 @@ public class Follower {
      */
     public void telemetryDebug(MultipleTelemetry telemetry) {
         telemetry.addData("follower busy", isBusy());
-        telemetry.addData("heading error", headingError);
+        telemetry.addData("heading error", Math.toDegrees(headingError));
         telemetry.addData("heading vector magnitude", headingVector.getMagnitude());
         //telemetry.addData("corrective vector magnitude", correctiveVector.getMagnitude());
         //telemetry.addData("corrective vector heading", correctiveVector.getTheta());
