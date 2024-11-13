@@ -22,6 +22,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,6 +42,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
+    SparkFunOTOS myOtos;
 
     private RobotConstants robotConstants;
     private int elevatorMoveTo = 0;
@@ -152,6 +154,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         initializeSensors();
         initializeSubSystems();
         initializeLEDs();
+        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
     }
 
     public String getSampleColor()
@@ -320,7 +323,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         telemetry.addLine("\n");
         telemetry.addData("Sample detected", getSampleColor());
 
-
+/*
         telemetry.addLine("\n");
         telemetry.addData("Left Grabber Servo Position: ", robotGrabber.getLeftPosition());
         telemetry.addData("Right Grabber Servo Position: ", robotGrabber.getRightPosition());
@@ -334,7 +337,12 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         telemetry.addData("Gamepad Guide gamepad 2: ", gamepad2.guide);
 
         telemetry.addLine("\n");
+ */
         telemetry.addData("Robot ID: ", robotID);
+        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+        telemetry.addData("X coordinate", pos.x);
+        telemetry.addData("Y coordinate", pos.y);
+        telemetry.addData("Heading angle", pos.h);
 
         updateTelemetry(telemetry);
     }
