@@ -366,7 +366,7 @@ module HopperIntake()
       cylinder(d = 58, h = 6, $fn = 3, center = true);
 }
 
-module ServoCutout($Height = 6)
+module ServoCutout($Height = 6, HoleD = 4.5)
 {
   translate([0, $ServoRotateOffset, 0])
   {
@@ -376,13 +376,13 @@ module ServoCutout($Height = 6)
     cube([2, 55, $Height], center = true);
     //Mount holes
     translate([5, 24, 0])
-      cylinder(d = 4.5, h = $Height, center = true);
+      cylinder(d = HoleD, h = $Height, center = true);
     translate([-5, 24, 0])
-      cylinder(d = 4.5, h = $Height, center = true);
+      cylinder(d = HoleD, h = $Height, center = true);
     translate([5, -24, 0])
-      cylinder(d = 4.5, h = $Height, center = true);
+      cylinder(d = HoleD, h = $Height, center = true);
     translate([-5, -24, 0])
-      cylinder(d = 4.5, h = $Height, center = true);
+      cylinder(d = HoleD, h = $Height, center = true);
   }
 }
 
@@ -970,28 +970,29 @@ module FrameSidePlateLeft()
     }
   }
 }
+
+module ServoCutoutSideMount(MountHoleD)
+{
+  translate([-5, 0, -3])
+    cube([31, 42, 21], center = true);
+  translate([5, 24, 0])
+    cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
+  translate([-5, 24, 0])
+    cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
+  translate([5, -24, 0])
+    cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
+  translate([-5, -24, 0])
+    cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);  
+}
  
 module ServoMountBlock()
 {
-  MountHoleD = M4HeatInsertD;
-  
   difference()
   {
     translate([1.5, 1, 0.75])
       cube([26, 15, 60], center = true);
-    translate([-5, 3, 0])
-      cube([31, 21, 42], center = true);
     rotate(90, [1, 0, 0])
-    {
-      translate([5, 24, 0])
-        cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
-      translate([-5, 24, 0])
-        cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
-      translate([5, -24, 0])
-        cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
-      translate([-5, -24, 0])
-        cylinder(d = MountHoleD, h = 200, center = true, $fn = 20);
-    }
+      ServoCutoutSideMount(M4HeatInsertD);
   }
 }
  
@@ -1274,7 +1275,37 @@ module Servo()
     cylinder(d = 8, h = 36, $fn = 6);
 }
 
+module IntakeArmMountBlock()
+{
+  SlideAlignD = 20.5;
+  ArmAlignD = 12;
+  
+  difference()
+  {
+    //Core
+    translate([0, 0, 25])
+      cube([80, 52, 50], center = true);
+    //Center gap
+    translate([0, 0, 25 + 10])
+      cube([81, 37, 50], center = true);
+    //Slider alignment
+    translate([-(81 / 2), -(SlideAlignD / 2), 0])
+      cube([81, SlideAlignD, 1]);
+    //Arm alignment
+    translate([-(81 / 2), -(ArmAlignD / 2), 0])
+      cube([81, ArmAlignD, 2]);
+    //Mount hole options, sized for M3 heat inserts
+    for (i = [-2:2])
+      translate([i*12, 0, 0])
+        cylinder(d = 3.8, h = 30, center = true);
 
+    //Arm servo openings
+    translate([-9.85, 0, 32])
+      rotate(90, [0, 1, 0])
+        rotate(90, [1, 0, 0])
+          ServoCutout(100, M4HeatInsertD);
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
@@ -1304,6 +1335,7 @@ module Servo()
 //BackstopFrameSingle();
 //IntakeFlapper();
 //IntakeDrivePulleyCap();
-IntakeDrivePulley();
+//IntakeDrivePulley();
+IntakeArmMountBlock(); //Servo block for the arm and also intake tilter
 
 
