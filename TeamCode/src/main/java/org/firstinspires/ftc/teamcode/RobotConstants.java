@@ -8,7 +8,7 @@ public class RobotConstants
 {
     public static double ELEVATOR_MULTIPLIER;//Bot A = 1.0, Bot B = -1.0
     public static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
-    public static final int ELEVATOR_TOP_RUNG_PLACE = -2250;//Upper rung starting position
+    public static final int ELEVATOR_TOP_RUNG_PLACE = -2100;//Upper rung starting position
 
     public static final int ELEVATOR_TOP_RUNG_RELEASE = -1450;//Upper rung pull down position
     public static final int ELEVATOR_TOP_BASKET = -3900;//Top basket location

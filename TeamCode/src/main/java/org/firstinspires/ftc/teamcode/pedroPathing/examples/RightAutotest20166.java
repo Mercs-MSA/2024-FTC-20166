@@ -69,6 +69,7 @@ public class RightAutotest20166 extends OpMode {
         WAIT_TIMER_DONE_STATE,
         ELEVATOR_PICK_UP_SAMPLE,
         MOVE_TO_DROP_CLIP_LOCATION,
+        MOVE_TO_SPECIMEN_PICKUP,
         DO_NOTHING,
 
 
@@ -83,7 +84,7 @@ public class RightAutotest20166 extends OpMode {
     private int timeoutPeriod = 0;
 
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
-    public static final Point submersibleDropPoint = new Point(2.4, -30, Point.CARTESIAN);
+    public static final Point submersibleDropPoint = new Point(2.4, -32, Point.CARTESIAN);
 
     //New Points for submersible to spikes ready to push into human player area
     public static final Point submersibleToSpike1 = new Point(27,-52 , Point.CARTESIAN);//First point to move away from sub
@@ -125,8 +126,11 @@ public class RightAutotest20166 extends OpMode {
 
     //
     public static Point specimenTwoStartPoint = new Point(49.5,-59  , Point.CARTESIAN);
-    public static Point specimenTwoClipOn = new Point(6, -29.5, Point.CARTESIAN);
+    public static Point specimenTwoClipOn = new Point(6, -32.5, Point.CARTESIAN);
     public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenTwoStartPoint, specimenTwoClipOn));
+
+
+    public static final Path speciminion = new Path (new BezierCurve(specimenTwoClipOn, specimenTwoStartPoint));
 
 
     /**
@@ -295,11 +299,11 @@ public class RightAutotest20166 extends OpMode {
         if (!pathIsBusy())
             currentAutonomousState = waitPathDoneNextState;
     }
-    private void processWaitAutonDoneState()
+    /*private void processWaitAutonDoneState()
     {
         follower.holdPoint(new BezierPoint(submersibleToSpike13), Math.toRadians(270));
         robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
-    }
+    }*/
 
     private void processPushSampleToObservation()
     {
@@ -310,13 +314,21 @@ public class RightAutotest20166 extends OpMode {
     }
 
     //private void processMoveToSampleFromObservationZoneState()
-    //{
-       // driveToSpecimenPickUp = new Path(new BezierCurve(pickUpStartPoint, pickUpEndPoint));
-      //  setupPath(driveToSpecimenPickUp, 270);
-       // robotGrabber.setPosition(RobotConstants.GRABBER_CLOSE_POSITION);
-       // robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
-   // }
+    /*{
+       driveToSpecimenPickUp = new Path(new BezierCurve(pickUpStartPoint, pickUpEndPoint));
+       setupPath(driveToSpecimenPickUp, 270);
+       robotGrabber.setPosition(RobotConstants.GRABBER_CLOSE_POSITION);
+       robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+    }*/
 
+    private void processMoveToSpecimenPickupState()
+    {
+        Pose specimenPickUpPose = new Pose (submersibleToSpike13.getX(), submersibleToSpike13.getY(), Math.toRadians(270));
+        setPathFromCurrentPositionToTargetPose(specimenPickUpPose);
+        //setupPath(speciminion, 270);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+    }
     private void processPickupSpecimenState()
     {
         //close gripper
@@ -342,9 +354,8 @@ public class RightAutotest20166 extends OpMode {
            setupPath(specimenTwoToSubmersible, 90);
            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
           currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-//            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
             waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
-            lowerElevatorNextState = AUTON_STATE.DO_NOTHING;
+            lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
             //setPathFromCurrentPositionToSubmersible ();
             //currentAutonomousState = AUTON_STATE.MOVE_TO_DROP_CLIP_LOCATION;
         }
@@ -354,15 +365,24 @@ public class RightAutotest20166 extends OpMode {
         Point returnPoint = new Point(pose.getX(), pose.getY(), Point.CARTESIAN);
         return returnPoint;
     }
-    private void setPathFromCurrentPositionToSubmersible()
+
+    private void setPathFromCurrentPositionToTargetPose(Pose targetPose)
     {
-          setupPath(new Path(new BezierCurve(poseToPoint(follower.getPose()), specimenTwoClipOn)),90);
+        Point targetPoint = poseToPoint(targetPose);
+        double targetHeading = targetPose.getHeading();
+        setupPath(new Path(new BezierCurve(poseToPoint(follower.getPose()), targetPoint)),targetHeading);
     }
 
-    private void processMoveToDropClipLocation()
+    private void setPathFromCurrentPositionToSubmersible(Pose endPose)
+    {
+        Point endPoint = poseToPoint(endPose);
+        setupPath(new Path(new BezierCurve(poseToPoint(follower.getPose()), specimenTwoClipOn)),90);
+    }
+    /*private void processMoveToDropClipLocation()
     {
 
-    }
+
+    }*/
     private void doNothing()
     {
         //follower.holdPoint(new BezierPoint(specimenTwoClipOn), Math.toRadians(90));
@@ -377,9 +397,9 @@ public class RightAutotest20166 extends OpMode {
             case WAIT_PATH_DONE_STATE:
                 processWaitPathDone();
                 break;
-            case WAIT_AUTO_FINISHED:
-                processWaitAutonDoneState();
-                break;
+            //case WAIT_AUTO_FINISHED:
+                //processWaitAutonDoneState();
+                //break;
             case LOWER_ELEVATOR_SETUP_STATE:
                 processLowerElevatorSetupState();
                 break;
@@ -389,7 +409,7 @@ public class RightAutotest20166 extends OpMode {
             case PUSH_SAMPLES_STATE:
                 processPushSampleToObservation();
                 break;
-           // case MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE:
+            //case MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE:
                 //processMoveToSampleFromObservationZoneState();
                // break;
             case PICKUP_SPECIMEN_STATE:
@@ -401,9 +421,11 @@ public class RightAutotest20166 extends OpMode {
             case ELEVATOR_PICK_UP_SAMPLE:
                 processElevatorPickUpSample();
                 break;
-            case MOVE_TO_DROP_CLIP_LOCATION:
-                processMoveToDropClipLocation();
-                break;
+            case MOVE_TO_SPECIMEN_PICKUP:
+                processMoveToSpecimenPickupState();
+            //case MOVE_TO_DROP_CLIP_LOCATION:
+                //processMoveToDropClipLocation();
+                //break;
             case DO_NOTHING:
                 doNothing();
                 break;
