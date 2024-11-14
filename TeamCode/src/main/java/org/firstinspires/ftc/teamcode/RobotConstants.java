@@ -32,12 +32,14 @@ public class RobotConstants
     public static double INTAKE_ARM_UP_POSITION = 0.3;
     public static double INTAKE_ARM_DOWN_POSITION = 0.75;
 
-    public static final double START_TO_SUBMERSIBLE_SPEED = 0.7;
-    public static final double SUBMERSIBLE_TO_PUSH_SPEED = 0.8;
+    public static final double START_TO_SUBMERSIBLE_SPEED = 0.8;
+    public static final double SUBMERSIBLE_TO_PUSH_SPEED = 0.9;
 
     public static final double INTAKE_ROLLER_OUT_SPEED = 1;
     public static final double INTAKE_ROLLER_IN_SPEED = -1;
     public static final double INTAKE_ROLLER_HOLD_SPEED = -0.2;
+    public static final double STALL_THRESHOLD = 0.02;
+    public static final int STALL_SAMPLE_COUNT = 10;
 
     public RobotConstants(int robotId) {
         if (robotId == 0) { //Bot A
