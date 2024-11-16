@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 public class SubSystemElevator {
     // Instantiate the drivetrain motor variables
     private DcMotorEx elevator;
-    private double multiplier;
+    public double multiplier;
     private int targetPosition;
 
 
@@ -38,15 +38,18 @@ public class SubSystemElevator {
             return true;
     }
 
-
+    public int getTarget()
+    {
+        return targetPosition;
+    }
     public void setPosition(int encoderPosition)
     {
-        targetPosition = encoderPosition;
-        elevator.setTargetPosition((int) (multiplier * encoderPosition));
+        targetPosition = (int)(encoderPosition * multiplier) ;
+        elevator.setTargetPosition((int) (targetPosition));
     }
 
     public int getPosition() {
-        return (int)(RobotConstants.ELEVATOR_MULTIPLIER * elevator.getCurrentPosition());
+        return (elevator.getCurrentPosition());
     }
 
     public void setPower(double power) {

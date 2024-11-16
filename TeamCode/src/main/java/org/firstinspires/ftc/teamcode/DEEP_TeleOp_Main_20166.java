@@ -6,17 +6,18 @@ package org.firstinspires.ftc.teamcode;
 // BR                        control            Motor 3                 backRight Drive motor
 // grabberLeft               control            servo 0                 grabberLeft servo
 // grabberRight              control            servo 1                 grabberRight servo
-// blinkIn                   control            servo 2                 ledDriver
+// blinkIn                   expansion          servo 1                 ledDriver
 // driveIntakeServo          control            servo 3                 driveIntakeServo servo
 // leftIntakeArmServo        control            servo 4                 leftIntakeArmServo servo
 // rightIntakeArmServo       control            servo 5                 rightIntakeArmServo servo
+// intakePivot               control            servo 2                 intakePivot servo
 // elevator                  expansion          motor 0                 elevator motor
 // intakeSlide               expansion          motor 3                 intake slide
 // imu                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
 // frontDistanceSensor       control            i2cBus 3                frontDistance sensor
-// limitSwitch               expansion          digital 0               limitSwitch digital channel
+// limitSwitch               control            digital 0               limitSwitch digital channel
 
 
 
@@ -29,9 +30,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
@@ -69,6 +69,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
     private IMU imu         = null;
+    private Servo intakePivot;
+
 
     private SubSystemElevator robotElevator = null;
     private SubSystemGrabber robotGrabber = null;
@@ -139,6 +141,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
         robotRobotID = new SubSystemRobotID(hardwareMap);
         robotID = robotRobotID.getRobotID();
+        intakePivot = hardwareMap.get(Servo.class, "intakePivot");
+        intakePivot.setPosition(0.5);
+
 
 
         robotConstants = new RobotConstants(robotID);
@@ -186,14 +191,21 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         return "";
     }
 
-    public double getHeading() {
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        return orientation.getYaw(AngleUnit.RADIANS);
+    public double getHeadingRadians() {
+        //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        //return orientation.getYaw(AngleUnit.RADIANS);
+        return Math.toRadians(getHeadingDegrees());
+
+
+
     }
 
     public double getHeadingDegrees() {
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        return orientation.getYaw(AngleUnit.DEGREES);
+        //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+       // return orientation.getYaw(AngleUnit.DEGREES);
+        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
+
+        return pos.h;
     }
 
     private static double[] rotatePoint(double xPoint, double yPoint, double angle) {
@@ -239,19 +251,19 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         //dpad down - elevatorMoveBottom
         //dpad left - elevatorMoveLow
         //dpad right - elevatorMoveHigh
-        //a -
+        //a - intake in
         //b - grabberClose
-        //y -
+        //y - intake out
         //x - grabberOpen
-        //left bumper (lb) - INTAKE (NEED TO SEE WHICH WAY IT TURNS)
-        //right bumper (rb) - INTAKE (NEED TO SEE WHICH WAY IT TURNS)
+        //left bumper (lb) -
+        //right bumper (rb) - intake arm (pressed = down, not pressed = up) also controls intake pivot
         //left trigger (lt) -
         //right trigger (rt) -
         //left joystick -
         //right joystick -
         //driving
         double x, y, heading;
-        heading = getHeading();
+        heading = getHeadingRadians();
 
         x = gamepad1.left_stick_x;
         y = gamepad1.left_stick_y;
@@ -276,7 +288,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         grabberOpen = gamepad2.x;
         grabberClose = gamepad2.b;
 
-        elevatorNetSpeed = gamepad1.right_trigger - gamepad1.left_trigger;
+        //elevatorNetSpeed = gamepad1.right_trigger - gamepad1.left_trigger;
 
         if (gamepad2.y)
             intakeSpeed = robotConstants.INTAKE_ROLLER_OUT_SPEED;
@@ -295,9 +307,17 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         //Spatula
         spatulaMoveDown = gamepad2.right_bumper;
         if (spatulaMoveDown)
+        {
             intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
-        else if (Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION) < 5)
+            intakePivot.setPosition(robotConstants.PIVOT_INTAKE_PICKUP);
+
+        }
+        else if (Math.abs(robotElevator.getPosition() - (robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION * robotElevator.multiplier)) < 5)
+        {
             intakeArmPosition = robotConstants.INTAKE_ARM_TRANSFER_SAMPLE_POSITION;
+            intakePivot.setPosition(robotConstants.PIVOT_INTAKE_DEPOSIT);
+
+        }
         else
             intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
     }
@@ -422,7 +442,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             }
         }
 
-        if ((elevatorNetSpeed > 0.1) && (robotElevator.getPosition() < robotConstants.ELEVATOR_TOP_BASKET * robotConstants.ELEVATOR_MULTIPLIER)){
+        /*if ((elevatorNetSpeed > 0.1) && (robotElevator.getPosition() < robotConstants.ELEVATOR_TOP_BASKET * robotConstants.ELEVATOR_MULTIPLIER)){
             robotElevator.setPower(elevatorNetSpeed);
             robotElevator.setPosition(robotElevator.getPosition() + 150);
         }
@@ -432,7 +452,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         }
         else {
             robotElevator.setPower(1);//Hold the current position at half power
-        }
+        }*/
     }
     private void setGrabberServo (boolean state)
     {
