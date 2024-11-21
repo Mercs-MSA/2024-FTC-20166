@@ -1307,6 +1307,29 @@ module IntakeArmMountBlock()
   }
 }
 
+module ServoMountPlate()
+{
+  Thickness = 6;
+  
+  difference()
+  {
+    translate([2, 0, -Thickness / 2])
+      cube([45, 70, Thickness], center = true);
+    translate([8, -9.85, 0])
+      ServoCutout(100, 4.2);
+    translate([-2.5 - (15.4 / 2) - 1, 0, 0])
+    {
+      translate([0, 25, 0])
+        cylinder(d = 3.2, h = 20, center = true);
+      cylinder(d = 3.2, h = 20, center = true);
+      translate([0, -25, 0])
+        cylinder(d = 3.2, h = 20, center = true);
+      translate([0, 0, (-1.6 / 2)])
+        cube([12, 80, 1.6], center = true);
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
 
@@ -1336,6 +1359,6 @@ module IntakeArmMountBlock()
 //IntakeFlapper();
 //IntakeDrivePulleyCap();
 //IntakeDrivePulley();
-IntakeArmMountBlock(); //Servo block for the arm and also intake tilter
-
+//IntakeArmMountBlock(); //Servo block for the arm and also intake tilter
+ServoMountPlate();
 

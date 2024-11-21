@@ -1,7 +1,12 @@
 $fn = 50;
 
+$ReturnOffset = 3;
+$ShowBearingOutlines = true;
+$BearingOutlineD = 12.5;
+
 $PlateThickness = 0.125 * 25.4;
 $BearingHeight = 10.2;//4.5 for V-grove cord
+
 
 module RoundedBlock($XDim = 10, $YDim = 10, $ZDim = 10, $D1 = 0, $D2 = 0, $D3 = 0, $D4 = 0, $D5 = 0, $D6 = 0, $D7 = 0, $D8 = 0)
 {
@@ -171,6 +176,13 @@ module MisumiLiftSlideInnerFirst($Multi = false, $Bottom = 0)
           cube([80, 40, 10]);
     }
   }
+  if ($ShowBearingOutlines)
+  {
+    //Bearing
+    translate([25, -19.5, 2])
+      rotate(90, [1, 0, 0])
+          cylinder(d = $BearingOutlineD, h = 8, $fn = 30, center = true);
+  }
 }
 
 /*
@@ -290,8 +302,8 @@ module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
       translate([21 / 2, -28 / 2, ((8 + ($Stages * 16) + 8) / 2)])
         RoundedBlock($XDim = 21, $YDim = 28, $ZDim = 8 + ($Stages * 16) + 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Pulley block
-      translate([21 / 2, $BearingHeight  / 2, 10 / 2])
-        RoundedBlock($XDim = 21, $YDim = $BearingHeight + 6, $ZDim = 10, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+      translate([(21 / 2), ($BearingHeight  / 2), (10 / 2) + $ReturnOffset])
+        RoundedBlock($XDim = 21, $YDim = $BearingHeight + 6, $ZDim = 9, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Pulley return block
       translate([21 / 2, $BearingHeight  / 2, (9 / 2) + (16 * $Stages) + 7])
         RoundedBlock($XDim = 21, $YDim = $BearingHeight + 6, $ZDim = 9, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
@@ -300,13 +312,13 @@ module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
     translate([21, -(28 + 20.5) / 2, 7])
       cube([90, 20.5, 10]);
     //Bearing opening
-    translate([21/2, ($BearingHeight / 2) + .5, 9/2])
+    translate([21/2, ($BearingHeight / 2) + .5, (9/2) + $ReturnOffset])
       cube([13, $BearingHeight, 15], center = true);
     //Return bearing opening
     translate([21/2, ($BearingHeight / 2) + .5, (9/2) + (16 * $Stages) + 5])
       cube([13, $BearingHeight, 20], center = true);
     //Bearing shaft
-    translate([21 / 2, 15, 5])
+    translate([21 / 2, 15, 5 + $ReturnOffset])
       rotate(90, [1, 0, 0])
         cylinder(d = 3, h = 50, $fn = 30);
     //Return bearing shaft
@@ -316,6 +328,21 @@ module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
     //Mount hole
     translate([14.5 + 12 + 8 + 1.5, -28 / 2, -1])
       cylinder(d = $MountD, h = 20);
+      
+  }
+  if ($ShowBearingOutlines)
+  {
+    translate([0, -9.5, 0])
+    {
+      //Bearings
+      translate([21 / 2, 15, 5 + $ReturnOffset])
+        rotate(90, [1, 0, 0])
+          cylinder(d = $BearingOutlineD, h = 8, $fn = 30, center = true);
+      //Return bearing
+      translate([21 / 2, 15, 5  + (16 * $Stages) + 7])
+        rotate(90, [1, 0, 0])
+          cylinder(d = $BearingOutlineD, h = 8, $fn = 30, center = true);
+    }
   }
 }
 
@@ -356,6 +383,16 @@ module MisumiLiftSlideOuterFirst($MountD = 2.9)
     translate([14.5 + 12 + 15, 28 / 2, -1])
       cylinder(d = $MountD, h = 20);
   }
+  if ($ShowBearingOutlines)
+  {
+    translate([0, -9.5, 0])
+    {
+      //Bearing
+      translate([21 / 2, 4, 5])
+        rotate(90, [1, 0, 0])
+            cylinder(d = $BearingOutlineD, h = 8, $fn = 30, center = true);
+    }
+  }
 }
 
 module PrintMisumiSliderSet($Sliders = 3)
@@ -390,9 +427,9 @@ module PrintMisumiSliderSet($Sliders = 3)
         MisumiLiftSlideBelt($MountD = 2.9);
 }
 
-module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition, channelholes, offsetholes, dopulleyguide, includespacers = true)
+module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition, channelholes, offsetholes, includespacers = true, dopulleys = true)
 {
-  hoffset = support1 ? 15 : 0;
+  hoffset = 0;//support1 ? 15 : 0;
   railoffset = includespacers ? 15 : 0;
   //Return style 0 = Return cord lines up with edge of outer slide
   //Return style 1 = Return cord lines up with pull up pulley
@@ -405,42 +442,38 @@ module MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, 
     translate([0, (i * (16.1 + railoffset)) + hoffset - 15, (i * offset * 2) + (i * StageOffset)])
     {
       if ((support1 && (i == 0)) || includespacers)
-        translate([0, (15/2), 0])
-          Extrusion15mm(length = length);
-      if (i == stages - 1)
+        translate([0, (15/2), 70])
+          Extrusion15mm(length = length - 100);
+
+      if (stages == 1)
         translate([0, 15 , offset])
-          MisumiSlide(length = length, position = StageOffset, showupper = 0, showlower = 0, showpulley = 0, offset = offset);
+          MisumiSlide(length = length, position = StageOffset, showupper = 2, showlower = 3, showpulley = 0, offset = offset);//Single stage so only need single upper and lower belt block
+      else if (i == 0)//First, fixed stage
+        translate([0, 15 , offset])
+          MisumiSlide(length = length, position = StageOffset, showupper = 1, showlower = 0, showpulley = 0, offset = offset);//Only upper pulley, outside type
+      else if (i == stages - 1)//Last, outer stage
+        translate([0, 15 , offset])
+          MisumiSlide(length = length, position = StageOffset, showupper = 2, showlower = 2, showpulley = 0, offset = offset);//Upper outside pulley and lower belt block
       else
         translate([0, 15 , offset])
-          MisumiSlide(length = length, position = StageOffset, showupper = 0, showlower = 0, showpulley = 0, offset = offset);
-/*      
-      if (dopulleyguide)
-      {
-        //Top pulley plate
-        translate([-11.5, 20.1, length - 44.9 - (11 * 2)])
-          PulleyPlate(TopMount = true);
-        //Bottom pulley plate
-        translate([-11.5, 20.1, 11.9 + (11 * 5) + StageOffset])
-          rotate(180, [1, 0, 0])
-            PulleyPlate(TopMount = false);
-      }
-      */
+          MisumiSlide(length = length, position = StageOffset, showupper = 2, showlower = 1, showpulley = 0, offset = offset);//Upper and lower pulleys, inside types
     }
   }
 
-
-  //Pulley return plate
-  //Need to update this to new return pulley
-  /*
-  translate([10, (15/2), -12 + offset])
-    MisumiPulleyReturnPlate(showpulley = true, extension = returnextension, holespacing = 16, voffset = 15, width = width);
-  */
+  if(dopulleys)
+  {
+    color("RoyalBlue")
+    translate([14, -7.1, -21.1])
+      rotate(-90, [0, 0, 1])
+        rotate(-90, [0, 1, 0])
+          MisumiLiftSlideReturn($MountD = 2.9, $Stages = stages);
+  }
   
   //Motor mount
   if (motorposition != -1)
   {
-    translate([-5, -20, motorposition])
-      rotate(90, [0, 1,0])
+    translate([5, -33, motorposition])
+      rotate(-90, [0, 1,0])
         MotorAndFrame(ChannelHoles = channelholes, Rx = -1, Ry = 0, Rz = -1, OffsetHoles = offsetholes);
   }
 }
@@ -487,6 +520,25 @@ module Extrusion15mm(length = 300)
   }
 }
 
+module TimingBeltPulleyGoBilda14mm()
+{
+  $fn = 200;
+  
+  //Inner pitch diameter
+  cylinder(d = 38.2, h = 7, center = true);
+  //Belt outer diameter
+  color([0.2, 0.2, 0.2, 0.5])
+    cylinder(d = 38.2 + 0.6 + 0.6, h = 7, center = true);
+  //Flange outer diameters
+  color("CadetBlue")
+  {
+    translate([0, 0, (7 + 0.75) / 2])
+      cylinder(d = 40, h = 1.5 / 2, center = true);
+    translate([0, 0, -(7 + 0.75) / 2])
+      cylinder(d = 40, h = 1.5 / 2, center = true);
+      }
+}
+
 module MotorAndFrame(ChannelHoles, Rx, Ry, Rz, OffsetHoles = 0)
 {
   //Motor
@@ -498,19 +550,14 @@ module MotorAndFrame(ChannelHoles, Rx, Ry, Rz, OffsetHoles = 0)
   //Mounting plate
   translate([0, 0, -4])
     rotate(180, [1, 0, 0])
-      MotorPlate($Type = 1);
+      MotorPlate($Type = 2);
   //Support plate
   translate([0, 0, -4 + 15 + $PlateThickness])
     rotate(180, [1, 0, 0])
-      MotorPlate($Type = 1);
+      MotorPlate($Type = 2);
   //Pulley
-  translate([0, 0, -16 - $PlateThickness - 1])
-    cylinder(d = 42, h = 14);
-  //Pulley belt guides
-    translate([22, 14, -19])
-      cylinder(d = 10, h = 12);
-    translate([-22, 14, -19])
-      cylinder(d = 10, h = 12);
+  translate([0, 0, -10 - $PlateThickness - 1.4])
+    TimingBeltPulleyGoBilda14mm();
 }
 
 module MisumiSlide(length, position, showupper = 0, showlower = 0, showpulley = 0, offset, mountholes = true)
@@ -525,6 +572,42 @@ module MisumiSlide(length, position, showupper = 0, showlower = 0, showpulley = 
   color("darkgray")
     translate([-8, 2, position / 2])
       cube([16, 12, length]);   
+
+  if (showupper == 1)
+  {
+    color("RoyalBlue")
+    translate([14.0, -7.1, length])
+      rotate(-90, [1, 0, 0])
+        rotate(90, [0, 0, 1])
+          MisumiLiftSlideOuterFirst();
+  }
+  
+  if (showupper == 2)
+  {
+    color("RoyalBlue")
+    translate([0, 0, length - 22])
+      rotate(90, [1, 0, 0])
+        rotate(90, [0, 0, 1])
+          MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 0);//Upper inner pulley
+  }
+
+  if ((showlower == 1) || (showlower == 2))
+  {
+    color("RoyalBlue")
+      translate([0, 0, 22])
+        rotate(90, [0, 1, 0])
+          rotate(-90, [1, 0, 0])
+            MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
+  }
+  
+  if ((showlower == 2) || (showlower == 3))
+  {
+    color("RoyalBlue")
+      translate([14, 23.1, position])
+        rotate(-90, [0, 1, 0])
+          rotate(90, [1, 0, 0])
+            MisumiLiftSlideBelt($MountD = 2.9);
+  }
 }
 
 module MotorPlate()
@@ -533,30 +616,86 @@ module MotorPlate()
   $MotorEffectiveD = 41;
   $InterfaceWidth = 14;
   
+  $PulleyX1 = 14;
+  $PulleyY1 = 22.6;
+  $PulleyX2 = 14 + 7;
+  $PulleyY2 = 22.6 - 6.3;
+  
+  $MType = $Type;
+  
   difference()
   {
-    hull()
+    if ($MType == 3)
+      hull()
+      {
+        cylinder(d = 40, h = $PlateThickness, center = true);
+        translate([28, -20, 0])
+          cylinder(d = 15, h = $PlateThickness, center = true);
+      }    
+    else if ($MType == 2)
+      hull()
+      {
+        cylinder(d = 40, h = $PlateThickness, center = true);
+        translate([28, -20, 0])
+          cylinder(d = 15, h = $PlateThickness, center = true);
+        translate([-28, -20, 0])
+          cylinder(d = 15, h = $PlateThickness, center = true);
+      }
+    else if ($MType == 1)
+      hull()
+      {
+        cylinder(d = 35, h = $PlateThickness, center = true);
+        translate([0, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
+          RoundedPlate($XDim = 70, $YDim = $InterfaceWidth, $ZDim = $PlateThickness, $D1 = $CornerD, $D2 = $CornerD, $D3 = $CornerD, $D4 = $CornerD);
+      }
+    else if ($MType == 0)
+      hull()
+      {
+        cylinder(d = 50, h = $PlateThickness, center = true);
+        translate([0, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
+          RoundedPlate($XDim = 70, $YDim = $InterfaceWidth, $ZDim = $PlateThickness, $D1 = $CornerD, $D2 = $CornerD, $D3 = $CornerD, $D4 = $CornerD);
+      }
+      
+    //8mm generic M4 mount holes
+    translate([28, (-($MotorEffectiveD + $InterfaceWidth) / 2) + 4, 0])
+      cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+    translate([-28, (-($MotorEffectiveD + $InterfaceWidth) / 2) + 4, 0])
+      cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+    translate([4, (-($MotorEffectiveD + $InterfaceWidth) / 2) + 4, 0])
+      cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+    translate([-4, (-($MotorEffectiveD + $InterfaceWidth) / 2) + 4, 0])
+      cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+    
+    if (($MType == 0) || ($MType == 1))
     {
-      cylinder(d = 50, h = $PlateThickness, center = true);
-      translate([0, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
-        RoundedPlate($XDim = 70, $YDim = $InterfaceWidth, $ZDim = $PlateThickness, $D1 = $CornerD, $D2 = $CornerD, $D3 = $CornerD, $D4 = $CornerD);
+      //Rail mount holes
+      translate([-24, (-($MotorEffectiveD + $InterfaceWidth) / 2) - 1, 0])
+        cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
+      translate([24, (-($MotorEffectiveD + $InterfaceWidth) / 2) - 1, 0])
+        cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
+      translate([0, (-($MotorEffectiveD + $InterfaceWidth) / 2) - 1, 0])
+        cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
     }
-    //Rail mount holes
-    translate([-24, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
-      cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
-    translate([24, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
-      cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
-    translate([0, -($MotorEffectiveD + $InterfaceWidth) / 2, 0])
-      cylinder(d = 3.1, h = $PlateThickness + 0.01, center = true);
-    //Retained bearing holes
-    translate([22, -14, 0])
-      cylinder(d = 3.1, h = 12, center = true);
-    translate([-22, -14, 0])
-      cylinder(d = 3.1, h = 12, center = true);
-    if ($Type == 0)
+    
+    if ($MType != 0)
+    {
+      //Retained bearing holes position 1
+      translate([$PulleyY1, -$PulleyX1, 0])
+        cylinder(d = 3.1, h = 12, center = true);
+      translate([-$PulleyY1, -$PulleyX1, 0])
+        cylinder(d = 3.1, h = 12, center = true);
+
+      //Retained bearing holes position 2
+      translate([$PulleyY2, -$PulleyX2, 0])
+        cylinder(d = 3.1, h = 12, center = true);
+      translate([-$PulleyY2, -$PulleyX2, 0])
+        cylinder(d = 3.1, h = 12, center = true);
+    }
+      
+    if ($MType == 0)
       //Motor opening
       cylinder(d = 37, h = $PlateThickness + 0.01, center = true);
-    else if ($Type == 1)
+    else if (($MType == 1) || ($MType == 2) || ($MType == 3))
     {
       //Motor shaft opening
       cylinder(d = 10, h = $PlateThickness + 0.01, center = true);
@@ -569,7 +708,38 @@ module MotorPlate()
         cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
       translate([-8, -8, 0])
         cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      //Motor mount holes 45 degrees rotated
+      rotate(45, [0, 0, 1])
+      {
+        translate([8, 8, 0])
+          cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+        translate([-8, 8, 0])
+          cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+        translate([8, -8, 0])
+          cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+        translate([-8, -8, 0])
+          cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      }
     }
+  }
+  if ($ShowBearingOutlines)
+  {
+    color("SlateGray")
+    {
+      //Pulley belt guides set 1
+      translate([$PulleyY1, -$PulleyX1, 3.5])
+        cylinder(d = 13, h = 12);
+      translate([-$PulleyY1, -$PulleyX1, 3.5])
+        cylinder(d = 13, h = 12);
+    }
+    color("DarkGray")
+    {
+      //Pulley belt guides set 2
+      translate([$PulleyY2, -$PulleyX2, 3.5])
+        cylinder(d = 13, h = 12);
+      translate([-$PulleyY2, -$PulleyX2, 3.5])
+        cylinder(d = 13, h = 12);
+        }
   }
 }
 
@@ -637,18 +807,6 @@ module PulleyPlate(TopMount = false)
 
 //******************************************
 //******************************************
-//Misumi slider kits
-//
-//Dual sliders need
-//    2x left (non-mirrored)
-//    1x right
-//    1x top inner
-//    1x bottom inner
-//Tripple sliders need
-//    2x left (non-mirrored)
-//    1x right
-//    2x top inner
-//    2x bottom inner
 //mirror([1, 0, 0])
 //  MisumiLiftSlideOuterFirst();
 //*MisumiLiftSlideOuterFirst();
@@ -662,11 +820,15 @@ PrintMisumiSliderSet($Sliders = 3);
 //*MisumiLiftSlideReturn($Stages = 3, $MountD = 2.9);
 //MisumiLiftSlideDrillTemplate1();
 //MisumiLiftSlideDrillTemplate2($Stages = 1);
-//MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10, dopulleyguide = true);
+//MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10);
 //projection()
 //MotorPlate($Type = 1);
 
 
 //MisumiSlide(length = 300, position = 0, showupper = true, showlower = true, pulleyextension = 0, showpulley = true, offset = 0);
-//MisumiRailSet(support1 = true, length = 300, stages = 1, position = 100, offset = 0, motorposition = 100, channelholes = 0, offsetholes = 0, dopulleyguide = false, includespacers = false);
+//MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 100, channelholes = 0, offsetholes = 0, includespacers = false);
+//MisumiRailSet(support1 = false, length = 300, stages = 1, position = 100, offset = 0, motorposition = 150, channelholes = 0, offsetholes = 0, includespacers = false);
+
+//MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3);
+
 
