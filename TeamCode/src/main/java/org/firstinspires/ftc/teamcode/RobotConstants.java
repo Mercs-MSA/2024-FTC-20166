@@ -8,12 +8,14 @@ public class RobotConstants
 {
     public static double ELEVATOR_MULTIPLIER;//Bot A = 1.0, Bot B = -1.0
     public static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
-    public static final int ELEVATOR_TOP_RUNG_PLACE = -2100;//Upper rung starting position
+    public static final int ELEVATOR_TOP_RUNG_PLACE = -2300;//Upper rung starting position
 
     public static final int ELEVATOR_TOP_RUNG_RELEASE = -1450;//Upper rung pull down position
     public static final int ELEVATOR_TOP_BASKET = -3900;//Top basket location
     public static final int ELEVATOR_LOW_BASKET = -2550;//Low basket location
     public static final int ELEVATOR_TRANSFER_SAMPLE_POSITION = -253;//sample transfer height
+    public static final int LEFT_AUTON_DELAY = 5000; //Delay in ms
+    public static final int RIGHT_AUTON_DELAY = 0; //Delay in ms
 
 
     //   private static final int ELEVATOR_BOTTOM_RUNG_PLACE = -400;

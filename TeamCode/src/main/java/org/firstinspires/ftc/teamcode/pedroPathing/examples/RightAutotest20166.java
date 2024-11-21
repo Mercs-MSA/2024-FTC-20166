@@ -141,6 +141,10 @@ public class RightAutotest20166 extends OpMode {
      * initializes the FTC Dashboard telemetry.
      */
     @Override
+    public void start() {
+        restartTimeout(robotConstants.RIGHT_AUTON_DELAY);
+    }
+    @Override
     public void init()
     {
         follower = new Follower(hardwareMap);
@@ -256,13 +260,16 @@ public class RightAutotest20166 extends OpMode {
 
     private void processStateStart()
     {
-        follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
-        setupPath(startToSubmersible, startToSubmersibleHeading);
-        restartTimeout(8000);
-        robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
-        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
-        lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
+        if (hasTimededout())
+        {
+            follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
+            setupPath(startToSubmersible, startToSubmersibleHeading);
+            restartTimeout(8000);
+            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
+            lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
+        }
     }
 
     private void processLowerElevatorSetupState()

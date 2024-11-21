@@ -124,6 +124,10 @@ private static final int xOffset = 6;
      * initializes the FTC Dashboard telemetry.
      */
     @Override
+    public void start() {
+        restartTimeout(robotConstants.LEFT_AUTON_DELAY);
+    }
+    @Override
     public void init()
     {
         follower = new Follower(hardwareMap);
@@ -250,12 +254,15 @@ private static final int xOffset = 6;
 
     private void processStateStart()
     {
-        setupPath(startToSubmersible, startToSubmersibleHeading);
-        restartTimeout(20000);
-        robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
-        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
-        lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
+        if (hasTimededout())
+        {
+            setupPath(startToSubmersible, startToSubmersibleHeading);
+            restartTimeout(20000);
+            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
+            lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
+        }
     }
 
     private void processLowerElevatorSetupState()
