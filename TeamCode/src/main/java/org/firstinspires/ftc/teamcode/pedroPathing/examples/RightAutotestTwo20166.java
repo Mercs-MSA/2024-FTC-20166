@@ -58,6 +58,7 @@ public class RightAutotestTwo20166 extends OpMode {
     public double testX = 0;
     public double testY = 0;
     public double testHeading = 0;
+    public int poseIndex;
     private enum AUTON_STATE
     {
         HOLD_POSE_STATE,
@@ -75,12 +76,15 @@ public class RightAutotestTwo20166 extends OpMode {
         BACKUP_AND_LOWER,
         MOVE_TO_SPECIMEN_PICKUP,
         DO_NOTHING,
+        INITIALIZE_POSE_LIST_INDEX,
+        FOLLOW_POSE_LIST
     }
 
-    private AUTON_STATE currentAutonomousState = AUTON_STATE.TEST_STATE;
-    private AUTON_STATE waitPathDoneNextState = AUTON_STATE.TEST_STATE;
-    private AUTON_STATE lowerElevatorNextState = AUTON_STATE.TEST_STATE;
-    private AUTON_STATE waitTimerDoneNextState = AUTON_STATE.TEST_STATE;
+    private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
+    private AUTON_STATE waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+    private AUTON_STATE lowerElevatorNextState = AUTON_STATE.DO_NOTHING;
+    private AUTON_STATE waitTimerDoneNextState = AUTON_STATE.DO_NOTHING;
+    private AUTON_STATE processFollowPoseListNextState = AUTON_STATE.DO_NOTHING;
 
     private static ElapsedTime timeoutTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int timeoutPeriod = 0;
@@ -92,26 +96,29 @@ public class RightAutotestTwo20166 extends OpMode {
     public static final double pushPrepY = -12.8;
     public static final double pushAlignY = -12.8;
     public static final double pushObservationY = -48;
-    public static final Point submersibleDropPoint = new Point(2.4, -32, Point.CARTESIAN);
-    public static final Pose testPose = new Pose(40, -40, Math.toRadians(90.0));
+    public static final Pose submersibleDropPose = pointAndHeadingToPose(17.75, -47.88, 90);
+    public static final Pose testPose = pointAndHeadingToPose(40, -40, 90.0);
 
 
 
-    //New Points for submersible to spikes ready to push into human player area
-    public static final Point submersibleToSpike1 = new Point(29,-52 , Point.CARTESIAN);//First point to move away from sub
-    public static final Point submersibleToSpike2 = new Point(33.4,-48.8 , Point.CARTESIAN);//Slide right ready to move behind samples
-    public static final Point submersibleToSpike3 = new Point(33.4,pushPrepY, Point.CARTESIAN);//Drive forward so behind samples
-    public static final Point submersibleToSpike4 = new Point(42,pushAlignY , Point.CARTESIAN);//Slide right until directly behind first sample
-    public static final Point submersibleToSpike5 = new Point(42, pushObservationY , Point.CARTESIAN);//Observation drop 'push to' location
-    public static final Point submersibleToSpike6 = new Point(42,pushPrepY , Point.CARTESIAN); //Back behind the samples
-    public static final Point submersibleToSpike7 = new Point(54,pushAlignY , Point.CARTESIAN);//Aligned behind second sample
-    public static final Point submersibleToSpike8 = new Point(54,pushObservationY , Point.CARTESIAN);//Observation drop 'push to' location for second sample
-    public static final Point submersibleToSpike9 = new Point(54,pushPrepY , Point.CARTESIAN);//Back behind samples
-    public static final Point submersibleToSpike10 = new Point(60,pushAlignY , Point.CARTESIAN);//Aligned behind third sample
-    public static final Point submersibleToSpike11 = new Point(60,pushObservationY  , Point.CARTESIAN);//Observation drop 'push to' location for third sample
-    public static final Point submersibleToSpike12 = new Point(52,-38  , Point.CARTESIAN);//Back out of Observation zone
-    public static final Point submersibleToSpike13 = new Point(specimenWallPickupX,specimenWallPickupY  , Point.CARTESIAN);//Move into grabbing position
+    //New Poses for submersible to spikes ready to push into human player area
+    public static final Pose submersibleToSpike1 = pointAndHeadingToPose(34.42,-49.88 , 90);//First point to move away from sub
+    public static final Pose submersibleToSpike2 = pointAndHeadingToPose(37.4,-11.77 , 90);//Slide right ready to move behind samples
+    public static final Pose submersibleToSpike3 = pointAndHeadingToPose(46.88 , -11.77, 90);//Drive forward so behind samples
+    public static final Pose submersibleToSpike4 = pointAndHeadingToPose(47.27, -56.49 , 90);//Slide right until directly behind first sample
+    public static final Pose submersibleToSpike5 = pointAndHeadingToPose(46.88, -11.77 , 90);//Observation drop 'push to' location
+    public static final Pose submersibleToSpike6 = pointAndHeadingToPose(56.67, -11.77, 90); //Back behind the samples
+    public static final Pose submersibleToSpike7 = pointAndHeadingToPose(47.27,-57.27, 90);//Aligned behind second sample
+    public static final Pose submersibleToSpike8 = pointAndHeadingToPose(46.37,-39.86, 90);//Observation drop 'push to' location for second sample
+  /*  public static final Pose submersibleToSpike9 = pointAndHeadingToPose(54,pushPrepY , 90);//Back behind samples
+    public static final Pose submersibleToSpike10 = pointAndHeadingToPose(60,pushAlignY , 90);//Aligned behind third sample
+    public static final Pose submersibleToSpike11 = pointAndHeadingToPose(60,pushObservationY  , 90);//Observation drop 'push to' location for third sample
+    public static final Pose submersibleToSpike12 = pointAndHeadingToPose(52,-38  , 90);//Back out of Observation zone*/
+    public static final Pose submersibleToSpike13 = pointAndHeadingToPose(specimenWallPickupX,specimenWallPickupY  , 270);//Move into grabbing position
+
+    public static final Pose[] getTwoSamples = {submersibleToSpike1, submersibleToSpike2, submersibleToSpike3, submersibleToSpike4, submersibleToSpike5, submersibleToSpike6, submersibleToSpike7, submersibleToSpike8, submersibleToSpike13};
     //Paths
+    /*
     public static final Path submersibleToSpikePathSegment1 = new Path(new BezierCurve(submersibleDropPoint, submersibleToSpike1, submersibleToSpike2));
     public static final Path submersibleToSpikePathSegment2 = new Path(new BezierCurve(submersibleToSpike2, submersibleToSpike3));
     public static final Path submersibleToSpikePathSegment3 = new Path(new BezierCurve(submersibleToSpike3, submersibleToSpike4));
@@ -130,18 +137,21 @@ public class RightAutotestTwo20166 extends OpMode {
      public static final PathChain submersibleToSpikeOneChain3x = new PathChain(submersibleToSpikePathSegment1, submersibleToSpikePathSegment2, submersibleToSpikePathSegment3, submersibleToSpikePathSegment4, submersibleToSpikePathSegment5, submersibleToSpikePathSegment6, submersibleToSpikePathSegment7, submersibleToSpikePathSegment83x, submersibleToSpikePathSegment9,submersibleToSpikePathSegment10, submersibleToSpikePathSegment11, submersibleToSpikePathSegment12);
     public static final PathChain submersibleToSpikeOneChain2x = new PathChain(submersibleToSpikePathSegment1, submersibleToSpikePathSegment2, submersibleToSpikePathSegment3, submersibleToSpikePathSegment4, submersibleToSpikePathSegment5, submersibleToSpikePathSegment6, submersibleToSpikePathSegment7, submersibleToSpikePathSegment82x, submersibleToSpikePathSegment12);
     public static  final Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
+
+     */
     public static final double startToSubmersibleHeading = 90;
     public static final double submersibleToSpike1Heading = 90;
 
     //
-    public static Point specimenPickupPoint = new Point(specimenWallPickupX,specimenWallPickupY  , Point.CARTESIAN);
-    public static Point specimenTwoClipOn = new Point(6, -32.5, Point.CARTESIAN);
-    public static Point specimenThreeClipOn = new Point(-2, -32.5, Point.CARTESIAN);
-    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenTwoClipOn));
+    public static Pose specimenPickupPoint = pointAndHeadingToPose(specimenWallPickupX,specimenWallPickupY  , 270);
+    public static Pose specimenTwoClipOn = pointAndHeadingToPose(6, -32.5, 90);
+    public static Pose specimenThreeClipOn = pointAndHeadingToPose(-2, -32.5, 90);
+
+/*    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenTwoClipOn));
     public static final Path moveToSpeciminThreePickup = new Path (new BezierCurve(specimenTwoClipOn, specimenPickupPoint));
-    public static final Path specimenThreeToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenThreeClipOn));
-    public static Point autonHoldLocation = specimenPickupPoint;
-    public static final Path moveToAutonHoldPath = new Path(new BezierCurve(specimenThreeClipOn, autonHoldLocation));
+    public static final Path specimenThreeToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenThreeClipOn)); */
+    public static Pose autonHoldLocation = specimenPickupPoint;
+ /*   public static final Path moveToAutonHoldPath = new Path(new BezierCurve(specimenThreeClipOn, autonHoldLocation));*/
 
 
     /**
@@ -173,21 +183,26 @@ public class RightAutotestTwo20166 extends OpMode {
 
     }
     private void initalizePathHeadings()
+        {
+           /* submersibleToSpikePathSegment1.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment2.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment3.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment4.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment5.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment6.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment83x.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment82x.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment9.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment10.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment11.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
+            submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
+            moveToSpeciminThreePickup.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.5);*/
+    }
+
+    private static Pose pointAndHeadingToPose(double x, double y, double headingInDegrees)
     {
-        submersibleToSpikePathSegment1.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment2.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment3.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment4.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment5.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment6.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment83x.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment82x.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment9.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment10.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment11.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
-        moveToSpeciminThreePickup.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.5);
+            return new Pose(x, y, Math.toRadians(headingInDegrees));
     }
     private void initializeSubSystems() throws InterruptedException {
         robotRobotID = new SubSystemRobotID(hardwareMap);
@@ -271,12 +286,13 @@ public class RightAutotestTwo20166 extends OpMode {
         if (hasTimededout())
         {
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
-            setupPath(startToSubmersible, startToSubmersibleHeading);
+            setPathFromCurrentPositionToTargetPose(submersibleDropPose);
             restartTimeout(8000);
             robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
             currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
-            lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
+            waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+            lowerElevatorNextState = AUTON_STATE.INITIALIZE_POSE_LIST_INDEX;
+            processFollowPoseListNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
         }
     }
 
@@ -292,7 +308,7 @@ public class RightAutotestTwo20166 extends OpMode {
         if(robotElevator.atTargetYet(10))
         {
             robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
-            currentAutonomousState = lowerElevatorNextState;
+            currentAutonomousState = AUTON_STATE.INITIALIZE_POSE_LIST_INDEX;
             robotElevator.setPosition(robotConstants.ELEVATOR_SPECIMEN_PICKUP);
         }
     }
@@ -304,11 +320,11 @@ public class RightAutotestTwo20166 extends OpMode {
     }
     private void processWaitAutonDoneState()
     {
-        follower.holdPoint(new BezierPoint(autonHoldLocation), Math.toRadians(90));
+        follower.holdPoint(new BezierPoint(new Point(autonHoldLocation.getX(), autonHoldLocation.getY(), Point.CARTESIAN)), Math.toRadians(90));
         currentAutonomousState = AUTON_STATE.DO_NOTHING;
     }
 
-    private void processHoldPoseState()
+/*    private void processHoldPoseState()
     {
         Point holdPoint = new Point(follower.getPose().getX(), follower.getPose().getY(), Point.CARTESIAN);
         follower.holdPoint(new BezierPoint(holdPoint), follower.getPose().getHeading());
@@ -316,7 +332,7 @@ public class RightAutotestTwo20166 extends OpMode {
         waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
     }
 
-    private void processPushSampleToObservation()
+ *//*   private void processPushSampleToObservation()
     {
         //setupPathChain(submersibleToSpikeOneChain3x, submersibleToSpike1Heading);
         setupPathChain(submersibleToSpikeOneChain2x, submersibleToSpike1Heading);
@@ -324,11 +340,11 @@ public class RightAutotestTwo20166 extends OpMode {
         restartTimeout(8000);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
-    }
+    }*/
 
-    private void processMoveToSpecimenPickupState()
+    /*private void processMoveToSpecimenPickupState()
     {
-        setupPath(moveToSpeciminThreePickup, 270);
+        setPathFromCurrentPositionToTargetPose(specimenPickupPoint);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
     }
@@ -366,7 +382,7 @@ public class RightAutotestTwo20166 extends OpMode {
            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
         }
-    }
+    }*/
     private Point poseToPoint(Pose pose)
     {
         Point returnPoint = new Point(pose.getX(), pose.getY(), Point.CARTESIAN);
@@ -385,7 +401,7 @@ public class RightAutotestTwo20166 extends OpMode {
 
     }
 
-    private void setPathFromCurrentPositionToSubmersible(Pose endPose)
+/*    private void setPathFromCurrentPositionToSubmersible(Pose endPose)
     {
         Point endPoint = poseToPoint(endPose);
         setupPath(new Path(new BezierCurve(poseToPoint(follower.getPose()), specimenTwoClipOn)),90);
@@ -396,7 +412,7 @@ public class RightAutotestTwo20166 extends OpMode {
         robotElevator.setPosition(0);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
-    }
+    }*/
     private void doNothing()
     {
         //follower.holdPoint(new BezierPoint(specimenTwoClipOn), Math.toRadians(90));
@@ -427,10 +443,10 @@ public class RightAutotestTwo20166 extends OpMode {
             case LOWER_ELEVATOR_STATE:
                 processLowerElevatorState();
                 break;
-            case PUSH_SAMPLES_STATE:
+            /*case PUSH_SAMPLES_STATE:
                 processPushSampleToObservation();
-                break;
-            case PICKUP_SPECIMEN_STATE:
+                break;*/
+            /*case PICKUP_SPECIMEN_STATE:
                 processPickupSpecimenState();
                 break;
             case WAIT_TIMER_DONE_STATE:
@@ -444,18 +460,48 @@ public class RightAutotestTwo20166 extends OpMode {
                 break;
             case BACKUP_AND_LOWER:
                 processBackupAndLowerState();
-                break;
+                break;*/
             case DO_NOTHING:
                 doNothing();
                 break;
             case TEST_STATE:
                 processTestState();
                 break;
-            case HOLD_POSE_STATE:
+            /*case HOLD_POSE_STATE:
                 processHoldPoseState();
+                break;*/
+            case INITIALIZE_POSE_LIST_INDEX:
+                processInitializePoseListIndex();
+                break;
+            case FOLLOW_POSE_LIST:
+                processFollowPoseList();
                 break;
         }
 
+    }
+
+
+    private void processInitializePoseListIndex()
+    {
+        poseIndex = 0;
+        setPathFromCurrentPositionToTargetPose(getTwoSamples[poseIndex]);
+        currentAutonomousState = AUTON_STATE.FOLLOW_POSE_LIST;
+    }
+
+    private void processFollowPoseList()
+    {
+        if (!follower.isBusy())
+        {
+            poseIndex++;
+            if (poseIndex < getTwoSamples.length)
+            {
+                setPathFromCurrentPositionToTargetPose(getTwoSamples[poseIndex]);
+            }
+            else
+            {
+                currentAutonomousState = processFollowPoseListNextState;
+            }
+        }
     }
 
     private double[] deltaTracking = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
