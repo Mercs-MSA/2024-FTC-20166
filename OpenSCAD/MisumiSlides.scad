@@ -1,6 +1,7 @@
 $fn = 50;
 
-$ReturnOffset = 3;
+$ReturnOffset = 0;
+$SpacerHeight = 3;
 $ShowBearingOutlines = true;
 $BearingOutlineD = 12.5;
 
@@ -289,18 +290,18 @@ module MisumiLiftSlideBelt($MountD = 2.9)
   }
 }
 
-module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
+module MisumiLiftSlideReturn(MountD = 2.9, Stages = 3)
 {  
   difference()
   {
     union()
     {
       //Attach block
-      translate([90 / 2, -28 / 2, 8 / 2])
-        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+      translate([90 / 2, -28 / 2, (8 - $SpacerHeight) / 2])
+        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8 + $SpacerHeight, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Return support block
-      translate([21 / 2, -28 / 2, ((8 + ($Stages * 16) + 8) / 2)])
-        RoundedBlock($XDim = 21, $YDim = 28, $ZDim = 8 + ($Stages * 16) + 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+      translate([21 / 2, -28 / 2, ((8 + ($Stages * 16) + 8 - $SpacerHeight) / 2)])
+        RoundedBlock($XDim = 21, $YDim = 28, $ZDim = $SpacerHeight + 8 + ($Stages * 16) + 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
       //Pulley block
       translate([(21 / 2), ($BearingHeight  / 2), (10 / 2) + $ReturnOffset])
         RoundedBlock($XDim = 21, $YDim = $BearingHeight + 6, $ZDim = 9, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
@@ -327,7 +328,7 @@ module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
         cylinder(d = 3, h = 50, $fn = 30);
     //Mount hole
     translate([14.5 + 12 + 8 + 1.5, -28 / 2, -1])
-      cylinder(d = $MountD, h = 20);
+#      cylinder(d = $MountD, h = 50, center = true);
       
   }
   if ($ShowBearingOutlines)
@@ -346,16 +347,17 @@ module MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3)
   }
 }
 
-module MisumiLiftSlideOuterFirst($MountD = 2.9)
+module MisumiLiftSlideOuterFirst($MountD = 2.9, $DoBearing)
 {
   difference()
   {
     union()
     {
-      translate([90 / 2, 28 / 2, 8 / 2])
-        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
-      translate([21 / 2, -$BearingHeight / 2, 8 / 2])
-        RoundedBlock($XDim = 21, $YDim = $BearingHeight + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+      translate([90 / 2, 28 / 2, ((8 - $SpacerHeight) / 2)])
+        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 8 + $SpacerHeight, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+      if ($DoBearing)
+        translate([21 / 2, -$BearingHeight / 2, 8 / 2])
+          RoundedBlock($XDim = 21, $YDim = $BearingHeight + 6, $ZDim = 8, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
     }
     //Slider alignment groove
     translate([0, (28 - 20.2) / 2, 7])
@@ -363,9 +365,10 @@ module MisumiLiftSlideOuterFirst($MountD = 2.9)
     //Bearing opening
     translate([21/2, -($BearingHeight / 2) - 0.5, 9/2])
       cube([13, $BearingHeight, 10], center = true);
-    translate([21 / 2, 32, 5])
-      rotate(90, [1, 0, 0])
-        cylinder(d = 3, h = 50, $fn = 30);
+    if ($DoBearing)
+      translate([21 / 2, 32, 5])
+        rotate(90, [1, 0, 0])
+          cylinder(d = 3, h = 50, $fn = 30);
     //Slider attach hole options
     //Pulley block flush with top
     translate([14.5, 28 / 2, -1])
@@ -383,7 +386,7 @@ module MisumiLiftSlideOuterFirst($MountD = 2.9)
     translate([14.5 + 12 + 15, 28 / 2, -1])
       cylinder(d = $MountD, h = 20);
   }
-  if ($ShowBearingOutlines)
+  if ($ShowBearingOutlines && $DoBearing)
   {
     translate([0, -9.5, 0])
     {
@@ -395,6 +398,22 @@ module MisumiLiftSlideOuterFirst($MountD = 2.9)
   }
 }
 
+module PrintMisumiSliderFirstStage($Sliders = 3)
+{
+  //Outer first stage top bearing mount
+  translate([-40, -5, $SpacerHeight])
+    MisumiLiftSlideOuterFirst($DoBearing = true);
+  //Return
+  translate([65 + $BearingHeight, 32, 28])
+    rotate(180, [0, 0, 1])
+      rotate(90, [1, 0, 0])
+        MisumiLiftSlideReturn($MountD = 2.9, $Stages = $Sliders);
+  //Spacer
+  translate([-50, 0, $SpacerHeight])
+    rotate(90, [0, 0, 1])
+    MisumiLiftSlideOuterFirst($DoBearing = false);
+}
+
 module PrintMisumiSliderSet($Sliders = 3)
 {
   //******************************************
@@ -402,12 +421,18 @@ module PrintMisumiSliderSet($Sliders = 3)
   //Misumi slider kits
   //******************************************
   //******************************************
-  translate([-40, -5, 0])
-    MisumiLiftSlideOuterFirst();
+  //Outer first stage top bearing mount
+  translate([-40, -5, $SpacerHeight])
+    MisumiLiftSlideOuterFirst($DoBearing = true);
+  //Return
   translate([65 + $BearingHeight, 32, 28])
     rotate(180, [0, 0, 1])
       rotate(90, [1, 0, 0])
         MisumiLiftSlideReturn($MountD = 2.9, $Stages = $Sliders);
+  //Spacer
+  translate([-50, 0, $SpacerHeight])
+    rotate(90, [0, 0, 1])
+    MisumiLiftSlideOuterFirst($DoBearing = false);
   
   if ($Sliders > 1)
   {
@@ -579,7 +604,7 @@ module MisumiSlide(length, position, showupper = 0, showlower = 0, showpulley = 
     translate([14.0, -7.1, length])
       rotate(-90, [1, 0, 0])
         rotate(90, [0, 0, 1])
-          MisumiLiftSlideOuterFirst();
+          MisumiLiftSlideOuterFirst($DoBearing = true);
   }
   
   if (showupper == 2)
@@ -808,13 +833,14 @@ module PulleyPlate(TopMount = false)
 //******************************************
 //******************************************
 //mirror([1, 0, 0])
-//  MisumiLiftSlideOuterFirst();
-//*MisumiLiftSlideOuterFirst();
+//  MisumiLiftSlideOuterFirst($DoBearing = true);
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 0);//Top inner pulley
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
 //******************************************
 //******************************************
-PrintMisumiSliderSet($Sliders = 3);
+//PrintMisumiSliderSet($Sliders = 3);
+PrintMisumiSliderFirstStage($Sliders = 2);
+
 //MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);
 //*MisumiLiftSlideBelt($MountD = 2.9);
 //*MisumiLiftSlideReturn($Stages = 3, $MountD = 2.9);
@@ -828,7 +854,4 @@ PrintMisumiSliderSet($Sliders = 3);
 //MisumiSlide(length = 300, position = 0, showupper = true, showlower = true, pulleyextension = 0, showpulley = true, offset = 0);
 //MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 100, channelholes = 0, offsetholes = 0, includespacers = false);
 //MisumiRailSet(support1 = false, length = 300, stages = 1, position = 100, offset = 0, motorposition = 150, channelholes = 0, offsetholes = 0, includespacers = false);
-
-//MisumiLiftSlideReturn($MountD = 2.9, $Stages = 3);
-
 
