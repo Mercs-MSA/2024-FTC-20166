@@ -400,18 +400,18 @@ module MisumiLiftSlideOuterFirst($MountD = 2.9, $DoBearing)
 
 module PrintMisumiSliderFirstStage($Sliders = 3)
 {
-  //Outer first stage top bearing mount
-  translate([-40, -5, $SpacerHeight])
-    MisumiLiftSlideOuterFirst($DoBearing = true);
+//  //Outer first stage top bearing mount
+//  translate([-40, -5, $SpacerHeight])
+//    MisumiLiftSlideOuterFirst($DoBearing = true);
   //Return
   translate([65 + $BearingHeight, 32, 28])
     rotate(180, [0, 0, 1])
       rotate(90, [1, 0, 0])
         MisumiLiftSlideReturn($MountD = 2.9, $Stages = $Sliders);
-  //Spacer
-  translate([-50, 0, $SpacerHeight])
-    rotate(90, [0, 0, 1])
-    MisumiLiftSlideOuterFirst($DoBearing = false);
+//  //Spacer
+//  translate([-50, 0, $SpacerHeight])
+//    rotate(90, [0, 0, 1])
+//    MisumiLiftSlideOuterFirst($DoBearing = false);
 }
 
 module PrintMisumiSliderSet($Sliders = 3)
@@ -768,6 +768,42 @@ module MotorPlate()
   }
 }
 
+module MisumiLiftSlide3mmShim()
+{
+  $MountD = 3;
+  difference()
+  {
+    union()
+    {
+      translate([90 / 2, 28 / 2, ((8 - $SpacerHeight) / 2)])
+        RoundedBlock($XDim = 90, $YDim = 28, $ZDim = 3, $D1 = 2, $D2 = 2, $D3 = 2, $D4 = 2, $D5 = 2, $D6 = 2, $D7 = 2, $D8 = 2);
+    }
+    //Slider alignment groove
+    translate([0, (28 - 20.2) / 2, 7])
+      cube([90, 20.2, 10]);
+    //Bearing opening
+    translate([21/2, -($BearingHeight / 2) - 0.5, 9/2])
+      cube([13, $BearingHeight, 10], center = true);
+    //Slider attach hole options
+    //Pulley block flush with top
+    translate([14.5, 28 / 2, -1])
+      cylinder(d = $MountD, h = 20);
+    //Pulley flush with top
+    translate([14.5 + 12, 28 / 2, -1])
+      cylinder(d = $MountD, h = 20);
+    //Full travel clearance
+    translate([14.5 + 12 + 23, 28 / 2, -1])
+      cylinder(d = $MountD, h = 20);
+    //Return clearance location 1
+    translate([14.5 + 12 + 8, 28 / 2, -1])
+      cylinder(d = $MountD, h = 20);
+    //Return clearance location 2
+    translate([14.5 + 12 + 15, 28 / 2, -1])
+      cylinder(d = $MountD, h = 20);
+  }
+}
+
+
 /*
 module PulleyPlate(TopMount = false)
 {
@@ -834,12 +870,13 @@ module PulleyPlate(TopMount = false)
 //******************************************
 //mirror([1, 0, 0])
 //  MisumiLiftSlideOuterFirst($DoBearing = true);
+//  MisumiLiftSlideOuterFirst($DoBearing = false);
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 0);//Top inner pulley
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
 //******************************************
 //******************************************
 //PrintMisumiSliderSet($Sliders = 3);
-PrintMisumiSliderFirstStage($Sliders = 2);
+//PrintMisumiSliderFirstStage($Sliders = 3);
 
 //MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);
 //*MisumiLiftSlideBelt($MountD = 2.9);
@@ -855,3 +892,4 @@ PrintMisumiSliderFirstStage($Sliders = 2);
 //MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 100, channelholes = 0, offsetholes = 0, includespacers = false);
 //MisumiRailSet(support1 = false, length = 300, stages = 1, position = 100, offset = 0, motorposition = 150, channelholes = 0, offsetholes = 0, includespacers = false);
 
+MisumiLiftSlide3mmShim();
