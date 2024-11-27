@@ -57,6 +57,8 @@ public class RobotConstants
             SUBMERSIBLE_TO_PUSH_SPEED = 0.7;
         } else {
             ELEVATOR_MULTIPLIER = 1;
+            START_TO_SUBMERSIBLE_SPEED = 0.6;
+            SUBMERSIBLE_TO_PUSH_SPEED = 0.7;
         }
     }
 }

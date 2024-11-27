@@ -290,6 +290,7 @@ public class RightAutotestTwo20166 extends OpMode {
     {
         if (hasTimededout())
         {
+            /*
 //            Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
 //            Path startToSubmersible = new Path(new BezierCurve(startPoint, poseToPoint(submersibleDropPose)));
             Point targetPoint = poseToPoint(submersibleDropPose);
@@ -309,14 +310,14 @@ public class RightAutotestTwo20166 extends OpMode {
 //            Point targetPoint = poseToPoint(targetPose);
 //            double targetHeading = Math.toDegrees(targetPose.getHeading());
 //            setupPath(new Path(new BezierCurve(poseToPoint(follower.getPose()), targetPoint)), targetHeading);
+*/
 
-
-//            follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
-//           setPathFromCurrentPositionToTargetPose(submersibleDropPose);
+            follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
+            setPathFromCurrentPositionToTargetPose(submersibleDropPose);
             restartTimeout(8000);
-//            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
             currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-            waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
             lowerElevatorNextState = AUTON_STATE.INITIALIZE_POSE_LIST_INDEX;
             processFollowPoseListNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
         }
@@ -341,8 +342,8 @@ public class RightAutotestTwo20166 extends OpMode {
 
     private void processWaitPathDone()
     {
-       // if (!pathIsBusy())
-       //     currentAutonomousState = waitPathDoneNextState;
+        if (!pathIsBusy())
+            currentAutonomousState = waitPathDoneNextState;
     }
     private void processWaitAutonDoneState()
     {
