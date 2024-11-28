@@ -54,7 +54,7 @@ public class RobotConstants
         } else if (robotId == 1){
             ELEVATOR_MULTIPLIER = -0.96;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
-            SUBMERSIBLE_TO_PUSH_SPEED = 0.7;
+            SUBMERSIBLE_TO_PUSH_SPEED = 1;
         } else {
             ELEVATOR_MULTIPLIER = 1;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
