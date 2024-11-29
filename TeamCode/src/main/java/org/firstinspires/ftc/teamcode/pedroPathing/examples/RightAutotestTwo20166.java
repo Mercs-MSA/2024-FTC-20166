@@ -105,7 +105,7 @@ public class RightAutotestTwo20166 extends OpMode {
     public static final Pose specimenZeroHangPose = pointAndHeadingToPose(1, submersibleDropOffY, 90);
     public static Pose specimenOneHangPose = pointAndHeadingToPose(4.5, submersibleDropOffY, 90);
     public static Pose specimenTwoHangPose = pointAndHeadingToPose(8, submersibleDropOffY, 90);
-
+    public static Pose specimenThreeHangPose = pointAndHeadingToPose(11.5, submersibleDropOffY, 90);
 
 /*    public static final Pose testPose = pointAndHeadingToPose(40, -40, 90.0);*/
 
@@ -401,8 +401,14 @@ public class RightAutotestTwo20166 extends OpMode {
                setPathFromCurrentPositionToTargetPose(specimenOneHangPose);
                lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
            }
-           else {
+           else if (pickupCount == 2)
+           {
                setPathFromCurrentPositionToTargetPose(specimenTwoHangPose);
+               lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
+           }
+           else if (pickupCount == 3)
+           {
+               setPathFromCurrentPositionToTargetPose(specimenThreeHangPose);
                lowerElevatorNextState = AUTON_STATE.BACKUP_AND_LOWER;
            }
            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
@@ -436,12 +442,10 @@ public class RightAutotestTwo20166 extends OpMode {
         Path segmentTwoPath = new Path(new BezierCurve(submersibleToPickupPointOne, submersibleToPickupPointTwo));
         segmentTwoPath.setLinearHeadingInterpolation(Math.toRadians(20), Math.toRadians(270), 1);
 
-
         //Path segmentFinalPath = new Path(new BezierCurve(submersibleToPickupPointTwo, poseToPoint(specimenPickupPose)));
         Path segmentFinalPath = new Path(new BezierCurve(submersibleToPickupPointTwo, poseToPoint(test)));
 
         segmentFinalPath.setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(270), 1);
-
         PathChain pickupPath = new PathChain(segmentOnePath, segmentTwoPath, segmentFinalPath);
         follower.followPath(pickupPath);
     }
