@@ -50,7 +50,6 @@ public class RightAutotestTwo20166 extends OpMode {
     private SubSystemRobotID robotRobotID = null;
 
 
-    public double botHeading = startingPoseRight.getHeading();
     private Follower follower;
     private SubSystemIntakeArm robotIntakeArm;
     private int robotID;
@@ -92,7 +91,7 @@ public class RightAutotestTwo20166 extends OpMode {
     private int timeoutPeriod = 0;
 
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
-    public static final double wallY = startingPoseRight.getY() + 2.5;
+    public static final double wallY = startingPoseRight.getY() + 3.5;
     public static final double specimenWallPickupX = 35;//47.5;
     public static final double specimenWallPickupY = wallY;//-61.5?
     public static final double pushPrepY = -12.8;
@@ -254,18 +253,17 @@ public class RightAutotestTwo20166 extends OpMode {
 
     private void setupPath(Path pathToFollow, double endHeading)
     {
-        //double currentHeading = botHeading;
+
         double currentHeading = follower.getPose().getHeading();
         follower.followPath(pathToFollow);
         pathToFollow.setLinearHeadingInterpolation(currentHeading, Math.toRadians(endHeading), 0.5);
-        //botHeading = endHeading;
+
     }
     private void setupPathChain(PathChain pathChainToFollow, double endHeading)
     {
         //MAKE SURE DEGREES OR RADIANS CORRECT
-        double currentHeading = botHeading;
+
         follower.followPath(pathChainToFollow);
-        botHeading = endHeading;
  //       initalizePathHeadings();
  //       int curveCount = pathChainToFollow.size();
  //       for (int i = 0; i < curveCount; i++)
@@ -372,7 +370,8 @@ public class RightAutotestTwo20166 extends OpMode {
 
     private void processMoveToSpecimenPickupState()
     {
-        setPathFromCurrentPositionToTargetPose(specimenPickupPose);
+        //setPathFromCurrentPositionToTargetPose(specimenPickupPose);
+        setPathChainFromCurrentPositionToSpecimenPickup();
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
     }
@@ -425,8 +424,25 @@ public class RightAutotestTwo20166 extends OpMode {
         testX = targetPose.getX();
         testY = targetPose.getY();
         testHeading = targetHeading;
+    }
+    private void setPathChainFromCurrentPositionToSpecimenPickup()
+    {
+        Pose test = new Pose (specimenWallPickupX, specimenWallPickupY, Math.toRadians(270));
+        Point submersibleToPickupPointOne = new Point(13,-40, Point.CARTESIAN);
+        Point submersibleToPickupPointTwo = new Point(32,-50, Point.CARTESIAN);
+        Path segmentOnePath = new Path(new BezierCurve(poseToPoint(follower.getPose()), submersibleToPickupPointOne));
+        segmentOnePath.setLinearHeadingInterpolation(follower.getPose().getHeading(), Math.toRadians(20), 1);
 
+        Path segmentTwoPath = new Path(new BezierCurve(submersibleToPickupPointOne, submersibleToPickupPointTwo));
+        segmentTwoPath.setLinearHeadingInterpolation(Math.toRadians(20), Math.toRadians(270), 1);
 
+        //Path segmentFinalPath = new Path(new BezierCurve(submersibleToPickupPointTwo, poseToPoint(specimenPickupPose)));
+        Path segmentFinalPath = new Path(new BezierCurve(submersibleToPickupPointTwo, poseToPoint(test)));
+
+        segmentFinalPath.setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(270), 1);
+
+        PathChain pickupPath = new PathChain(segmentOnePath, segmentTwoPath, segmentFinalPath);
+        follower.followPath(pickupPath);
     }
 
     /*private void setPathFromCurrentPositionToSubmersible(Pose endPose)
