@@ -25,6 +25,7 @@ public class FollowerConstants {
 
     public static Pose startingPoseRight = new Pose(16, -62, Math.toRadians(90));
     public static Pose startingPoseLeft = new Pose(-13, -62, Math.toRadians(90));
+    public static Pose startingPoseLeftTwo = new Pose(-43, -59, Math.toRadians(225));
 
     // This section is for configuring your motors
     public static String leftFrontMotorName = "FL";
@@ -124,7 +125,7 @@ public class FollowerConstants {
     // goes below this value, then end the Path. This is in inches.
     // This can be custom set for each Path.
  //   public static double pathEndTranslationalConstraint = 0.1;
-    public static double pathEndTranslationalConstraint = 0.5; //changed from 0.2
+    public static double pathEndTranslationalConstraint = 0.2; //changed from 0.2
 
     // When the robot is at the end of its current Path or PathChain and the heading error goes
     // below this value, then end the Path. This is in radians.
