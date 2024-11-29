@@ -436,6 +436,7 @@ public class RightAutotestTwo20166 extends OpMode {
         Path segmentTwoPath = new Path(new BezierCurve(submersibleToPickupPointOne, submersibleToPickupPointTwo));
         segmentTwoPath.setLinearHeadingInterpolation(Math.toRadians(20), Math.toRadians(270), 1);
 
+
         //Path segmentFinalPath = new Path(new BezierCurve(submersibleToPickupPointTwo, poseToPoint(specimenPickupPose)));
         Path segmentFinalPath = new Path(new BezierCurve(submersibleToPickupPointTwo, poseToPoint(test)));
 
