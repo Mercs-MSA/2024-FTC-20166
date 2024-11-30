@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
@@ -55,6 +56,9 @@ public class LeftAutotestTwo20166 extends OpMode {
     private SubSystemRobotID robotRobotID = null;
 
 
+    public double testX = 0;
+    public double testY = 0;
+    public double testHeading = 0;
 
     private enum AUTON_STATE
     {
@@ -68,7 +72,8 @@ public class LeftAutotestTwo20166 extends OpMode {
         MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE,
 
         PICKUP_SPECIMEN_STATE,
-        DROPOFF_SPECIMEN_STATE
+        DO_NOTHING,
+        MOVE_ELEVATOR_UP_STATE, DROPOFF_SPECIMEN_STATE
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
@@ -79,44 +84,36 @@ public class LeftAutotestTwo20166 extends OpMode {
     private int timeoutPeriod = 0;
 private static final int xOffset = 6;
     public static final Point startPoint = new Point (startingPoseLeftTwo.getX(), startingPoseLeftTwo.getY(), Point.CARTESIAN);
-    public static final Point submersibleDropPoint = new Point(-2.4+xOffset, -32.6, Point.CARTESIAN);
+    //public static final Point submersibleDropPoint = new Point(-2.4+xOffset, -32.6, Point.CARTESIAN);
 
     //New Points for submersible to spikes ready to push into human player area
-    public static final Point submersibleToSpike1 = new Point(-27+xOffset,-52 , Point.CARTESIAN);//First point to move away from sub
-    public static final Point submersibleToSpike2 = new Point(-33.4+xOffset,-48.8 , Point.CARTESIAN);//Slide right ready to move behind samples
-    public static final Point submersibleToSpike3 = new Point(-33.4+xOffset,-12.8 , Point.CARTESIAN);//Drive forward so behind samples
-    public static final Point submersibleToSpike4 = new Point(-42+xOffset,-12.8 , Point.CARTESIAN);//Slide right until directly behind first sample
-    public static final Point submersibleToSpike5 = new Point(-42+xOffset,-48 , Point.CARTESIAN);//Observation drop 'push to' location
-    public static final Point submersibleToSpike6 = new Point(-41.5+xOffset,-12.8 , Point.CARTESIAN); //Back behind the samples
-    public static final Point submersibleToSpike7 = new Point(-52+xOffset,-12.8 , Point.CARTESIAN);//Aligned behind second sample
-    public static final Point submersibleToSpike8 = new Point(-52+xOffset,-48 , Point.CARTESIAN);//Observation drop 'push to' location for second sample
-    public static final Point submersibleToSpike9 = new Point(-46+xOffset,-12.8 , Point.CARTESIAN);//Back behind samples
-    public static final Point submersibleToSpike10 = new Point(-59.5+xOffset,-12.8 , Point.CARTESIAN);//Aligned behind third sample
-    public static final Point submersibleToSpike11 = new Point(-61+xOffset,-48  , Point.CARTESIAN);//Observation drop 'push to' location for third sample
-    public static final Point submersibleToSpike12 = new Point(-60+xOffset,-40  , Point.CARTESIAN);//Back out of Observation zone
-    public static final Point submersibleToSpike13 = new Point(-49.5+xOffset,-55  , Point.CARTESIAN);//Move into grabbing position
-    //Paths
-    public static final Path submersibleToSpikePathSegment1 = new Path(new BezierCurve(submersibleDropPoint, submersibleToSpike1, submersibleToSpike2));
-    public static final Path submersibleToSpikePathSegment2 = new Path(new BezierCurve(submersibleToSpike2, submersibleToSpike3));
-    public static final Path submersibleToSpikePathSegment3 = new Path(new BezierCurve(submersibleToSpike3, submersibleToSpike4));
-    public static final Path submersibleToSpikePathSegment4 = new Path(new BezierCurve(submersibleToSpike4, submersibleToSpike5));
-    public static final Path submersibleToSpikePathSegment5 = new Path(new BezierCurve(submersibleToSpike5, submersibleToSpike6));
-    public static final Path submersibleToSpikePathSegment6 = new Path(new BezierCurve(submersibleToSpike6, submersibleToSpike7));
-    public static final Path submersibleToSpikePathSegment7 = new Path(new BezierCurve(submersibleToSpike7, submersibleToSpike8));
-    public static final Path submersibleToSpikePathSegment8 = new Path(new BezierCurve(submersibleToSpike8, submersibleToSpike9));
-    public static final Path submersibleToSpikePathSegment9 = new Path(new BezierCurve(submersibleToSpike9, submersibleToSpike10));
-    public static final Path submersibleToSpikePathSegment10 = new Path(new BezierCurve(submersibleToSpike10, submersibleToSpike11));
-    public static final Path submersibleToSpikePathSegment11 = new Path(new BezierCurve(submersibleToSpike11, submersibleToSpike12));
-    public static final Path submersibleToSpikePathSegment12 = new Path(new BezierCurve(submersibleToSpike12, submersibleToSpike13));
+    public static final Pose sampleToBasketPreMove = pointAndHeadingToPose(-48, -54, 225);
+    public static final Point submersibleToSpike2 = new Point(-56,-60 , Point.CARTESIAN);//elevator on top of basket, ready to drop sample one
+    //grabber opens and drops sample
+    public static final Point submersibleToSpike3 = new Point(-50,-51 , Point.CARTESIAN);//back up after dropping sample one in basket
+    //robot will turn
+    public static final Point submersibleToSpike4 = new Point(-49,-33 , Point.CARTESIAN);//collect sample two
+    public static final Point submersibleToSpike5 = new Point(-50, -51,Point.CARTESIAN);//align to drop sample two
+    //grabber opens to drop sample two
+    public static final Point submersibleToSpike6 = new Point(-56, -60, Point.CARTESIAN); //elevator ready to drop
+    //grabber opens
+    public static final Point submersibleToSpike7 = new Point(-50, -51 , Point.CARTESIAN);//elevator backs out after dropping
+    public static final Point submersibleToSpike8 = new Point(-58, -33, Point.CARTESIAN);//collect sample three
+    public static final Point submersibleToSpike9 = new Point(-50, -51, Point.CARTESIAN);//align  to elevator basket
+    public static final Point submersibleToSpike10 = new Point(-56, -60, Point.CARTESIAN);//elevator on top of basket, ready to drop sample one
+    public static final Point submersibleToSpike11 = new Point(-50, -51, Point.CARTESIAN);//elevator backs out after dropping
+    public static final Point submersibleToSpike12 = new Point(-65  , -33, Point.CARTESIAN);//collect sample four
+    public static final Point submersibleToSpike13 = new Point(-50, -51,  Point.CARTESIAN);//align to drop sample four
+    public static final Point submersibleToSpike14 = new Point( -56, -60, Point.CARTESIAN); //elevator ready to drop
+    //grabber opens to drop sample four
+
+    public static final Point submersibleToSpike15 = new Point(-50, -51, Point.CARTESIAN); //elevator backs out after dropping sample four
+
 
     public Path driveToSpecimenPickUp;
     public Point pickUpStartPoint = new Point(49.5,-55  , Point.CARTESIAN); //GET POINT
     public Point pickUpEndPoint = new Point(49.5,-59  , Point.CARTESIAN);
     public Point submersibleDepositPoint; //This is the drop off point for the specimens after the initial specimen.
-    public static final PathChain submersibleToSpikeOneChain = new PathChain(submersibleToSpikePathSegment1, submersibleToSpikePathSegment2, submersibleToSpikePathSegment3, submersibleToSpikePathSegment4, submersibleToSpikePathSegment5, submersibleToSpikePathSegment6, submersibleToSpikePathSegment7, submersibleToSpikePathSegment8, submersibleToSpikePathSegment9,submersibleToSpikePathSegment10, submersibleToSpikePathSegment11, submersibleToSpikePathSegment12);
-    public static  final Path startToSubmersible = new Path(new BezierCurve(startPoint, submersibleDropPoint));
-    public static final double startToSubmersibleHeading = Math.toRadians(90);
-    public static final double submersibleToSpike1Heading = Math.toRadians(90);
 
 
     /**
@@ -131,7 +128,9 @@ private static final int xOffset = 6;
     public void init()
     {
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(startingPoseLeft);
+        follower.setStartingPose(startingPoseLeftTwo);
+        follower.update();
+
         try {
             initializeSubSystems();
         } catch (InterruptedException e) {
@@ -145,21 +144,7 @@ private static final int xOffset = 6;
         telemetryA.update();
 
     }
-    private void initalizePathHeadings()
-    {
-        submersibleToSpikePathSegment1.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment2.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment3.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment4.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment5.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment6.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment8.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment9.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment10.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment11.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-        submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
-    }
+
     private void initializeSubSystems() throws InterruptedException {
         robotRobotID = new SubSystemRobotID(hardwareMap);
         robotID = robotRobotID.getRobotID();
@@ -214,18 +199,7 @@ private static final int xOffset = 6;
         pathToFollow.setLinearHeadingInterpolation(currentHeading, endHeading);
         botHeading = endHeading;
     }
-    private void setupPathChain(PathChain pathChainToFollow, double endHeading)
-    {
-        double currentHeading = botHeading;
-        follower.followPath(pathChainToFollow);
-        botHeading = endHeading;
-        initalizePathHeadings();
- //       int curveCount = pathChainToFollow.size();
- //       for (int i = 0; i < curveCount; i++)
- //       {
- //           pathChainToFollow.getPath(i).setLinearHeadingInterpolation(currentHeading, endHeading);
- //       }
-    }
+
 
     private void restartTimeout(int timeout)
     {
@@ -252,19 +226,6 @@ private static final int xOffset = 6;
             return true;
     }
 
-    private void processStateStart()
-    {
-        if (hasTimededout())
-        {
-            setupPath(startToSubmersible, startToSubmersibleHeading);
-            restartTimeout(20000);
-            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
-            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
-            lowerElevatorNextState = AUTON_STATE.PUSH_SAMPLES_STATE;
-        }
-    }
-
     private void processLowerElevatorSetupState()
     {
         robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
@@ -282,24 +243,6 @@ private static final int xOffset = 6;
         }
     }
 
-    private void processWaitPathDone()
-    {
-        if (!pathIsBusy())
-            currentAutonomousState = waitPathDoneNextState;
-    }
-    private void processWaitAutonDoneState()
-    {
-        follower.holdPoint(new BezierPoint(submersibleToSpike13), Math.toRadians(270));
-        robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
-    }
-
-    private void processPushSampleToObservation()
-    {
-        setupPathChain(submersibleToSpikeOneChain, submersibleToSpike1Heading);
-        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
-
-    }
 
     private void processMoveToSampleFromObservationZoneState()
     {
@@ -315,6 +258,60 @@ private static final int xOffset = 6;
 
     }
 
+
+/////////////////////////////////////////////////////////////////
+private Point poseToPoint(Pose pose)
+{
+    Point returnPoint = new Point(pose.getX(), pose.getY(), Point.CARTESIAN);
+    return returnPoint;
+}
+private static Pose pointAndHeadingToPose(double x, double y, double headingInDegrees)
+{
+    return new Pose(x, y, Math.toRadians(headingInDegrees));
+}
+    private void setPathFromCurrentPositionToTargetPose(Pose targetPose)
+    {
+        Point targetPoint = poseToPoint(targetPose);
+        double targetHeading = Math.toDegrees(targetPose.getHeading());
+        setupPath(new Path(new BezierCurve(poseToPoint(follower.getPose()), targetPoint)), targetHeading);
+        testX = targetPose.getX();
+        testY = targetPose.getY();
+        testHeading = targetHeading;
+    }
+    private void processWaitPathDone()
+    {
+        if (!pathIsBusy())
+            currentAutonomousState = waitPathDoneNextState;
+    }
+    private void processStateStart()
+    {
+        if (hasTimededout())
+        {
+            setPathFromCurrentPositionToTargetPose(sampleToBasketPreMove);
+            restartTimeout(20000);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+        }
+    }
+    private void processElevatorUpState()
+    {
+
+        robotElevator.setPosition(robotConstants.ELEVATOR_TOP_BASKET);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+
+
+    }
+    private void processWaitAutonDoneState()
+    {
+        follower.holdPoint(new BezierPoint(submersibleToSpike13), Math.toRadians(270));
+        robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+    }
+    private void doNothing()
+    {
+
+    }
+
     private void processStateMachine()
     {
         switch (currentAutonomousState)
@@ -325,6 +322,9 @@ private static final int xOffset = 6;
             case WAIT_PATH_DONE_STATE:
                 processWaitPathDone();
                 break;
+            case MOVE_ELEVATOR_UP_STATE:
+                processElevatorUpState();
+                break;
             case WAIT_AUTO_FINISHED:
                 processWaitAutonDoneState();
                 break;
@@ -334,14 +334,14 @@ private static final int xOffset = 6;
             case LOWER_ELEVATOR_STATE:
                 processLowerElevatorState();
                 break;
-            case PUSH_SAMPLES_STATE:
-                processPushSampleToObservation();
-                break;
             case MOVE_TO_SAMPLE_FROM_OBSERVATION_ZONE_STATE:
                 processMoveToSampleFromObservationZoneState();
                 break;
             case MOVE_FROM_PICKUP_TO_SUBMERSIBLE_STATE:
                 processMoveFromPickupToSubmersibleState();
+            case DO_NOTHING:
+                doNothing();
+
 
 
         }
@@ -349,10 +349,12 @@ private static final int xOffset = 6;
     }
 
 
-
     public void loop() {
         processStateMachine();
         follower.update();
+        telemetryA.addData("Test X: ", testX);
+        telemetryA.addData("Test Y: ", testY);
+        telemetryA.addData("Test Heading: ", testHeading);
 
         follower.telemetryDebug(telemetryA);
     }

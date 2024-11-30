@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.examples;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPoseLeftThree;
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPoseRight;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -29,7 +30,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
  */
 @Config
 @Autonomous
-public class RightAutotestTwo20166 extends OpMode {
+public class LeftAutotestThree20166 extends OpMode {
     private RobotConstants robotConstants = null;
     private Telemetry telemetryA;
     private SubSystemGrabber robotGrabber;
@@ -76,6 +77,7 @@ public class RightAutotestTwo20166 extends OpMode {
 
     private static ElapsedTime timeoutTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int timeoutPeriod = 0;
+    public static final Pose sampleToBasketPreMove = pointAndHeadingToPose(-56, -56, 225);
 
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
     public static final double wallY = startingPoseRight.getY() +0.5;
@@ -178,7 +180,7 @@ public class RightAutotestTwo20166 extends OpMode {
     public void init()
     {
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(startingPoseRight);
+        follower.setStartingPose(startingPoseLeftThree);
         follower.update();
 
         try {
@@ -275,13 +277,13 @@ public class RightAutotestTwo20166 extends OpMode {
         if (hasTimededout())
         {
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
-            setPathFromCurrentPositionToTargetPose(specimenZeroHangPose);
+            setPathFromCurrentPositionToTargetPose(sampleToBasketPreMove);
             restartTimeout(8000);
-            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+//            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
             currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
-            lowerElevatorNextState = AUTON_STATE.INITIALIZE_POSE_LIST_INDEX;
-            processFollowPoseListNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
+            waitPathDoneNextState = AUTON_STATE.DO_NOTHING;//LOWER_ELEVATOR_SETUP_STATE;
+//            lowerElevatorNextState = AUTON_STATE.INITIALIZE_POSE_LIST_INDEX;
+//            processFollowPoseListNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
         }
     }
 
