@@ -22,19 +22,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-/*
-import static org.firstinspires.ftc.teamcode.wayPoints.dropOffToSpecimenPickup;
-import static org.firstinspires.ftc.teamcode.wayPoints.dropOffToSpecimenPickupHeading;
-import static org.firstinspires.ftc.teamcode.wayPoints.specimenPickUpToSubmersible2;
-import static org.firstinspires.ftc.teamcode.wayPoints.specimenPickUpToSubmersible2Heading;
-import static org.firstinspires.ftc.teamcode.wayPoints.spike1ToDropOff;
-import static org.firstinspires.ftc.teamcode.wayPoints.spike1ToDropOffHeading;
-import static org.firstinspires.ftc.teamcode.wayPoints.startToSubmersible;
-import static org.firstinspires.ftc.teamcode.wayPoints.startToSubmersibleHeading;
-import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1;
-import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1Heading;
-//import static org.firstinspires.ftc.teamcode.wayPoints.*;
-*/
 
 /**
  * Testing autonomous using Pedro based on curved back and forth example
@@ -91,18 +78,18 @@ public class RightAutotestTwo20166 extends OpMode {
     private int timeoutPeriod = 0;
 
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
-    public static final double wallY = startingPoseRight.getY() + 1;
+    public static final double wallY = startingPoseRight.getY() + 1.5;
     public static final double specimenWallPickupX = 37;//47.5;
     public static final double specimenWallPickupY = wallY;//-61.5?
     public static final double pushPrepY = -12.8;
     public static final double pushAlignY = -12.8;
-    public static final double pushObservationY = -44;
-    public static final double behindSamples = -14;
+    public static final double pushObservationY = -50;//Was -44;
+    public static final double behindSamples = -13;
     public static final double sample1X = 41;
-    public static final double submersibleDropOffY = -33;
+    public static final double submersibleDropOffY = -32;
     public static final double sample2X = 50.88;
     public static final double sample3X = 51;
-    public static final Pose specimenZeroHangPose = pointAndHeadingToPose(-3, submersibleDropOffY+1, 90);
+    public static final Pose specimenZeroHangPose = pointAndHeadingToPose(-2.5, submersibleDropOffY, 90);
     public static Pose specimenOneHangPose = pointAndHeadingToPose(-0.5, submersibleDropOffY, 90);
     public static Pose specimenTwoHangPose = pointAndHeadingToPose(3, submersibleDropOffY, 90);
     public static Pose specimenThreeHangPose = pointAndHeadingToPose(6.5, submersibleDropOffY, 90);
@@ -126,7 +113,7 @@ public class RightAutotestTwo20166 extends OpMode {
     public static final Pose submersibleToSpike7Push2Samples = pointAndHeadingToPose(60, pushObservationY, 90);//NEW POINT
     //public static final Pose submersibleToSpike6 = pointAndHeadingToPose(56.67, behindSamples, 90); //Back behind the samples
     //public static final Pose submersibleToSpike8 = pointAndHeadingToPose(sample2X, behindSamples, 90);//Aligned behind second sample
-    public static final Pose submersibleToSpike8 = pointAndHeadingToPose(40, pushObservationY, 90);//Observation drop 'push to' location for second sample
+    public static final Pose submersibleToSpike8 = pointAndHeadingToPose(40, pushObservationY + 5, 200);
   /*  public static final Pose submersibleToSpike9 = pointAndHeadingToPose(54,pushPrepY , 90);//Back behind samples
     public static final Pose submersibleToSpike10 = pointAndHeadingToPose(60,pushAlignY , 90);//Aligned behind third sample
     public static final Pose submersibleToSpike11 = pointAndHeadingToPose(60,pushObservationY  , 90);//Observation drop 'push to' location for third sample
@@ -199,29 +186,8 @@ public class RightAutotestTwo20166 extends OpMode {
         }
         follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
 
-        initalizePathHeadings();
-
-
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
-
-    }
-    private void initalizePathHeadings()
-        {
-           /* submersibleToSpikePathSegment1.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment2.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment3.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment4.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment5.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment6.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment83x.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment82x.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment9.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment10.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment11.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90));
-            submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
-            moveToSpeciminThreePickup.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.5);*/
     }
 
     private static Pose pointAndHeadingToPose(double x, double y, double headingInDegrees)
@@ -243,17 +209,8 @@ public class RightAutotestTwo20166 extends OpMode {
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
     }
 
-
-    public final void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
     /**
-     * This runs the OpMode, updating the Follower as well as printing out the debug statements to
-     * the Telemetry, as well as the FTC Dashboard.
+     * Setup a path to follow such that the bot ends facing in 'endHeading' direction
      */
 
     private void setupPath(Path pathToFollow, double endHeading)
@@ -269,7 +226,6 @@ public class RightAutotestTwo20166 extends OpMode {
         //MAKE SURE DEGREES OR RADIANS CORRECT
 
         follower.followPath(pathChainToFollow, true);
- //       initalizePathHeadings();
  //       int curveCount = pathChainToFollow.size();
  //       for (int i = 0; i < curveCount; i++)
  //       {
@@ -362,16 +318,6 @@ public class RightAutotestTwo20166 extends OpMode {
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
     }
-
- /*   private void processPushSampleToObservation()
-    {
-        //setupPathChain(submersibleToSpikeOneChain3x, submersibleToSpike1Heading);
-        setupPathChain(submersibleToSpikeOneChain2x, submersibleToSpike1Heading);
-        follower.setMaxPower(robotConstants.SUBMERSIBLE_TO_PUSH_SPEED);
-        restartTimeout(8000);
-        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
-    }*/
 
     private void processMoveToSpecimenPickupState()
     {
@@ -470,15 +416,8 @@ public class RightAutotestTwo20166 extends OpMode {
     }
     private void doNothing()
     {
-        //follower.holdPoint(new BezierPoint(specimenTwoClipOn), Math.toRadians(90));
     }
 
-  /*  private void processTestState()
-    {
-        setPathFromCurrentPositionToTargetPose(testPose);
-        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
-    }*/
     private void processStateMachine()
     {
         switch (currentAutonomousState)
@@ -556,6 +495,8 @@ public class RightAutotestTwo20166 extends OpMode {
             else
             {
                 currentAutonomousState = processFollowPoseListNextState;
+                //currentAutonomousState = AUTON_STATE.DO_NOTHING;
+
             }
         }
     }
@@ -573,8 +514,6 @@ public class RightAutotestTwo20166 extends OpMode {
     {
         double distanceMoved = 0;
         if (follower.isBusy()) {
-
-
             double currentX = follower.getPose().getX();
             double distanceMovedX = currentX - lastX;
             lastX = currentX;
@@ -600,12 +539,11 @@ public class RightAutotestTwo20166 extends OpMode {
                 robotStalled = false;
 
         }
-        /*telemetryA.addData("Distance Moved", distanceMoved);
+        telemetryA.addData("Distance Moved", distanceMoved);
         telemetryA.addData("deltaTotal", deltaTotal);
-        telemetryA.addData("minDelta", minDelta);
-        telemetryA.addData("robotStalled", robotStalled);*/
-        //robotStalled = false;
-
+        /*telemetryA.addData("minDelta", minDelta);
+        //robotStalled = false;*/
+        telemetryA.addData("robotStalled", robotStalled);
     }
 
 
@@ -614,16 +552,17 @@ public class RightAutotestTwo20166 extends OpMode {
         follower.update();
         checkIfStalled();
 
-
+        if (gamepad1.a)
+            follower.breakFollowing();
         telemetryA.addData("Timer", timeoutTimer.time());
         telemetryA.addData("Current state",currentAutonomousState);
         telemetryA.addData("Elevator target: ", robotElevator.getTarget());
         telemetryA.addData("Elevator current: ", robotElevator.getPosition());
-        telemetryA.addData("Target X: ", testX);
-        telemetryA.addData("Target Y: ", testY);
-        telemetryA.addData("Target2 X: ", test2X);
-        telemetryA.addData("Target2 Y: ", test2Y);
-        telemetryA.addData("Target Heading: ", testHeading);
+        telemetryA.addData("Test X: ", testX);
+        telemetryA.addData("Test Y: ", testY);
+//        telemetryA.addData("Target2 X: ", test2X);
+//        telemetryA.addData("Target2 Y: ", test2Y);
+        telemetryA.addData("Test Heading: ", testHeading);
         follower.telemetryDebug(telemetryA);
     }
 }

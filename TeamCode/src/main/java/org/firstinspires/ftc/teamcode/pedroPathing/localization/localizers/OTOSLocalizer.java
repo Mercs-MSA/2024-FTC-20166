@@ -86,7 +86,7 @@ public class OTOSLocalizer extends Localizer {
 
         // TODO: replace these with your tuned multipliers
         otos.setLinearScalar(1.0);
-        otos.setAngularScalar(1.0);
+        otos.setAngularScalar(0.9933);
 
         otos.calibrateImu();
         otos.resetTracking();

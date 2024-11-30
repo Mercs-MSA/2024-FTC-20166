@@ -56,7 +56,7 @@ public class FollowerConstants {
             0);
 
     // Feed forward constant added on to the translational PIDF
-    public static double translationalPIDFFeedForward = 0.015;
+    public static double translationalPIDFFeedForward = 0.000000015;
 
 
     // Heading error PIDF coefficients
@@ -89,7 +89,7 @@ public class FollowerConstants {
 
     // Mass of robot in kilograms
 //    public static double mass = 10.65942;
-    public static double mass = 9.0;
+    public static double mass = 11.0;//Was 9
 
     // Centripetal force to power scaling
     public static double centripetalScaling = 0.0005;
@@ -97,11 +97,11 @@ public class FollowerConstants {
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
-    public static double forwardZeroPowerAcceleration = -34.62719;
+    public static double forwardZeroPowerAcceleration = -24.62719;//Was -34.62719
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
-    public static double lateralZeroPowerAcceleration = -78.15554;
+    public static double lateralZeroPowerAcceleration = -45.15554;//Was -78.15554
 
     // A multiplier for the zero power acceleration to change the speed the robot decelerates at
     // the end of paths.
@@ -119,13 +119,13 @@ public class FollowerConstants {
     // this value, then end the Path. This is in inches/second.
     // This can be custom set for each Path.
  //   public static double pathEndVelocityConstraint = 0.1;
-    public static double pathEndVelocityConstraint = 0.2;
+    public static double pathEndVelocityConstraint = 0.1;
 
     // When the robot is at the end of its current Path or PathChain and the translational error
     // goes below this value, then end the Path. This is in inches.
     // This can be custom set for each Path.
  //   public static double pathEndTranslationalConstraint = 0.1;
-    public static double pathEndTranslationalConstraint = 0.2; //changed from 0.2
+    public static double pathEndTranslationalConstraint = 0.2;
 
     // When the robot is at the end of its current Path or PathChain and the heading error goes
     // below this value, then end the Path. This is in radians.
@@ -141,13 +141,13 @@ public class FollowerConstants {
     // milliseconds to further correct by default.
     // This can be custom set for each Path.
 //    public static double pathEndTimeoutConstraint = 500;
-    public static double pathEndTimeoutConstraint = 100; //changed from 500
+    public static double pathEndTimeoutConstraint = 50; //changed from 500
 
     // This is how many steps the BezierCurve class uses to approximate the length of a BezierCurve.
     public static int APPROXIMATION_STEPS = 1000;
 
     // This is scales the translational error correction power when the Follower is holding a Point.
-    public static double holdPointTranslationalScaling = 0.45;
+    public static double holdPointTranslationalScaling = 0.85;
 
     // This is scales the heading error correction power when the Follower is holding a Point.
     public static double holdPointHeadingScaling = 0.35;
