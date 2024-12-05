@@ -54,7 +54,7 @@ public class LeftAutotestThree20166 extends OpMode {
         TEST_STATE,
         AUTON_START_STATE,
         LOWER_ELEVATOR_STATE,
-        LOWER_ELEVATOR_SETUP_STATE,
+        MOVE_UP_ELEVATOR_SETUP_STATE,
         WAIT_AUTO_FINISHED,
         WAIT_PATH_DONE_STATE,
         PUSH_SAMPLES_STATE,
@@ -66,7 +66,7 @@ public class LeftAutotestThree20166 extends OpMode {
         MOVE_TO_SPECIMEN_PICKUP,
         DO_NOTHING,
         INITIALIZE_POSE_LIST_INDEX,
-        WAIT_ELEVATOR_DONE, FOLLOW_POSE_LIST
+        WAIT_ELEVATOR_DONE, MOVE_INTO_RELEASE_POSITION_STATE, RELEASE_SAMPLE_ABOVE_BASKET_STATE, MOVE_BACK_STATE, MOVE_TO_FIRST_SAMPLE_STATE, FOLLOW_POSE_LIST
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
@@ -79,6 +79,10 @@ public class LeftAutotestThree20166 extends OpMode {
     private static ElapsedTime timeoutTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int timeoutPeriod = 0;
     public static final Pose sampleToBasketPreMove = pointAndHeadingToPose(-54, -54, 225);
+
+    public static final Pose sampleReadyToDrop = pointAndHeadingToPose(-56, -57.5, 225);
+
+    public static final Pose moveToFirstSample = pointAndHeadingToPose(-47.5, -35.5, 90);
 
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
     public static final double wallY = startingPoseRight.getY() +0.5;
@@ -283,16 +287,17 @@ public class LeftAutotestThree20166 extends OpMode {
             robotElevator.setPosition(robotConstants.ELEVATOR_TOP_BASKET);
             currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
             waitPathDoneNextState = AUTON_STATE.WAIT_ELEVATOR_DONE;
-            waitElevatorNextState = AUTON_STATE.DO_NOTHING;
+            waitElevatorNextState = AUTON_STATE.MOVE_INTO_RELEASE_POSITION_STATE;
 //            processFollowPoseListNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
         }
     }
 
-    private void processLowerElevatorSetupState()
+    private void processMoveUpElevatorSetupState()
     {
         robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
         restartTimeout(500);
         currentAutonomousState = AUTON_STATE.LOWER_ELEVATOR_STATE;
+        lowerElevatorNextState = AUTON_STATE.MOVE_INTO_RELEASE_POSITION_STATE;
     }
     private void processLowerElevatorState()
     {
@@ -369,7 +374,7 @@ public class LeftAutotestThree20166 extends OpMode {
            }
            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-           waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
+           waitPathDoneNextState = AUTON_STATE.MOVE_UP_ELEVATOR_SETUP_STATE;
         }
     }
     private Point poseToPoint(Pose pose)
@@ -425,11 +430,44 @@ public class LeftAutotestThree20166 extends OpMode {
     }
     private void processWaitElevatorDone()
     {
-        if (robotElevator.atTargetYet(10))
+        if (robotElevator.atTargetYet(50))
         {
             currentAutonomousState = waitElevatorNextState;
         }
     }
+
+    private void processMoveIntoReleasePositionState()
+    {
+        setPathFromCurrentPositionToTargetPose(sampleReadyToDrop);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.RELEASE_SAMPLE_ABOVE_BASKET_STATE;
+    }
+
+    private void releaseSampleAboveBasket()
+    {
+        robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
+        restartTimeout(300);
+        currentAutonomousState = AUTON_STATE.WAIT_TIMER_DONE_STATE;
+        waitTimerDoneNextState = AUTON_STATE.MOVE_BACK_STATE;
+    }
+
+    private void moveBackState()
+    {
+        setPathFromCurrentPositionToTargetPose(sampleToBasketPreMove);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.MOVE_TO_FIRST_SAMPLE_STATE;
+    }
+
+    private void moveToFirstSampleState()
+    {
+        setPathFromCurrentPositionToTargetPose(moveToFirstSample);
+        follower.setMaxPower(robotConstants.SUBMERSIBLE_TO_PUSH_SPEED);
+        robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+    }
+
+
 
     private void processStateMachine()
     {
@@ -444,8 +482,20 @@ public class LeftAutotestThree20166 extends OpMode {
             case WAIT_AUTO_FINISHED:
                 processWaitAutonDoneState();
                 break;
-            case LOWER_ELEVATOR_SETUP_STATE:
-                processLowerElevatorSetupState();
+            case MOVE_UP_ELEVATOR_SETUP_STATE:
+                processMoveUpElevatorSetupState();
+                break;
+            case MOVE_INTO_RELEASE_POSITION_STATE:
+                processMoveIntoReleasePositionState();
+                break;
+            case RELEASE_SAMPLE_ABOVE_BASKET_STATE:
+                releaseSampleAboveBasket();
+                break;
+            case MOVE_BACK_STATE:
+                moveBackState();
+                break;
+            case MOVE_TO_FIRST_SAMPLE_STATE:
+                moveToFirstSampleState();
                 break;
             case LOWER_ELEVATOR_STATE:
                 processLowerElevatorState();

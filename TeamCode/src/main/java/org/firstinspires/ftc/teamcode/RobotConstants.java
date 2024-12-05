@@ -37,6 +37,7 @@ public class RobotConstants
 
     public static double START_TO_SUBMERSIBLE_SPEED;
     public static  double SUBMERSIBLE_TO_PUSH_SPEED;
+    public static double BASKET_TO_SAMPLE_SPEED;
 
     public static final double INTAKE_ROLLER_OUT_SPEED = 1;
     public static final double INTAKE_ROLLER_IN_SPEED = -1;
@@ -50,15 +51,18 @@ public class RobotConstants
         if (robotId == 0) { //Bot A
             ELEVATOR_MULTIPLIER = 1;
             START_TO_SUBMERSIBLE_SPEED = 0.8;
+            BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.9;
 
         } else if (robotId == 1){
             ELEVATOR_MULTIPLIER = -0.96;
             START_TO_SUBMERSIBLE_SPEED = 0.65;
+            BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 1;
         } else {
             ELEVATOR_MULTIPLIER = 1;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
+            BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.7;
         }
     }

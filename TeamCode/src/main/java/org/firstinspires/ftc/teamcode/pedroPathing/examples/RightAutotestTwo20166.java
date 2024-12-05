@@ -416,6 +416,8 @@ public class RightAutotestTwo20166 extends OpMode {
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
     }
+
+
     private void doNothing()
     {
 
