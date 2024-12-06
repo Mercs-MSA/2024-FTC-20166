@@ -1330,6 +1330,87 @@ module ServoMountPlate()
   }
 }
 
+module SensorSpacer()
+{
+  difference()
+  {
+    cube([50, 25, 18], center = true);
+    cube([26, 16, 18.1], center = true);
+    translate([0, 0, (18.1 - 3) / 2])
+      cube([42, 16, 3], center = true);
+    translate([16, 0, 0])
+      cylinder(d = 3.5, h = 30, center = true);
+    translate([16, 0, 3])
+      cylinder(d = 10, h = 18, center = true);
+    translate([-16, 0, 0])
+      cylinder(d = 3.5, h = 30, center = true);
+    translate([15.5, -3, 3])
+      cube([5, 22, 18], center = true);
+  }
+}
+
+module ArmBracketFix()
+{
+  $fn = 40;
+  $VOffset = 24.2;
+  $HSpacing = 10;
+  $VSpacing = 48.5;
+  $InnerGap = 41;
+  $NutD = $Hex2Circle * 6.4;
+  $ServoHoleD = 4.2;
+
+  difference()
+  {
+    union()
+    {
+      translate([0, -24, -20])
+        import("ArmMount.stl", convexity=3);
+      translate([0, .20, -2.7])
+        cube([8, 53.56, 80], center = true);
+    }
+    for (i = [-2:2])
+    {
+      translate([0, 0, 16 * i])
+        rotate(90, [0, 1, 0])
+          cylinder(d = 3.2, h = 20, center = true);
+    }
+    translate([-26, 0, -2.7])
+    {
+      //Fix mis alligned holes (not quite 100%
+      rotate(90, [1, 0, 0])
+      {
+        translate([$HSpacing / 2, $VSpacing / 2, 0])
+          cylinder(d = $ServoHoleD, h = 70, center = true);
+        translate([-$HSpacing / 2, $VSpacing / 2, 0])
+          cylinder(d = $ServoHoleD, h = 70, center = true);
+        translate([$HSpacing / 2, -$VSpacing / 2, 0])
+          cylinder(d = $ServoHoleD, h = 70, center = true);
+        translate([-$HSpacing / 2, -$VSpacing / 2, 0])
+          cylinder(d = $ServoHoleD, h = 70, center = true);
+
+      }
+      //Add nut captures
+        rotate(90, [1, 0, 0])
+        {
+          translate([$HSpacing / 2, $VSpacing / 2, 0])
+            cylinder(d = $NutD, h = $InnerGap, center = true, $fn = 6);
+          translate([-$HSpacing / 2, $VSpacing / 2, 0])
+            cylinder(d = $NutD, h = $InnerGap, center = true, $fn = 6);
+          translate([$HSpacing / 2, -$VSpacing / 2, 0])
+            cylinder(d = $NutD, h = $InnerGap, center = true, $fn = 6);
+          translate([-$HSpacing / 2, -$VSpacing / 2, 0])
+            cylinder(d = $NutD, h = $InnerGap, center = true, $fn = 6);
+
+      }
+    //Open servo hole for Axon servo
+    //Body
+    cube([21.6, 70, 43], center = true);
+    //Spurs
+    cube([4.5, 70, 64], center = true);    
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //Does not work yetFTCLifterSpindle(Splitter = true, $SpindleDiameter = 50, $HubDiameter = 40, $ShaftType = 0, $SpindleType = 0);
 
@@ -1360,5 +1441,7 @@ module ServoMountPlate()
 //IntakeDrivePulleyCap();
 //IntakeDrivePulley();
 //IntakeArmMountBlock(); //Servo block for the arm and also intake tilter
-ServoMountPlate();
+//ServoMountPlate();
 
+//SensorSpacer();
+ArmBracketFix();
