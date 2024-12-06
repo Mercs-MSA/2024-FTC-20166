@@ -167,7 +167,7 @@ private static final int xOffset = 6;
 
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
-        robotGrabber = new SubSystemGrabber(hardwareMap, false);
+        robotGrabber = new SubSystemGrabber(hardwareMap, 1);
 
 
         //robotIntake = new SubSystemIntake(hardwareMap);

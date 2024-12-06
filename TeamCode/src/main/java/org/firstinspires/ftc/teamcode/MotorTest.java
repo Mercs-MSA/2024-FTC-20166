@@ -46,7 +46,7 @@ public class MotorTest extends LinearOpMode {
     }
 private void initalizeGrabber() throws InterruptedException
 {
-    robotGrabber = new SubSystemGrabber(hardwareMap, true);
+    robotGrabber = new SubSystemGrabber(hardwareMap, 0);
     robotGrabber.setPosition(GRABBER_OPEN_POSITION);
 }
     private void setGrabberServo (boolean state)
@@ -76,7 +76,8 @@ private void initalizeGrabber() throws InterruptedException
             telemetry.addData("FR (1)", frontRightDrive.getCurrentPosition());
             telemetry.addData("BL (2)", backLeftDrive.getCurrentPosition());
             telemetry.addData("BR (3)", backRightDrive.getCurrentPosition());
-            telemetry.addData("Intake Slide", robotIntakeSlide.getPosition());
+            telemetry.addData("Intake Slide min)", robotIntakeSlide.atMinPosition());
+            telemetry.addData("Intake Slide max)", robotIntakeSlide.atMaxPosition());
             updateTelemetry(telemetry);
 
             if(gamepad1.x)
@@ -103,7 +104,7 @@ private void initalizeGrabber() throws InterruptedException
             if (gamepad1.dpad_right)
                 setGrabberServo(false);
 
-            robotIntakeSlide.movePosition(gamepad1.left_trigger, gamepad1.right_trigger);
+            robotIntakeSlide.movePosition(gamepad1.right_trigger - gamepad1.left_trigger);
 
         }
     }

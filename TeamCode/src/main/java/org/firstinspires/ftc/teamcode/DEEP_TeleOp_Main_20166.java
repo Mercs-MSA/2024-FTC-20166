@@ -13,7 +13,7 @@ package org.firstinspires.ftc.teamcode;
 // intakePivot               control            servo 2                 intakePivot servo
 // elevator                  expansion          motor 0                 elevator motor
 // intakeSlide               expansion          motor 3                 intake slide
-// imu                       control            i2cBus 0                revInternalIMU
+// imuNo longer used                       control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
 // frontDistanceSensor       control            i2cBus 3                frontDistance sensor
@@ -68,7 +68,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private DcMotorEx frontRightDrive = null;
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
-    private IMU imu         = null;
+//    private IMU imu         = null;
     private Servo intakePivot;
 
 
@@ -119,8 +119,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        imu.initialize(new IMU.Parameters(orientationOnRobot));
         //imu.resetYaw();
         //rev magnet thing
 
@@ -135,17 +135,14 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private void initializeSubSystems() throws InterruptedException {
 
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
-        robotGrabber = new SubSystemGrabber(hardwareMap, true);
+        robotGrabber = new SubSystemGrabber(hardwareMap, 0);
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
         robotRobotID = new SubSystemRobotID(hardwareMap);
         robotID = robotRobotID.getRobotID();
         intakePivot = hardwareMap.get(Servo.class, "intakePivot");
-        intakePivot.setPosition(0.5);
-
-
-
+        //intakePivot.setPosition(0.5);
         robotConstants = new RobotConstants(robotID);
     }
 
@@ -297,9 +294,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         else
             intakeSpeed = robotConstants.INTAKE_ROLLER_HOLD_SPEED;
         //buttons
-        if(gamepad1.guide && gamepad2.guide) {
-            imu.resetYaw();
-        }
+//        if(gamepad1.guide && gamepad2.guide) {
+//            imu.resetYaw();
+//        }
 
         intakeOut = gamepad2.right_trigger;
         intakeIn = gamepad2.left_trigger;
@@ -324,8 +321,14 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
 
 
-    private void updateIntakeSlide() {
-        robotIntakeSlide.movePosition(intakeIn, intakeOut);
+    private void updateIntakeSlide()
+    {
+        double intakeSpeed = intakeOut - intakeIn;
+
+        if (Math.abs(intakeSpeed) < 0.1)
+            intakeSpeed = 0;
+
+        robotIntakeSlide.movePosition(intakeSpeed);
     }
 
     private void updateDashboard()

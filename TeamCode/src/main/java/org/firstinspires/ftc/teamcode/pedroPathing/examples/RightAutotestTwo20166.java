@@ -203,7 +203,7 @@ public class RightAutotestTwo20166 extends OpMode {
 
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
-        robotGrabber = new SubSystemGrabber(hardwareMap, false);
+        robotGrabber = new SubSystemGrabber(hardwareMap, 0);
 
 
         //robotIntake = new SubSystemIntake(hardwareMap);

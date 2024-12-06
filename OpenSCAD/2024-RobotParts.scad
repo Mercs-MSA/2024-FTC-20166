@@ -1354,10 +1354,12 @@ module ArmBracketFix()
   $fn = 40;
   $VOffset = 24.2;
   $HSpacing = 10;
-  $VSpacing = 48.5;
+  $VSpacing = 48;
   $InnerGap = 41;
   $NutD = $Hex2Circle * 6.4;
   $ServoHoleD = 4.2;
+  $ServoH = 40.5;
+  $servoW = 20.5;
 
   difference()
   {
@@ -1404,7 +1406,7 @@ module ArmBracketFix()
       }
     //Open servo hole for Axon servo
     //Body
-    cube([21.6, 70, 43], center = true);
+    cube([$servoW, 70, $servoW], center = true);
     //Spurs
     cube([4.5, 70, 64], center = true);    
     }

@@ -151,7 +151,7 @@ public class LeftAutotest20166_old extends OpMode {
     private void initializeSubSystems() throws InterruptedException {
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
-        robotGrabber = new SubSystemGrabber(hardwareMap, false);
+        robotGrabber = new SubSystemGrabber(hardwareMap, 1);
         robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
 
         if(limitSwitch.getState()) robotId = 0; else robotId = 1;

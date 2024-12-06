@@ -14,12 +14,25 @@ public class SubSystemGrabber {
     private Servo grabberRight;
     private RobotConstants robotConstants;
 
-
-    public SubSystemGrabber(HardwareMap hardwareMap, boolean open) throws InterruptedException
+    /*
+    Grabber servo subsystem.
+    Subsystem has 2 servos mirrored.
+    Open and close positions are set in robotConstants.
+    @param hardwareMap Hardware map for the robot
+    @param initState   Initial state of the servos when subsystem created. 0 = uninitialized, 1 = open, 2 = closed
+     */
+    public SubSystemGrabber(HardwareMap hardwareMap, int initState) throws InterruptedException
     {
          grabberLeft = hardwareMap.get(Servo.class, "grabberLeft");
          grabberRight = hardwareMap.get(Servo.class, "grabberRight");
-         setPosition(open ? robotConstants.GRABBER_OPEN_POSITION : robotConstants.GRABBER_CLOSE_POSITION);
+         //Only initialize the servo if erquested. The "do nothing" option hopefully stops the movement at teleop init
+         if (initState != 0)
+         {
+             if (initState == 1)
+                setPosition(robotConstants.GRABBER_OPEN_POSITION);
+             else
+                 setPosition(robotConstants.GRABBER_CLOSE_POSITION);
+         }
      }
 
     public void setPosition(double position) {
