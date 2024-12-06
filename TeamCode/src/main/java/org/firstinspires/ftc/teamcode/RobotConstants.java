@@ -45,6 +45,7 @@ public class RobotConstants
     public static final double STALL_THRESHOLD = 0.01;
     public static final double PIVOT_INTAKE_PICKUP = 0.7;
     public static final double PIVOT_INTAKE_DEPOSIT = 0.3;
+    public static final double PIVOT_INTAKE_IDLE = 0.5;
     public static final int STALL_SAMPLE_COUNT = 10;
 
     public RobotConstants(int robotId) {

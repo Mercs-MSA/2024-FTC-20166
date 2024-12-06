@@ -36,6 +36,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakePivot;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 
@@ -77,6 +78,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private SubSystemIntakeArm robotIntakeArm = null;
     private SubSystemIntake robotIntake = null;
     private SubSystemIntakeSlide robotIntakeSlide = null;
+    private SubSystemIntakePivot robotIntakePivot = null;
     private SubSystemRobotID robotRobotID = null;
 
 
@@ -88,8 +90,6 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private float intakeIn;
     private float intakeOut;
     private boolean spatulaMoveDown = false;
-    private float elevatorNetSpeed;
-
     private int robotID = 0;
 
     public void initializeDriveMotors()
@@ -116,9 +116,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private void initializeSensors()
     {
         //Initialize gyro etc...
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+//        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 //        imu = hardwareMap.get(IMU.class, "imu");
 //        imu.initialize(new IMU.Parameters(orientationOnRobot));
         //imu.resetYaw();
@@ -139,9 +139,10 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
+        robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
         robotRobotID = new SubSystemRobotID(hardwareMap);
         robotID = robotRobotID.getRobotID();
-        intakePivot = hardwareMap.get(Servo.class, "intakePivot");
+//        intakePivot = hardwareMap.get(Servo.class, "intakePivot");
         //intakePivot.setPosition(0.5);
         robotConstants = new RobotConstants(robotID);
     }
@@ -306,17 +307,19 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         if (spatulaMoveDown)
         {
             intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
-            intakePivot.setPosition(robotConstants.PIVOT_INTAKE_PICKUP);
+            robotIntakePivot.setPosition(robotConstants.PIVOT_INTAKE_PICKUP);
 
         }
         else if (Math.abs(robotElevator.getPosition() - (robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION * robotElevator.multiplier)) < 5)
         {
             intakeArmPosition = robotConstants.INTAKE_ARM_TRANSFER_SAMPLE_POSITION;
-            intakePivot.setPosition(robotConstants.PIVOT_INTAKE_DEPOSIT);
+            robotIntakePivot.setPosition(robotConstants.PIVOT_INTAKE_DEPOSIT);
 
         }
-        else
+        else {
             intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
+            robotIntakePivot.setPosition(robotConstants.PIVOT_INTAKE_IDLE);
+        }
     }
 
 
