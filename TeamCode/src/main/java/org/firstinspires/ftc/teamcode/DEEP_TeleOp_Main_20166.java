@@ -348,6 +348,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
         telemetry.addLine("\n");
         telemetry.addData("Sample detected", getSampleColor());
+        telemetry.addData("ID Status", robotRobotID.getRobotDigital());
 
 /*
         telemetry.addLine("\n");
