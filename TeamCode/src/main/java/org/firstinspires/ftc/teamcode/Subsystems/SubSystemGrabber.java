@@ -19,7 +19,7 @@ public class SubSystemGrabber {
     Subsystem has 2 servos mirrored.
     Open and close positions are set in robotConstants.
     @param hardwareMap Hardware map for the robot
-    @param initState   Initial state of the servos when subsystem created. 0 = uninitialized, 1 = open, 2 = closed
+    @param initState   Initial state of the servos when subsystem created`. 0 = uninitialized, 1 = open, 2 = closed
      */
     public SubSystemGrabber(HardwareMap hardwareMap, int initState) throws InterruptedException
     {

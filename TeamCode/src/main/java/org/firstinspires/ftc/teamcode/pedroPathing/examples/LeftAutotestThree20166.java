@@ -62,11 +62,13 @@ public class LeftAutotestThree20166 extends OpMode {
         PICKUP_SPECIMEN_STATE,
         WAIT_TIMER_DONE_STATE,
         ELEVATOR_PICK_UP_SAMPLE,
+
+        PROCESS_BASKET_SAMPLE_DONE_STATE,
         BACKUP_AND_LOWER,
         MOVE_TO_SPECIMEN_PICKUP,
         DO_NOTHING,
         INITIALIZE_POSE_LIST_INDEX,
-        WAIT_ELEVATOR_DONE, MOVE_INTO_RELEASE_POSITION_STATE, RELEASE_SAMPLE_ABOVE_BASKET_STATE, MOVE_BACK_STATE, MOVE_TO_FIRST_SAMPLE_STATE, FOLLOW_POSE_LIST
+        WAIT_ELEVATOR_DONE, MOVE_INTO_RELEASE_POSITION_STATE, RELEASE_SAMPLE_ABOVE_BASKET_STATE, MOVE_BACK_STATE, MOVE_TO_NEXT_SAMPLE_STATE, PROCESS_BASKET_DROP_SETUP, GRAB_SAMPLE, FOLLOW_POSE_LIST
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
@@ -80,10 +82,11 @@ public class LeftAutotestThree20166 extends OpMode {
     private int timeoutPeriod = 0;
     public static final Pose sampleToBasketPreMove = pointAndHeadingToPose(-54, -54, 225);
 
-    public static final Pose sampleReadyToDrop = pointAndHeadingToPose(-56, -57.5, 225);
+    public static final Pose sampleReadyToDrop = pointAndHeadingToPose(-58.5, -58, 225);
 
-    public static final Pose moveToFirstSample = pointAndHeadingToPose(-47.5, -35.5, 90);
+    public static final Pose moveToFirstSample = pointAndHeadingToPose(-50, -33, 90);
 
+    public static final Pose moveToSecondSample = pointAndHeadingToPose( -59, -27, 90);
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
     public static final double wallY = startingPoseRight.getY() +0.5;
     public static final double specimenWallPickupX = 37;//47.5;
@@ -210,7 +213,7 @@ public class LeftAutotestThree20166 extends OpMode {
 
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
 
-        robotGrabber = new SubSystemGrabber(hardwareMap, 1);
+        robotGrabber = new SubSystemGrabber(hardwareMap, 2);
 
 
         //robotIntake = new SubSystemIntake(hardwareMap);
@@ -276,19 +279,23 @@ public class LeftAutotestThree20166 extends OpMode {
         else
             return true;
     }
-
+private void processBasketDropSetup()
+{
+    setPathFromCurrentPositionToTargetPose(sampleToBasketPreMove);
+    restartTimeout(8000);
+    robotElevator.setPosition(robotConstants.ELEVATOR_TOP_BASKET);
+    currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+    waitPathDoneNextState = AUTON_STATE.WAIT_ELEVATOR_DONE;
+    waitElevatorNextState = AUTON_STATE.MOVE_INTO_RELEASE_POSITION_STATE;
+}
     private void processStateStart()
     {
         if (hasTimededout())
         {
+            robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
-            setPathFromCurrentPositionToTargetPose(sampleToBasketPreMove);
-            restartTimeout(8000);
-            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_BASKET);
-            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-            waitPathDoneNextState = AUTON_STATE.WAIT_ELEVATOR_DONE;
-            waitElevatorNextState = AUTON_STATE.MOVE_INTO_RELEASE_POSITION_STATE;
-//            processFollowPoseListNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
+            pickupCount = 0;
+            currentAutonomousState = AUTON_STATE.PROCESS_BASKET_DROP_SETUP;
         }
     }
 
@@ -336,13 +343,36 @@ public class LeftAutotestThree20166 extends OpMode {
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.PICKUP_SPECIMEN_STATE;
     }
-    private void processPickupSpecimenState()
+
+    private void processGrabSample()
     {
-        pickupCount = pickupCount + 1;
         robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
-        restartTimeout(300);
+        restartTimeout(100);
         currentAutonomousState = AUTON_STATE.WAIT_TIMER_DONE_STATE;
-        waitTimerDoneNextState = AUTON_STATE.ELEVATOR_PICK_UP_SAMPLE;
+        waitTimerDoneNextState = AUTON_STATE.PROCESS_BASKET_DROP_SETUP;
+
+
+    }
+    private void processMoveToNextSamplePickup()
+    {
+        //
+        pickupCount = pickupCount + 1;
+        if (pickupCount == 1)
+        {
+            setPathFromCurrentPositionToTargetPose(moveToFirstSample);
+            robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.WAIT_ELEVATOR_DONE;
+            waitElevatorNextState = AUTON_STATE.GRAB_SAMPLE;
+        }
+        else if (pickupCount == 2)
+        {
+            setPathFromCurrentPositionToTargetPose(moveToSecondSample);
+            robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.WAIT_ELEVATOR_DONE;
+            waitElevatorNextState = AUTON_STATE.GRAB_SAMPLE;
+        }
     }
     private void waitTimerDone()
     {
@@ -352,31 +382,7 @@ public class LeftAutotestThree20166 extends OpMode {
         }
     }
 
-    private void processElevatorPickUpSample()
-    {
-        robotElevator.setPosition(robotConstants.ELEVATOR_SPECIMEN_PICK_UP_LIFT_POSITION);
-        if (robotElevator.atTargetYet(10))
-        {
-           restartTimeout(8000);
-           if (pickupCount == 1) {
-               setPathFromCurrentPositionToTargetPose(specimenOneHangPose);
-               lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
-           }
-           else if (pickupCount == 2)
-           {
-               setPathFromCurrentPositionToTargetPose(specimenTwoHangPose);
-               lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
-           }
-           else if (pickupCount == 3)
-           {
-               setPathFromCurrentPositionToTargetPose(specimenThreeHangPose);
-               lowerElevatorNextState = AUTON_STATE.BACKUP_AND_LOWER;
-           }
-           robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
-           currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-           waitPathDoneNextState = AUTON_STATE.MOVE_UP_ELEVATOR_SETUP_STATE;
-        }
-    }
+
     private Point poseToPoint(Pose pose)
     {
         Point returnPoint = new Point(pose.getX(), pose.getY(), Point.CARTESIAN);
@@ -455,10 +461,10 @@ public class LeftAutotestThree20166 extends OpMode {
     {
         setPathFromCurrentPositionToTargetPose(sampleToBasketPreMove);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-        waitPathDoneNextState = AUTON_STATE.MOVE_TO_FIRST_SAMPLE_STATE;
+        waitPathDoneNextState = AUTON_STATE.MOVE_TO_NEXT_SAMPLE_STATE;
     }
 
-    private void moveToFirstSampleState()
+    private void processBasketSampleDone()
     {
         setPathFromCurrentPositionToTargetPose(moveToFirstSample);
         follower.setMaxPower(robotConstants.SUBMERSIBLE_TO_PUSH_SPEED);
@@ -475,6 +481,9 @@ public class LeftAutotestThree20166 extends OpMode {
         {
             case AUTON_START_STATE:
                 processStateStart();
+                break;
+            case PROCESS_BASKET_DROP_SETUP:
+                processBasketDropSetup();
                 break;
             case WAIT_PATH_DONE_STATE:
                 processWaitPathDone();
@@ -494,24 +503,29 @@ public class LeftAutotestThree20166 extends OpMode {
             case MOVE_BACK_STATE:
                 moveBackState();
                 break;
-            case MOVE_TO_FIRST_SAMPLE_STATE:
-                moveToFirstSampleState();
+            case PROCESS_BASKET_SAMPLE_DONE_STATE:
+                processBasketSampleDone();
                 break;
             case LOWER_ELEVATOR_STATE:
                 processLowerElevatorState();
                 break;
+            case MOVE_TO_NEXT_SAMPLE_STATE:
+                processMoveToNextSamplePickup();
+                break;
+            case GRAB_SAMPLE:
+                processGrabSample();
             /*case PUSH_SAMPLES_STATE:
                 processPushSampleToObservation();
                 break;*/
-            case PICKUP_SPECIMEN_STATE:
-                processPickupSpecimenState();
-                break;
+//            case PICKUP_SPECIMEN_STATE:
+//                processPickupSpecimenState();
+//                break;
             case WAIT_TIMER_DONE_STATE:
                 waitTimerDone();
                 break;
-            case ELEVATOR_PICK_UP_SAMPLE:
-                processElevatorPickUpSample();
-                break;
+//            case ELEVATOR_PICK_UP_SAMPLE:
+//                processElevatorPickUpSample();
+//                break;
             case MOVE_TO_SPECIMEN_PICKUP:
                 processMoveToSpecimenPickupState();
                 break;

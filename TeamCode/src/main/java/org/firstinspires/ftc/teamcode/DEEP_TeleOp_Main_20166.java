@@ -4,20 +4,30 @@ package org.firstinspires.ftc.teamcode;
 // FR                        control            Motor 1                 frontRight Drive motor
 // BL                        control            Motor 2                 backLeft Drive motor
 // BR                        control            Motor 3                 backRight Drive motor
+
+// elevator                  expansion          motor 0                 elevator motor
+
 // grabberLeft               control            servo 0                 grabberLeft servo
 // grabberRight              control            servo 1                 grabberRight servo
-// blinkIn                   expansion          servo 1                 ledDriver
-// driveIntakeServo          control            servo 3                 driveIntakeServo servo
+// intakePivotServo          control            servo 2                 intakePivot servo
+// intakeSLide               control            servo 3                 intakeSlide servo
 // leftIntakeArmServo        control            servo 4                 leftIntakeArmServo servo
 // rightIntakeArmServo       control            servo 5                 rightIntakeArmServo servo
-// intakePivot               control            servo 2                 intakePivot servo
-// elevator                  expansion          motor 0                 elevator motor
-// intakeSlide               expansion          motor 3                 intake slide
-// imuNo longer used                       control            i2cBus 0                revInternalIMU
+
+// blinkIn                   expansion          servo 1                 ledDriver
+// leftIntakeServo           expansion          servo 2                 leftIntakeServo
+// rightIntakeServo          expansion          servo 3                 rightIntakeServo
+
+// imu NOT USED              control            i2cBus 0                revInternalIMU
 // leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
 // frontDistanceSensor       control            i2cBus 3                frontDistance sensor
 // limitSwitch               control            digital 0               limitSwitch digital channel
+// limitSwitchTwo            control            digital 1               limitSwitchTwo digital channel
+
+
+// NOT USED ANYMORE intakeSlide               expansion          motor 3                 intake slide
+// intakeSlideServo            control            servo
 
 
 

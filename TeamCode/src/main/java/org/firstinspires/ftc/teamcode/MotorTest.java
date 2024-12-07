@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,7 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
+
+
 
 @TeleOp
 //@Disabled
@@ -21,6 +23,8 @@ public class MotorTest extends LinearOpMode {
     private DcMotorEx backRightDrive = null;
     private SubSystemGrabber robotGrabber = null;
     private SubSystemIntakeSlide robotIntakeSlide = null;
+
+    private SubSystemIntakeArm robotIntakeArm = null;
 
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
@@ -57,17 +61,20 @@ private void initalizeGrabber() throws InterruptedException
             robotGrabber.setPosition(GRABBER_CLOSE_POSITION);
     }
 
-    private void inttializeIntakeSlide() throws InterruptedException
+    private void initalizeIntakeSlide() throws InterruptedException
     {
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
 
     }
-
+ private void initalizeIntakePivot() throws InterruptedException {
+     robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
+ }
 
     public void runOpMode() throws InterruptedException {
         initializeDriveMotors();
         initalizeGrabber();
-        inttializeIntakeSlide();
+        initalizeIntakeSlide();
+        initalizeIntakePivot();
 
         waitForStart();
         while (opModeIsActive())
@@ -78,7 +85,8 @@ private void initalizeGrabber() throws InterruptedException
             telemetry.addData("BR (3)", backRightDrive.getCurrentPosition());
             telemetry.addData("Intake Slide min)", robotIntakeSlide.atMinPosition());
             telemetry.addData("Intake Slide max)", robotIntakeSlide.atMaxPosition());
-            updateTelemetry(telemetry);
+
+
 
             if(gamepad1.x)
                 frontLeftDrive.setPower(-gamepad1.left_stick_y);
@@ -104,8 +112,20 @@ private void initalizeGrabber() throws InterruptedException
             if (gamepad1.dpad_right)
                 setGrabberServo(false);
 
-            robotIntakeSlide.movePosition(gamepad1.right_trigger - gamepad1.left_trigger);
+            if (gamepad1.dpad_up)
+            {
+                robotIntakeArm.setPosition(0.1);
+                telemetry.addData("Intake arm up)", robotIntakeArm.getPosition());
 
+            }
+            else if (gamepad1.dpad_down)
+            {
+                robotIntakeArm.setPosition(0.75);
+                telemetry.addData("Intake arm down", robotIntakeArm.getPosition());
+            }
+
+            robotIntakeSlide.movePosition(gamepad1.right_trigger - gamepad1.left_trigger);
+            updateTelemetry(telemetry);
         }
     }
 }
