@@ -635,6 +635,49 @@ module MisumiSlide(length, position, showupper = 0, showlower = 0, showpulley = 
   }
 }
 
+projection()
+ElevatorMotor();
+
+module ElevatorMotor()
+{
+
+    /*
+    cylinder(d = 40, h = 10);
+    translate([-14, -22.6, 0])
+        cylinder(d = 13, h = 10);
+    translate([14, -22.6, 0])
+        cylinder(d = 13, h = 10);
+    */
+    difference()
+    {
+        hull()
+        {
+        cylinder(d = 40, h = 1);
+        translate([-14, -22.6, 0])
+            cylinder(d = 13, h = 1);
+        translate([14, -22.6, 0])
+            cylinder(d = 13, h = 1);
+        }
+      //Motor shaft opening
+      cylinder(d = 10, h = $PlateThickness + 0.01, center = true);
+      //Motor mount holes
+      translate([8, 8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      translate([-8, 8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      translate([8, -8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      translate([-8, -8, 0])
+        cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      //Bearing holes
+    translate([-14, -22.6, 0])
+        cylinder(d = 4.1, h = 10, center = true);
+    translate([14, -22.6, 0])
+        cylinder(d = 4.1, h = 10, center = true);
+        
+   }
+}
+
 module MotorPlate()
 {
   $CornerD = 5;
@@ -657,7 +700,7 @@ module MotorPlate()
         translate([28, -20, 0])
           cylinder(d = 15, h = $PlateThickness, center = true);
       }    
-    else if ($MType == 2)
+    else if (($MType == 2) || ($MType == 4))
       hull()
       {
         cylinder(d = 40, h = $PlateThickness, center = true);
@@ -875,7 +918,7 @@ module PulleyPlate(TopMount = false)
 //*MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);//Bottom inner pulley
 //******************************************
 //******************************************
-PrintMisumiSliderSet($Sliders = 3);
+//PrintMisumiSliderSet($Sliders = 3);
 //PrintMisumiSliderFirstStage($Sliders = 3);
 
 //MisumiLiftSlideInnerFirst($Multi = true, $Bottom = 1);
@@ -885,7 +928,7 @@ PrintMisumiSliderSet($Sliders = 3);
 //MisumiLiftSlideDrillTemplate2($Stages = 1);
 // Broken MisumiRailSet(support1 = true, length = 300, stages = 2, position = 100, offset = 0, motorposition = 40, channelholes = 3, offsetholes = 10);
 //projection()
-//MotorPlate($Type = 1);
+//MotorPlate($Type = 4);
 
 
 //MisumiSlide(length = 300, position = 0, showupper = true, showlower = true, pulleyextension = 0, showpulley = true, offset = 0);

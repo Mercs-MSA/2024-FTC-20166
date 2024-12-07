@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
-
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 
 
 @TeleOp
@@ -25,9 +25,12 @@ public class MotorTest extends LinearOpMode {
     private SubSystemIntakeSlide robotIntakeSlide = null;
 
     private SubSystemIntakeArm robotIntakeArm = null;
+    private SubSystemRobotID robotRobotID = null;
 
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
+    private int robotID = 0;
+
     public void initializeDriveMotors()
     {
         frontLeftDrive = hardwareMap.get(DcMotorEx.class, "FL");
@@ -70,7 +73,12 @@ private void initalizeGrabber() throws InterruptedException
      robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
  }
 
+ private void initializeRobotID() throws InterruptedException {
+     robotRobotID = new SubSystemRobotID(hardwareMap);
+     robotID = robotRobotID.getRobotID();
+ }
     public void runOpMode() throws InterruptedException {
+        initializeRobotID();
         initializeDriveMotors();
         initalizeGrabber();
         initalizeIntakeSlide();
@@ -79,13 +87,15 @@ private void initalizeGrabber() throws InterruptedException
         waitForStart();
         while (opModeIsActive())
         {
+            robotID = robotRobotID.getRobotID();
+
             telemetry.addData("FL (0)", frontLeftDrive.getCurrentPosition());
             telemetry.addData("FR (1)", frontRightDrive.getCurrentPosition());
             telemetry.addData("BL (2)", backLeftDrive.getCurrentPosition());
             telemetry.addData("BR (3)", backRightDrive.getCurrentPosition());
             telemetry.addData("Intake Slide min)", robotIntakeSlide.atMinPosition());
             telemetry.addData("Intake Slide max)", robotIntakeSlide.atMaxPosition());
-
+            telemetry.addData("Robot ID", robotID);
 
 
             if(gamepad1.x)

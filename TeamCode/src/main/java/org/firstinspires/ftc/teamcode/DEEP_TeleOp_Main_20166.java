@@ -6,6 +6,7 @@ package org.firstinspires.ftc.teamcode;
 // BR                        control            Motor 3                 backRight Drive motor
 
 // elevator                  expansion          motor 0                 elevator motor
+// elevator2                 expansion          motor 1                 elevator motor 2
 
 // grabberLeft               control            servo 0                 grabberLeft servo
 // grabberRight              control            servo 1                 grabberRight servo
@@ -109,18 +110,25 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotorEx.class, "BL");
         backRightDrive = hardwareMap.get(DcMotorEx.class, "BR");
 
-        frontRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        if (robotID == 2)
+        {
+            frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+        else
+        {
+            frontRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+            backRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       // frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void initializeSensors()
@@ -143,15 +151,18 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     }
 
     private void initializeSubSystems() throws InterruptedException {
+        robotRobotID = new SubSystemRobotID(hardwareMap);
+        robotID = robotRobotID.getRobotID();
 
-        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
+        if (robotID == 2)
+            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
+        else
+            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
         robotGrabber = new SubSystemGrabber(hardwareMap, 0);
         robotIntake = new SubSystemIntake(hardwareMap);
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
         robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
-        robotRobotID = new SubSystemRobotID(hardwareMap);
-        robotID = robotRobotID.getRobotID();
 //        intakePivot = hardwareMap.get(Servo.class, "intakePivot");
         //intakePivot.setPosition(0.5);
         robotConstants = new RobotConstants(robotID);
@@ -163,9 +174,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     }
 
     private void initalizeEverything() throws InterruptedException {
-        initializeDriveMotors();
         initializeSensors();
         initializeSubSystems();
+        initializeDriveMotors();
         initializeLEDs();
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
     }

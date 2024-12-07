@@ -201,7 +201,10 @@ public class RightAutotestTwo20166 extends OpMode {
         robotID = robotRobotID.getRobotID();
         robotConstants = new RobotConstants(robotID);
 
-        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER);
+        if (robotID == 2)
+            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
+        else
+            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
 
         robotGrabber = new SubSystemGrabber(hardwareMap, 0);
 

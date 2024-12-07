@@ -48,20 +48,24 @@ public class RobotConstants
     public static final double PIVOT_INTAKE_IDLE = 0.5;
     public static final int STALL_SAMPLE_COUNT = 10;
 
-    public RobotConstants(int robotId) {
-        if (robotId == 0) { //Bot A
+    public RobotConstants(int robotId)
+    {
+        if (robotId == 0)
+        { //Bot A (V1)
             ELEVATOR_MULTIPLIER = 1;
             START_TO_SUBMERSIBLE_SPEED = 0.8;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.9;
 
-        } else if (robotId == 1){
+        } else if (robotId == 1)
+        { //Bot C (V2)
             ELEVATOR_MULTIPLIER = -0.96;
             START_TO_SUBMERSIBLE_SPEED = 0.65;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 1;
-        } else {
-            ELEVATOR_MULTIPLIER = 1;
+        } else
+        { //Bot B (V3)
+            ELEVATOR_MULTIPLIER = -0.5;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.7;

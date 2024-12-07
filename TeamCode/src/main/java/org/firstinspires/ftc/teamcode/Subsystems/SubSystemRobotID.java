@@ -13,31 +13,23 @@ public class SubSystemRobotID {
         limitSwitch.setMode(DigitalChannel.Mode.INPUT);
         limitSwitchTwo = hardwareMap.get(DigitalChannel.class, "limitSwitchTwo");
         limitSwitchTwo.setMode(DigitalChannel.Mode.INPUT);
-
+        robotID = getRobotDigital();
     }
     public int getRobotID()
     {
-        if(limitSwitch.getState())
-        {
-            robotID = 0;
-        }
-        else if (limitSwitchTwo.getState())
-        {
-            robotID = 2;
-        }
-        else
-        {
-            robotID = 1;
-        }
+        robotID = getRobotDigital();
         return robotID;
     }
 
     public int getRobotDigital(){
         int status = 0;
-        if (limitSwitch.getState())
+        if (!limitSwitch.getState())
             status = status + 1;
-        if (limitSwitchTwo.getState())
+        if (!limitSwitchTwo.getState())
             status = status + 2;
+        //Doesn't seem to work as expected for the magnetic switch??
+        if(status == 3)
+            status = 1;
         return status;
     }
 
