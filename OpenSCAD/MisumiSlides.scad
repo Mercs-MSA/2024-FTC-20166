@@ -635,19 +635,10 @@ module MisumiSlide(length, position, showupper = 0, showlower = 0, showpulley = 
   }
 }
 
-projection()
-ElevatorMotor();
 
 module ElevatorMotor()
 {
 
-    /*
-    cylinder(d = 40, h = 10);
-    translate([-14, -22.6, 0])
-        cylinder(d = 13, h = 10);
-    translate([14, -22.6, 0])
-        cylinder(d = 13, h = 10);
-    */
     difference()
     {
         hull()
@@ -669,6 +660,33 @@ module ElevatorMotor()
         cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
       translate([-8, -8, 0])
         cylinder(d = 4.1, h = $PlateThickness + 0.01, center = true);
+      //Bearing holes
+    translate([-14, -22.6, 0])
+        cylinder(d = 4.1, h = 10, center = true);
+    translate([14, -22.6, 0])
+        cylinder(d = 4.1, h = 10, center = true);
+        
+   }
+}
+
+module ElevatorMotorGuide()
+{
+    $D = 16;
+    difference()
+    {
+        hull()
+        {
+        translate([-4, -22.6, 0])
+            cylinder(d = $D, h = 1);
+        translate([4, -22.6, 0])
+            cylinder(d = $D, h = 1);
+         translate([-14, -22.6, 0])
+            cylinder(d = $D, h = 1);
+        translate([14, -22.6, 0])
+            cylinder(d = $D, h = 1);
+        }
+    //Pulley clearance
+#      cylinder(d = 35, h = $PlateThickness + 0.01, center = true);
       //Bearing holes
     translate([-14, -22.6, 0])
         cylinder(d = 4.1, h = 10, center = true);
@@ -936,3 +954,7 @@ module PulleyPlate(TopMount = false)
 //MisumiRailSet(support1 = false, length = 300, stages = 1, position = 100, offset = 0, motorposition = 150, channelholes = 0, offsetholes = 0, includespacers = false);
 
 //MisumiLiftSlide3mmShim();
+
+projection()
+//    ElevatorMotor();
+ElevatorMotorGuide();
