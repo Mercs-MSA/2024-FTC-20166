@@ -98,7 +98,7 @@ public class LeftAutotestThree20166 extends OpMode {
     public static final double sample1X = 42;
     public static final double submersibleDropOffY = -32;
     public static final double sample2X = 55.75;
-    public static final double sample3X = 51;
+    public static final double sample3X = 51; //
 
     public double listLastSegmentSpeed = 0.7;
     public static final Pose specimenZeroHangPose = pointAndHeadingToPose(-2.5, submersibleDropOffY, 90);
