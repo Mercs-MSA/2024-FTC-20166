@@ -18,6 +18,8 @@ public class SubSystemElevator {
     private int numMotors = 0;
 
 
+
+
     public SubSystemElevator(HardwareMap hardwareMap, double multiplier, int motorCount) throws InterruptedException {                 // Motor Mapping
         // Initialize the motor hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -78,5 +80,15 @@ public class SubSystemElevator {
 
     public void setPower(double power) {
         elevator.setPower(power);
+    }
+    public void nudgeElevator(int nudge)
+    {
+        elevator.setTargetPosition(elevator.getCurrentPosition() - nudge);
+
+    }
+    public void resetElevator()
+    {
+        elevator.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
     }
 }

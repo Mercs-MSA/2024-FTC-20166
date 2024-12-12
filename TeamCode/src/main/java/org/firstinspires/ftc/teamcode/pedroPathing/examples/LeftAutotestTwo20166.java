@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -43,6 +44,7 @@ import static org.firstinspires.ftc.teamcode.wayPoints.submersibleToSpike1Headin
  */
 @Config
 @Autonomous
+@Disabled
 public class LeftAutotestTwo20166 extends OpMode {
     private RobotConstants robotConstants;
     private Telemetry telemetryA;

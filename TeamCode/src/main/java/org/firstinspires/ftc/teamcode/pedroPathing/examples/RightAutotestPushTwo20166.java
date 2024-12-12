@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -29,7 +30,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
  */
 @Config
 @Autonomous
-public class RightAutotestTwo20166 extends OpMode {
+public class RightAutotestPushTwo20166 extends OpMode {
     private RobotConstants robotConstants = null;
     private Telemetry telemetryA;
     private SubSystemGrabber robotGrabber;
@@ -108,11 +109,11 @@ public class RightAutotestTwo20166 extends OpMode {
     public static final Pose submersibleToSpike4 = pointAndHeadingToPose(sample1X, pushObservationY , 90);//Push sample 1 to observation zone
     public static final Pose submersibleToSpike4Push2Samples = pointAndHeadingToPose(51, pushObservationY, 90);//NEW POINT
     public static final Pose submersibleToSpike5 = pointAndHeadingToPose(sample1X, behindSamples, 90);//Align for second sample
-    public static final Pose submersibleToSpike5Push2Samples = pointAndHeadingToPose(55, behindSamples, 90);//NEW POINT
+//    public static final Pose submersibleToSpike5Push2Samples = pointAndHeadingToPose(55, behindSamples, 90);//NEW POINT
     public static final Pose submersibleToSpike6 = pointAndHeadingToPose(sample2X, behindSamples, 90);//Observation drop 'push to' location
-    public static final Pose submersibleToSpike6Push2Samples = pointAndHeadingToPose(60, behindSamples, 90);//NEW POINT
+//    public static final Pose submersibleToSpike6Push2Samples = pointAndHeadingToPose(60, behindSamples, 90);//NEW POINT
     public static final Pose submersibleToSpike7 = pointAndHeadingToPose(sample2X, pushObservationY, 90);//Pushing second sample
-    public static final Pose submersibleToSpike7Push2Samples = pointAndHeadingToPose(60, pushObservationY, 90);//NEW POINT
+//    public static final Pose submersibleToSpike7Push2Samples = pointAndHeadingToPose(60, pushObservationY, 90);//NEW POINT
     //public static final Pose submersibleToSpike6 = pointAndHeadingToPose(56.67, behindSamples, 90); //Back behind the samples
     //public static final Pose submersibleToSpike8 = pointAndHeadingToPose(sample2X, behindSamples, 90);//Aligned behind second sample
     public static final Pose submersibleToSpike8 = pointAndHeadingToPose(40, pushObservationY + 5, 200);
@@ -125,7 +126,7 @@ public class RightAutotestTwo20166 extends OpMode {
     //public static final Pose testPoint1 = pointAndHeadingToPose(42.5, pushObservationY, 90);
     //public static final Pose testPoint2 = pointAndHeadingToPose(42.5, -pushObservationY, 90);
     public static final Pose[] getTwoSamples = {submersibleToSpike1, submersibleToSpike2, submersibleToSpike3, submersibleToSpike4, submersibleToSpike5, submersibleToSpike6, submersibleToSpike7, submersibleToSpike8, submersibleToSpike13};
-    public static final Pose[] getDoubleSamplesPush = {submersibleToSpike1, submersibleToSpike2, submersibleToSpike3Push2Samples, submersibleToSpike4Push2Samples, submersibleToSpike5Push2Samples, submersibleToSpike6Push2Samples, submersibleToSpike7Push2Samples, submersibleToSpike8, submersibleToSpike13};
+    public static final Pose[] getDoubleSamplesPush = {submersibleToSpike1, submersibleToSpike2, submersibleToSpike3Push2Samples, submersibleToSpike4Push2Samples, submersibleToSpike8, submersibleToSpike13};
     //Paths
     //public static final Pose[] doTest = {testPoint1, testPoint2, testPoint1, testPoint2, testPoint1, testPoint2, testPoint1, testPoint2, testPoint1, testPoint2};
     /*
@@ -206,7 +207,7 @@ public class RightAutotestTwo20166 extends OpMode {
         else
             robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
 
-        robotGrabber = new SubSystemGrabber(hardwareMap, 0);
+        robotGrabber = new SubSystemGrabber(hardwareMap, 2);
 
 
         //robotIntake = new SubSystemIntake(hardwareMap);

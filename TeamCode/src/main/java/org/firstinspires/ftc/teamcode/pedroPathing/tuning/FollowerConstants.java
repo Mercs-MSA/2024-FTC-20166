@@ -101,7 +101,7 @@ public class FollowerConstants {
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
-    public static double forwardZeroPowerAcceleration = -24.62719;//Was -34.62719
+    public static double forwardZeroPowerAcceleration = -25;//Was -24.62719 //12/7 chang to 1?
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
@@ -116,7 +116,7 @@ public class FollowerConstants {
     // This can be set individually for each Path, but this is the default.
 //    public static double zeroPowerAccelerationMultiplier = 4;
 //    public static double zeroPowerAccelerationMultiplier = 4;
-    public static double zeroPowerAccelerationMultiplier = 4;
+    public static double zeroPowerAccelerationMultiplier = 4.2; //decrease but robot will slow 12/7
 
 
     // When the robot is at the end of its current Path or PathChain and the velocity goes below

@@ -125,10 +125,10 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-       // frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void initializeSensors()
@@ -476,6 +476,15 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             } else if (elevatorMoveHigh == true) {
                 setElevator(robotConstants.ELEVATOR_TOP_RUNG_RELEASE);
             }
+        }
+
+        if (gamepad1.right_bumper)
+        {
+            robotElevator.nudgeElevator(50);
+        }
+        if (gamepad1.left_bumper)
+        {
+            robotElevator.resetElevator();
         }
 
         /*if ((elevatorNetSpeed > 0.1) && (robotElevator.getPosition() < robotConstants.ELEVATOR_TOP_BASKET * robotConstants.ELEVATOR_MULTIPLIER)){

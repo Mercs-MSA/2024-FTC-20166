@@ -84,7 +84,7 @@ public class LeftAutotestThree20166 extends OpMode {
 
     public static final Pose sampleReadyToDrop = pointAndHeadingToPose(-58.5, -58, 225);
 
-    public static final Pose moveToFirstSample = pointAndHeadingToPose(-50, -33, 90);
+    public static final Pose moveToFirstSample = pointAndHeadingToPose(-48, -33, 90);
 
     public static final Pose moveToSecondSample = pointAndHeadingToPose( -59, -27, 90);
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
@@ -95,9 +95,9 @@ public class LeftAutotestThree20166 extends OpMode {
     public static final double pushAlignY = -12.8;
     public static final double pushObservationY = -50;//Was -44;
     public static final double behindSamples = -13;
-    public static final double sample1X = 41;
+    public static final double sample1X = 42;
     public static final double submersibleDropOffY = -32;
-    public static final double sample2X = 50.88;
+    public static final double sample2X = 55.75;
     public static final double sample3X = 51;
 
     public double listLastSegmentSpeed = 0.7;
@@ -375,6 +375,12 @@ private void processBasketDropSetup()
             currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
             waitPathDoneNextState = AUTON_STATE.WAIT_ELEVATOR_DONE;
             waitElevatorNextState = AUTON_STATE.GRAB_SAMPLE;
+        }
+        else if (pickupCount == 3)
+        {
+            robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
+            currentAutonomousState  = AUTON_STATE.WAIT_ELEVATOR_DONE;
+            waitElevatorNextState = AUTON_STATE.DO_NOTHING;
         }
     }
     private void waitTimerDone()

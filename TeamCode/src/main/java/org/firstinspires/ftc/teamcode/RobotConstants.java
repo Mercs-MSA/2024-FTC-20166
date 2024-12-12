@@ -11,7 +11,7 @@ public class RobotConstants
     public static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
     public static final int ELEVATOR_TOP_RUNG_PLACE = -2300;//Upper rung starting position
 
-    public static final int ELEVATOR_TOP_RUNG_RELEASE = -1450;//Upper rung pull down position
+    public static final int ELEVATOR_TOP_RUNG_RELEASE = -1375;//Upper rung pull down position
     public static final int ELEVATOR_TOP_BASKET = -3900;//Top basket location
     public static final int ELEVATOR_LOW_BASKET = -2550;//Low basket location
     public static final int ELEVATOR_TRANSFER_SAMPLE_POSITION = -253;//sample transfer height
@@ -60,7 +60,7 @@ public class RobotConstants
         } else if (robotId == 1)
         { //Bot C (V2)
             ELEVATOR_MULTIPLIER = -0.96;
-            START_TO_SUBMERSIBLE_SPEED = 0.65;
+            START_TO_SUBMERSIBLE_SPEED = 0.45;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 1;
         } else
