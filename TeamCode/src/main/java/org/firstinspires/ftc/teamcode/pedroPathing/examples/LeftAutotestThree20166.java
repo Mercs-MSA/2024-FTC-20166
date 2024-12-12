@@ -68,7 +68,7 @@ public class LeftAutotestThree20166 extends OpMode {
         MOVE_TO_SPECIMEN_PICKUP,
         DO_NOTHING,
         INITIALIZE_POSE_LIST_INDEX,
-        WAIT_ELEVATOR_DONE, MOVE_INTO_RELEASE_POSITION_STATE, RELEASE_SAMPLE_ABOVE_BASKET_STATE, MOVE_BACK_STATE, MOVE_TO_NEXT_SAMPLE_STATE, PROCESS_BASKET_DROP_SETUP, GRAB_SAMPLE, FOLLOW_POSE_LIST
+        WAIT_ELEVATOR_DONE, MOVE_INTO_RELEASE_POSITION_STATE, RELEASE_SAMPLE_ABOVE_BASKET_STATE, MOVE_BACK_STATE, MOVE_TO_NEXT_SAMPLE_STATE, PROCESS_BASKET_DROP_SETUP, GRAB_SAMPLE, PARK_IN_ASCENT_ZONE_STATE_ONE, PARK_IN_ASCENT_ZONE_STATE_TWO, FOLLOW_POSE_LIST
     }
 
     private AUTON_STATE currentAutonomousState = AUTON_STATE.AUTON_START_STATE;
@@ -87,6 +87,8 @@ public class LeftAutotestThree20166 extends OpMode {
     public static final Pose moveToFirstSample = pointAndHeadingToPose(-48, -33, 90);
 
     public static final Pose moveToSecondSample = pointAndHeadingToPose( -59, -27, 90);
+    public static final Pose processParkInAscentZone1 = pointAndHeadingToPose(-35, -10, 90);
+    public static final Pose processParkInAscentZone2 = pointAndHeadingToPose(-23, -10, 90);
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
     public static final double wallY = startingPoseRight.getY() +0.5;
     public static final double specimenWallPickupX = 37;//47.5;
@@ -98,7 +100,7 @@ public class LeftAutotestThree20166 extends OpMode {
     public static final double sample1X = 42;
     public static final double submersibleDropOffY = -32;
     public static final double sample2X = 55.75;
-    public static final double sample3X = 51; //
+    public static final double sample3X = 51;
 
     public double listLastSegmentSpeed = 0.7;
     public static final Pose specimenZeroHangPose = pointAndHeadingToPose(-2.5, submersibleDropOffY, 90);
@@ -380,7 +382,7 @@ private void processBasketDropSetup()
         {
             robotElevator.setPosition(robotConstants.ELEVATOR_BOTTOM_POSITION);
             currentAutonomousState  = AUTON_STATE.WAIT_ELEVATOR_DONE;
-            waitElevatorNextState = AUTON_STATE.DO_NOTHING;
+            waitElevatorNextState = AUTON_STATE.PARK_IN_ASCENT_ZONE_STATE_ONE;
         }
     }
     private void waitTimerDone()
@@ -482,6 +484,18 @@ private void processBasketDropSetup()
         waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
     }
 
+    private void processParkInAscentZone1()
+    {
+        setPathFromCurrentPositionToTargetPose(processParkInAscentZone1);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.PARK_IN_ASCENT_ZONE_STATE_TWO;
+    }
+    private void processParkInAscentZone2()
+    {
+        setPathFromCurrentPositionToTargetPose(processParkInAscentZone2);
+        currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+        waitPathDoneNextState = AUTON_STATE.DO_NOTHING;
+    }
 
 
     private void processStateMachine()
@@ -523,6 +537,13 @@ private void processBasketDropSetup()
                 break;
             case GRAB_SAMPLE:
                 processGrabSample();
+                break;
+            case PARK_IN_ASCENT_ZONE_STATE_ONE:
+                processParkInAscentZone1();
+                break;
+            case PARK_IN_ASCENT_ZONE_STATE_TWO:
+                processParkInAscentZone2();
+                break;
             /*case PUSH_SAMPLES_STATE:
                 processPushSampleToObservation();
                 break;*/

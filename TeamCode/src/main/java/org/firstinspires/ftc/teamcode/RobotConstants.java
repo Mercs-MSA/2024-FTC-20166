@@ -60,7 +60,7 @@ public class RobotConstants
         } else if (robotId == 1)
         { //Bot C (V2)
             ELEVATOR_MULTIPLIER = -0.96;
-            START_TO_SUBMERSIBLE_SPEED = 0.45;
+            START_TO_SUBMERSIBLE_SPEED = 0.55;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 1;
         } else

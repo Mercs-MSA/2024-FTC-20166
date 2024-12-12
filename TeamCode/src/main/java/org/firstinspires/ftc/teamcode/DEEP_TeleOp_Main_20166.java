@@ -8,8 +8,8 @@ package org.firstinspires.ftc.teamcode;
 // elevator                  expansion          motor 0                 elevator motor
 // elevator2                 expansion          motor 1                 elevator motor 2
 
-// grabberLeft               control            servo 0                 grabberLeft servo
-// grabberRight              control            servo 1                 grabberRight servo
+// grabberLeft               control            servo 1                grabberLeft servo
+// grabberRight              control            servo 0                 grabberRight servo
 // intakePivotServo          control            servo 2                 intakePivot servo
 // intakeSLide               control            servo 3                 intakeSlide servo
 // leftIntakeArmServo        control            servo 4                 leftIntakeArmServo servo
