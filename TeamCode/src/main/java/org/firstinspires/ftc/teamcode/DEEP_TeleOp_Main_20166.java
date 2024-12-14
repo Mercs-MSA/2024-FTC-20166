@@ -482,11 +482,11 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             }
         }
 
-        if (gamepad1.right_bumper)
+        if (gamepad1.right_bumper && gamepad1.start)
         {
             robotElevator.nudgeElevator(50);
         }
-        if (gamepad1.left_bumper)
+        if (gamepad1.left_bumper && gamepad1.start)
         {
             robotElevator.resetElevator();
         }
