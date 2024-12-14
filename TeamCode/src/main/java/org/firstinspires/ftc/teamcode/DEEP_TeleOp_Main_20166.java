@@ -8,10 +8,10 @@ package org.firstinspires.ftc.teamcode;
 // elevator                  expansion          motor 0                 elevator motor
 // elevator2                 expansion          motor 1                 elevator motor 2
 
-// grabberLeft               control            servo 1                grabberLeft servo
-// grabberRight              control            servo 0                 grabberRight servo
+// grabberLeft               control            servo 0                 grabberLeft servo
+// grabberRight              control            servo 1                 grabberRight servo
 // intakePivotServo          control            servo 2                 intakePivot servo
-// intakeSLide               control            servo 3                 intakeSlide servo
+// intakeSlideServo          control            servo 3                 intakeSlide servo
 // leftIntakeArmServo        control            servo 4                 leftIntakeArmServo servo
 // rightIntakeArmServo       control            servo 5                 rightIntakeArmServo servo
 
@@ -19,16 +19,9 @@ package org.firstinspires.ftc.teamcode;
 // leftIntakeServo           expansion          servo 2                 leftIntakeServo
 // rightIntakeServo          expansion          servo 3                 rightIntakeServo
 
-// imu NOT USED              control            i2cBus 0                revInternalIMU
-// leftDistanceSensor        control            i2Bus 1                 leftDistance sensor
 // colorSensor               control            i2Bus 2                 color sensor
-// frontDistanceSensor       control            i2cBus 3                frontDistance sensor
 // limitSwitch               control            digital 0               limitSwitch digital channel
 // limitSwitchTwo            control            digital 1               limitSwitchTwo digital channel
-
-
-// NOT USED ANYMORE intakeSlide               expansion          motor 3                 intake slide
-// intakeSlideServo            control            servo
 
 
 
@@ -75,6 +68,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private double intakeSpeed = 0;
     private double intakeArmPosition = 0;
+
+    private double intakePivotPosition = 0;
     //Motor demo variables
     private DcMotorEx frontLeftDrive = null;
     private DcMotorEx frontRightDrive = null;
@@ -82,6 +77,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private DcMotorEx backRightDrive = null;
 //    private IMU imu         = null;
     private Servo intakePivot;
+
+    private double intakeSlidePosition = 0;
 
 
     private SubSystemElevator robotElevator = null;
@@ -320,39 +317,39 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 //            imu.resetYaw();
 //        }
 
-        intakeOut = gamepad2.right_trigger;
-        intakeIn = gamepad2.left_trigger;
+        intakeSlidePosition = -gamepad2.left_stick_y;
 
         //Spatula
         spatulaMoveDown = gamepad2.right_bumper;
+
+    }
+
+     private void updateIntakeArm()
+    {
         if (spatulaMoveDown)
         {
             intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
-            robotIntakePivot.setPosition(robotConstants.PIVOT_INTAKE_PICKUP);
+            intakePivotPosition = robotConstants.PIVOT_INTAKE_PICKUP;
 
         }
-        else if (Math.abs(robotElevator.getPosition() - (robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION * robotElevator.multiplier)) < 5)
+        /*else if (Math.abs(robotElevator.getPosition() - (robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION * robotElevator.multiplier)) < 5)
         {
             intakeArmPosition = robotConstants.INTAKE_ARM_TRANSFER_SAMPLE_POSITION;
-            robotIntakePivot.setPosition(robotConstants.PIVOT_INTAKE_DEPOSIT);
 
-        }
+        }*/
         else {
             intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
-            robotIntakePivot.setPosition(robotConstants.PIVOT_INTAKE_IDLE);
+            intakePivotPosition = robotConstants.PIVOT_INTAKE_IDLE;
         }
-    }
+        robotIntakeArm.setPosition(intakeArmPosition);
+        robotIntakePivot.setPosition(intakePivotPosition);
 
+    }
 
 
     private void updateIntakeSlide()
     {
-        double intakeSpeed = intakeOut - intakeIn;
-
-        if (Math.abs(intakeSpeed) < 0.1)
-            intakeSpeed = 0;
-
-        robotIntakeSlide.movePosition(intakeSpeed);
+        robotIntakeSlide.setPosition(intakeSlidePosition);
     }
 
     private void updateDashboard()
@@ -662,11 +659,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         telemetry.addData("intakeServo", intakeSpeed);
 
     }
-    private void updateIntakeArm()
-    {
-        robotIntakeArm.setPosition(intakeArmPosition);
 
-    }
 
     public void runOpMode() throws InterruptedException {
         initalizeEverything();

@@ -7,63 +7,32 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.opencv.core.Mat;
 
-public class SubSystemIntakeSlide {
-    /* This code is for the motor driven intake slider
-    private DcMotorEx intakeSlide;
-    private static final int MAX_EXTENSION_COUNT = 1150;
-    private static final int MIN_EXTENSION_COUNT = 0;
-     */
-    private CRServo intakeSlideServo;
+public class SubSystemIntakeSlide
+{
+    private Servo intakeSlideServo;
 
 
     public SubSystemIntakeSlide(HardwareMap hardwareMap) throws InterruptedException {
-        /* This code is for the motor driven intake slider
-        intakeSlide = hardwareMap.get(DcMotorEx.class, "intakeSlide");       //Sets the names of the hardware on the hardware map
-        intakeSlide.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        intakeSlide.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        intakeSlide.setTargetPosition(0);
-        intakeSlide.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        intakeSlide.setPower(0.7);
-         */
-        intakeSlideServo = hardwareMap.get(CRServo.class, "intakeSlideServo");
+
+        intakeSlideServo = hardwareMap.get(Servo.class, "intakeSlideServo");
     }
 
+    public double min = 0.25;
+    public double max = 0.8;
 
-    /* This code is for the motor driven intake slider
-    public void setPosition(int encoderPosition) {
-        intakeSlide.setTargetPosition(encoderPosition);
-    }
-    */
-    public boolean atMaxPosition()
+    public void setPosition(double position)
     {
-        return false;
-    }
-    public boolean atMinPosition()
-    {
-        return false;
-    }
-    public void movePosition(double speed)
-    {
-        if( (speed > 0.0) && (!atMaxPosition()))
-            intakeSlideServo.setPower(speed);
-        else if ((speed < 0.0) && (!atMinPosition()))
-            intakeSlideServo.setPower(speed);
-        else  //Should never get here, but good practice to catch all
-            intakeSlideServo.setPower(0);
-    }
-    /* This code is for the motor driven intake slider
-    public void movePosition(double inspeed, double outspeed) {
-        if (inspeed > 0.5)
-            setPosition(MAX_EXTENSION_COUNT);
-        else if (outspeed > 0.5)
-            setPosition(MIN_EXTENSION_COUNT);
-        else
-            setPosition(getPosition());
-
+        double servoPosition;
+        if (position < 0)
+        {
+            position = 0;
+        }
+        else if (position > 1)
+        {
+            position = 1;
+        }
+        servoPosition = min+((max-min) * position);
+        intakeSlideServo.setPosition(servoPosition);
     }
 
-    public int getPosition() {
-        return intakeSlide.getCurrentPosition();
-    }
-     */
 }

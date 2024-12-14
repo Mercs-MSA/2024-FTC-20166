@@ -93,8 +93,6 @@ private void initalizeGrabber() throws InterruptedException
             telemetry.addData("FR (1)", frontRightDrive.getCurrentPosition());
             telemetry.addData("BL (2)", backLeftDrive.getCurrentPosition());
             telemetry.addData("BR (3)", backRightDrive.getCurrentPosition());
-            telemetry.addData("Intake Slide min)", robotIntakeSlide.atMinPosition());
-            telemetry.addData("Intake Slide max)", robotIntakeSlide.atMaxPosition());
             telemetry.addData("Robot ID", robotID);
 
 
@@ -134,7 +132,6 @@ private void initalizeGrabber() throws InterruptedException
                 telemetry.addData("Intake arm down", robotIntakeArm.getPosition());
             }
 
-            robotIntakeSlide.movePosition(gamepad1.right_trigger - gamepad1.left_trigger);
             updateTelemetry(telemetry);
         }
     }

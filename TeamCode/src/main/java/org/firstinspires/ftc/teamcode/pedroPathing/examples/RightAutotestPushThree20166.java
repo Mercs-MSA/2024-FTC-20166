@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakePivot;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
@@ -38,7 +40,11 @@ public class RightAutotestPushThree20166 extends OpMode {
 
 
     private Follower follower;
-    private SubSystemIntakeArm robotIntakeArm;
+    private SubSystemIntakeArm robotIntakeArm = null;
+    private SubSystemIntakeSlide robotIntakeSlide = null;
+    private SubSystemIntakePivot robotIntakePivot = null;
+
+
     private int robotID;
     private int pickupCount = 0;
     public double testX = 0;
@@ -79,7 +85,7 @@ public class RightAutotestPushThree20166 extends OpMode {
 
     public static final Point startPoint = new Point (startingPoseRight.getX(), startingPoseRight.getY(), Point.CARTESIAN);
     public static final double wallY = startingPoseRight.getY() +0.8;
-    public static final double specimenWallPickupX = 37;//47.5;
+    public static final double specimenWallPickupX = 39;//47.5;
     public static final double specimenWallPickupY = wallY;//-61.5?
     public static final double pushPrepY = -12.8;
     public static final double pushAlignY = -12.8;
@@ -92,7 +98,7 @@ public class RightAutotestPushThree20166 extends OpMode {
 
     public double listLastSegmentSpeed = 0.8;
     public static final Pose specimenZeroHangPose = pointAndHeadingToPose(-2.5, submersibleDropOffY, 90);
-    public static Pose specimenOneHangPose = pointAndHeadingToPose(-0.5, submersibleDropOffY, 90);
+    public static Pose specimenOneHangPose = pointAndHeadingToPose(-1, submersibleDropOffY, 90);
     public static Pose specimenTwoHangPose = pointAndHeadingToPose(2, submersibleDropOffY, 90);
     public static Pose specimenThreeHangPose = pointAndHeadingToPose(5, submersibleDropOffY, 90);
 
@@ -161,7 +167,7 @@ public class RightAutotestPushThree20166 extends OpMode {
 /*    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenTwoClipOn));
     public static final Path moveToSpeciminThreePickup = new Path (new BezierCurve(specimenTwoClipOn, specimenPickupPoint));
     public static final Path specimenThreeToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenThreeClipOn)); */
-    public static Pose autonHoldLocation = specimenPickupPose;
+    public static Pose autonHoldLocation = pointAndHeadingToPose(specimenWallPickupX + 5, specimenWallPickupY + 5, 180);
 
  /*   public static final Path moveToAutonHoldPath = new Path(new BezierCurve(specimenThreeClipOn, autonHoldLocation));*/
 
@@ -212,6 +218,11 @@ public class RightAutotestPushThree20166 extends OpMode {
         //robotIntake = new SubSystemIntake(hardwareMap);
 
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
+        robotIntakeArm.setPosition(robotConstants.INTAKE_ARM_START_POSITION);
+        robotIntakeSlide= new SubSystemIntakeSlide(hardwareMap);
+        robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_START_POSITION);
+        robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
+        robotIntakePivot.setPosition(robotConstants.INTAKE_PIVOT_START_POSITION);
     }
 
     /**
@@ -277,6 +288,7 @@ public class RightAutotestPushThree20166 extends OpMode {
     {
         if (hasTimededout())
         {
+            robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
             setPathFromCurrentPositionToTargetPose(specimenZeroHangPose);
             restartTimeout(8000);
@@ -312,7 +324,7 @@ public class RightAutotestPushThree20166 extends OpMode {
     }
     private void processWaitAutonDoneState()
     {
-        follower.holdPoint(new BezierPoint(new Point(autonHoldLocation.getX(), autonHoldLocation.getY(), Point.CARTESIAN)), Math.toRadians(90));
+        follower.holdPoint(new BezierPoint(new Point(autonHoldLocation.getX(), autonHoldLocation.getY(), Point.CARTESIAN)), Math.toRadians(180));
         currentAutonomousState = AUTON_STATE.DO_NOTHING;
     }
 
@@ -414,8 +426,8 @@ public class RightAutotestPushThree20166 extends OpMode {
     }*/
     private void processBackupAndLowerState()
     {
-        //setPathFromCurrentPositionToTargetPose(autonHoldLocation);
-        follower.holdPoint(new BezierPoint(poseToPoint(autonHoldLocation)), Math.toRadians(90));
+        setPathFromCurrentPositionToTargetPose(autonHoldLocation);
+        //follower.holdPoint(new BezierPoint(poseToPoint(autonHoldLocation)), Math.toRadians(180));
         robotElevator.setPosition(0);
         currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
         waitPathDoneNextState = AUTON_STATE.WAIT_AUTO_FINISHED;
