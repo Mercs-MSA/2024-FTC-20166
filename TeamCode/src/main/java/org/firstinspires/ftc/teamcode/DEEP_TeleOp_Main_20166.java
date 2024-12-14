@@ -349,7 +349,14 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void updateIntakeSlide()
     {
-        robotIntakeSlide.setPosition(intakeSlidePosition);
+        if (Math.abs(robotElevator.getPosition()) > 50)
+        {
+            robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
+        }
+        else
+        {
+            robotIntakeSlide.setPosition(intakeSlidePosition);
+        }
     }
 
     private void updateDashboard()

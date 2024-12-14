@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakePivot;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
@@ -39,7 +41,11 @@ public class LeftAutotestThree20166 extends OpMode {
 
 
     private Follower follower;
-    private SubSystemIntakeArm robotIntakeArm;
+
+    private SubSystemIntakeArm robotIntakeArm = null;
+    private SubSystemIntakeSlide robotIntakeSlide = null;
+    private SubSystemIntakePivot robotIntakePivot = null;
+
     private int robotID;
     private int pickupCount = 0;
     public double testX = 0;
@@ -223,8 +229,15 @@ public class LeftAutotestThree20166 extends OpMode {
 
         //robotIntake = new SubSystemIntake(hardwareMap);
 
+
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
+        robotIntakeArm.setPosition(robotConstants.INTAKE_ARM_START_POSITION);
+        robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
+        robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_START_POSITION);
+        robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
+        robotIntakePivot.setPosition(robotConstants.INTAKE_PIVOT_START_POSITION);
     }
+
 
     /**
      * Setup a path to follow such that the bot ends facing in 'endHeading' direction
@@ -297,6 +310,7 @@ private void processBasketDropSetup()
     {
         if (hasTimededout())
         {
+            robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
             robotGrabber.setPosition(robotConstants.GRABBER_CLOSE_POSITION);
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
             pickupCount = 0;
