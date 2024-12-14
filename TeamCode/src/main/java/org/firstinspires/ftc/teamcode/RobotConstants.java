@@ -50,7 +50,7 @@ public class RobotConstants
 
 //    public static final double INTAKE_SLIDE_MAX_POSITION = 0.8;
 //    public static final double INTAKE_SLIDE_MIN_POSITION = 0.25;
-    public static final double INTAKE_SLIDE_SAFE_POSITION = 0.55;
+    public static final double INTAKE_SLIDE_SAFE_POSITION = 0.5;
     public static final double INTAKE_SLIDE_START_POSITION = 0.0;
     public static final double INTAKE_ARM_START_POSITION = 0.0;
     public static final double INTAKE_PIVOT_START_POSITION = 0.0;

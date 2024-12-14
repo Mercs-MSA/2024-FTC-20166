@@ -88,10 +88,10 @@ public class SubSystemElevator {
     }
     public void resetElevator()
     {
-        elevator2.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        elevator2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        elevator2.setTargetPosition(0);
-        elevator2.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        elevator2.setPower(1);
+        elevator.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        elevator.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        elevator.setTargetPosition(0);
+        elevator.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        elevator.setPower(1);
     }
 }

@@ -98,6 +98,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private float intakeIn;
     private float intakeOut;
     private boolean spatulaMoveDown = false;
+    public boolean intakeOverride = false;
+
     private int robotID = 0;
 
     public void initializeDriveMotors()
@@ -330,6 +332,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         {
             intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
             intakePivotPosition = robotConstants.PIVOT_INTAKE_PICKUP;
+            intakeOverride = true;
 
         }
         /*else if (Math.abs(robotElevator.getPosition() - (robotConstants.ELEVATOR_TRANSFER_SAMPLE_POSITION * robotElevator.multiplier)) < 5)
@@ -340,6 +343,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         else {
             intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
             intakePivotPosition = robotConstants.PIVOT_INTAKE_IDLE;
+            intakeOverride = false;
         }
         robotIntakeArm.setPosition(intakeArmPosition);
         robotIntakePivot.setPosition(intakePivotPosition);
@@ -457,6 +461,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         {
             setElevator(robotElevator.getPosition() - (int)(25*robotConstants.ELEVATOR_MULTIPLIER));
         }
+
         if (elevatorMode) //Basket mode
         {
             if (elevatorMoveBottom == true) {
@@ -662,7 +667,11 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void updateIntake()
     {
-        robotIntake.setSpeed(intakeSpeed);
+        if (intakeOverride)
+            robotIntake.setSpeed(robotConstants.INTAKE_ROLLER_IN_SPEED);
+        else
+            robotIntake.setSpeed(intakeSpeed);
+
         telemetry.addData("intakeServo", intakeSpeed);
 
     }
