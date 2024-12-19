@@ -47,7 +47,7 @@ public class RobotConstants
     public static final double PIVOT_INTAKE_DEPOSIT = 0.3;
     public static final double PIVOT_INTAKE_IDLE = 0.8;
     public static final int STALL_SAMPLE_COUNT = 10;
-
+q
 //    public static final double INTAKE_SLIDE_MAX_POSITION = 0.8;
 //    public static final double INTAKE_SLIDE_MIN_POSITION = 0.25;
     public static final double INTAKE_SLIDE_SAFE_POSITION = 0.5;
