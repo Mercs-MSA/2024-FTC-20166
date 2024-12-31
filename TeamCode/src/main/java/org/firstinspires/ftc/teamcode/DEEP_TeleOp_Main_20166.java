@@ -361,6 +361,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         {
             robotIntakeSlide.setPosition(intakeSlidePosition);
         }
+
+        robotIntakeSlide.updateServoPosition();
     }
 
     private void updateDashboard()

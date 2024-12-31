@@ -21,8 +21,8 @@ public class SubSystemIntake {
 
     public void setSpeed(double speed)
     {
-        leftIntakeServo.setPower(speed);
-        rightIntakeServo.setPower(-speed);
+        leftIntakeServo.setPower(-speed);
+        rightIntakeServo.setPower(speed);
     }
 
 }

@@ -11,6 +11,12 @@ public class SubSystemIntakeSlide
 {
     private Servo intakeSlideServo;
 
+    private double targetServoPosition = 0;
+
+    private double currentServoPosition = 0;
+
+    private double sliderSpeed = 0.01;
+
 
     public SubSystemIntakeSlide(HardwareMap hardwareMap) throws InterruptedException {
 
@@ -22,7 +28,6 @@ public class SubSystemIntakeSlide
 
     public void setPosition(double position)
     {
-        double servoPosition;
         if (position < 0)
         {
             position = 0;
@@ -31,8 +36,29 @@ public class SubSystemIntakeSlide
         {
             position = 1;
         }
-        servoPosition = min+((max-min) * position);
-        intakeSlideServo.setPosition(servoPosition);
+        targetServoPosition = min+((max-min) * position);
+    }
+    public void updateServoPosition()
+    {
+        if (targetServoPosition > currentServoPosition)
+        {
+            currentServoPosition = currentServoPosition + sliderSpeed;
+            if (currentServoPosition > targetServoPosition)
+            {
+                currentServoPosition = targetServoPosition;
+            }
+        }
+        else if (targetServoPosition < currentServoPosition)
+        {
+            currentServoPosition = currentServoPosition - sliderSpeed;
+            if (currentServoPosition < targetServoPosition)
+            {
+                currentServoPosition = targetServoPosition;
+            }
+        }
+
+        intakeSlideServo.setPosition(currentServoPosition);
+
     }
 
 }
