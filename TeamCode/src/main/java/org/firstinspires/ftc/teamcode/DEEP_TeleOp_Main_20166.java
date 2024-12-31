@@ -25,6 +25,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 
+
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -346,7 +347,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             intakeOverride = false;
         }
         robotIntakeArm.setPosition(intakeArmPosition);
+
         robotIntakePivot.setPosition(intakePivotPosition);
+        robotIntakeArm.updateArmPosition();
 
     }
 

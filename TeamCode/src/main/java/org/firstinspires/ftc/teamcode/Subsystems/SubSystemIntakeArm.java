@@ -11,21 +11,42 @@ public class SubSystemIntakeArm {
     // Instantiate the drivetrain motor variables
     private Servo leftServo;
     private Servo rightServo;
+    private double targetArmServoPosition = 0;
+    private double currentArmServoPosition = 0;
 
-    public SubSystemIntakeArm(HardwareMap hardwareMap) throws InterruptedException
-    {
-         leftServo = hardwareMap.get(Servo.class, "leftIntakeArmServo");
-         rightServo = hardwareMap.get(Servo.class, "rightIntakeArmServo");
+    private double armSpeed = 0.015;
+
+    public SubSystemIntakeArm(HardwareMap hardwareMap) throws InterruptedException {
+        leftServo = hardwareMap.get(Servo.class, "leftIntakeArmServo");
+        rightServo = hardwareMap.get(Servo.class, "rightIntakeArmServo");
     }
 
-    public void setPosition(double position)
-    {
-        leftServo.setPosition(1 - position);
-        rightServo.setPosition(position);
+    public void setPosition(double position) {
+        targetArmServoPosition = position;
+    }
+
+    public void updateArmPosition() {
+        if (targetArmServoPosition > currentArmServoPosition) {
+            currentArmServoPosition = currentArmServoPosition + armSpeed;
+            if (currentArmServoPosition > targetArmServoPosition) {
+                currentArmServoPosition = targetArmServoPosition;
+            }
+        } else if (targetArmServoPosition < currentArmServoPosition) {
+            currentArmServoPosition = currentArmServoPosition - armSpeed;
+            if (currentArmServoPosition < targetArmServoPosition) {
+                currentArmServoPosition = targetArmServoPosition;
+            }
+        }
+        leftServo.setPosition(1 - currentArmServoPosition);
+        rightServo.setPosition(currentArmServoPosition);
+
     }
 
     public double getPosition()
     {
         return rightServo.getPosition();
     }
+
+
+
 }

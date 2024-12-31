@@ -8,6 +8,8 @@ public class SubSystemIntakePivot {
     private Servo intakePivotServo;
 
 
+
+
     public SubSystemIntakePivot(HardwareMap hardwareMap) throws InterruptedException {
         intakePivotServo = hardwareMap.get(Servo.class, "intakePivotServo");
     }
@@ -15,8 +17,14 @@ public class SubSystemIntakePivot {
 
     public void setPosition(double position)
     {
+
+
         intakePivotServo.setPosition(position);
     }
+
+
+
+
 
     public double getPosition()
     {
