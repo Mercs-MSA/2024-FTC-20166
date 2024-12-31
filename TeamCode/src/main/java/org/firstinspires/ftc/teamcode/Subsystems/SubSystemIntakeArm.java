@@ -25,6 +25,13 @@ public class SubSystemIntakeArm {
         targetArmServoPosition = position;
     }
 
+    public void setPositionNow(double position) {
+        currentArmServoPosition = position;
+        targetArmServoPosition = position;
+        leftServo.setPosition(1 - currentArmServoPosition);
+        rightServo.setPosition(currentArmServoPosition);
+    }
+
     public void updateArmPosition() {
         if (targetArmServoPosition > currentArmServoPosition) {
             currentArmServoPosition = currentArmServoPosition + armSpeed;

@@ -308,7 +308,7 @@ public class RightAutotestPushTwo20166 extends OpMode {
 
     private void processWaitPathDone()
     {
-        if (!pathIsBusy())
+        if (!pathIsBusy() || robotStalled)
             currentAutonomousState = waitPathDoneNextState;
     }
     private void processWaitAutonDoneState()

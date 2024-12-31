@@ -194,6 +194,8 @@ public class RightAutotestPushThree20166 extends OpMode {
         }
         follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
 
+        robotIntakeSlide.setPositionNow(robotConstants.INTAKE_SLIDE_START_POSITION);
+        robotIntakeArm.setPositionNow(robotConstants.INTAKE_ARM_START_POSITION);
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
     }
@@ -289,6 +291,7 @@ public class RightAutotestPushThree20166 extends OpMode {
         if (hasTimededout())
         {
             robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
+            robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
             setPathFromCurrentPositionToTargetPose(specimenZeroHangPose);
             restartTimeout(8000);
@@ -319,12 +322,16 @@ public class RightAutotestPushThree20166 extends OpMode {
 
     private void processWaitPathDone()
     {
-        if (!pathIsBusy())
+        if (!pathIsBusy() || robotStalled)
             currentAutonomousState = waitPathDoneNextState;
     }
     private void processWaitAutonDoneState()
     {
         follower.holdPoint(new BezierPoint(new Point(autonHoldLocation.getX(), autonHoldLocation.getY(), Point.CARTESIAN)), Math.toRadians(180));
+        if (robotStalled)
+        {
+            follower.breakFollowing();
+        }
         currentAutonomousState = AUTON_STATE.DO_NOTHING;
     }
 
@@ -503,7 +510,7 @@ public class RightAutotestPushThree20166 extends OpMode {
 
     private void processFollowPoseList()
     {
-        if (!follower.isBusy())
+        if (!follower.isBusy() || robotStalled)
         {
             poseIndex++;
             if (poseIndex < getTwoSamples.length)//changed from getTwoSamples
@@ -581,8 +588,11 @@ public class RightAutotestPushThree20166 extends OpMode {
         follower.update();
         checkIfStalled();
 
-        if (gamepad1.a)
-            follower.breakFollowing();
+        robotIntakeSlide.updateServoPosition();
+        robotIntakeArm.updateArmPosition();
+
+//        if (gamepad1.a)
+//            follower.breakFollowing();
         telemetryA.addData("Timer", timeoutTimer.time());
         telemetryA.addData("Current state",currentAutonomousState);
         telemetryA.addData("Elevator target: ", robotElevator.getTarget());

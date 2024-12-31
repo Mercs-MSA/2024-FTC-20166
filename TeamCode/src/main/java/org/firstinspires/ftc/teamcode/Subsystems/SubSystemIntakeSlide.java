@@ -38,6 +38,23 @@ public class SubSystemIntakeSlide
         }
         targetServoPosition = min+((max-min) * position);
     }
+
+    public void setPositionNow(double position)
+    {
+        if (position < 0)
+        {
+            position = 0;
+        }
+        else if (position > 1)
+        {
+            position = 1;
+        }
+        currentServoPosition = position;
+        targetServoPosition = position;
+
+        intakeSlideServo.setPosition(currentServoPosition);
+
+    }
     public void updateServoPosition()
     {
         if (targetServoPosition > currentServoPosition)
