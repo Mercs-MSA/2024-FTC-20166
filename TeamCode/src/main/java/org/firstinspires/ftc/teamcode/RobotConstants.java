@@ -42,7 +42,7 @@ public class RobotConstants
     public static final double INTAKE_ROLLER_OUT_SPEED = 1;
     public static final double INTAKE_ROLLER_IN_SPEED = -1;
     public static final double INTAKE_ROLLER_HOLD_SPEED = -0.2;
-    public static final double STALL_THRESHOLD = 0.01;
+    public static final double STALL_THRESHOLD = 0.02;
     public static final double PIVOT_INTAKE_PICKUP = 0.8;
     public static final double PIVOT_INTAKE_DEPOSIT = 0.3;
     public static final double PIVOT_INTAKE_IDLE = 0.8;
@@ -67,12 +67,12 @@ public class RobotConstants
         } else if (robotId == 1)
         { //Bot C (V2)
             ELEVATOR_MULTIPLIER = -0.96;
-            START_TO_SUBMERSIBLE_SPEED = 0.50;
+            START_TO_SUBMERSIBLE_SPEED = 0.73;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 1;
         } else
         { //Bot B (V3)
-            ELEVATOR_MULTIPLIER = -0.5;
+            ELEVATOR_MULTIPLIER = 0.96;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.7;

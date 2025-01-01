@@ -45,6 +45,11 @@ public class RightAutotestPushThree20166 extends OpMode {
     private SubSystemIntakePivot robotIntakePivot = null;
 
 
+    public double stallX = 0;
+    public double stallY = 0;
+    public double stallT = 0;
+    public double stallDeltaTotal;
+
     private int robotID;
     private int pickupCount = 0;
     public double testX = 0;
@@ -91,9 +96,9 @@ public class RightAutotestPushThree20166 extends OpMode {
     public static final double pushAlignY = -12.8;
     public static final double pushObservationY = -50;//Was -44;
     public static final double behindSamples = -13;
-    public static final double sample1X = 42;
+    public static final double sample1X = 43;
     public static final double submersibleDropOffY = -31.8;
-    public static final double sample2X = 52;
+    public static final double sample2X = 53;
     public static final double sample3X = 51;
 
     public double listLastSegmentSpeed = 0.8;
@@ -167,7 +172,7 @@ public class RightAutotestPushThree20166 extends OpMode {
 /*    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenTwoClipOn));
     public static final Path moveToSpeciminThreePickup = new Path (new BezierCurve(specimenTwoClipOn, specimenPickupPoint));
     public static final Path specimenThreeToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenThreeClipOn)); */
-    public static Pose autonHoldLocation = pointAndHeadingToPose(specimenWallPickupX + 5, specimenWallPickupY + 5, 180);
+    public static Pose autonHoldLocation = pointAndHeadingToPose(29, -51, 128);
 
  /*   public static final Path moveToAutonHoldPath = new Path(new BezierCurve(specimenThreeClipOn, autonHoldLocation));*/
 
@@ -312,7 +317,7 @@ public class RightAutotestPushThree20166 extends OpMode {
     private void processLowerElevatorState()
     {
 //        if((Math.abs(robotElevator.getPosition() - robotConstants.ELEVATOR_TOP_RUNG_RELEASE) < 5) || hasTimededout())
-        if(robotElevator.atTargetYet(10))
+        if(robotElevator.atTargetYet(10) || hasTimededout())
         {
             robotGrabber.setPosition(robotConstants.GRABBER_OPEN_POSITION);
             currentAutonomousState = lowerElevatorNextState;
@@ -372,7 +377,7 @@ public class RightAutotestPushThree20166 extends OpMode {
         if (robotElevator.atTargetYet(10))
         {
            restartTimeout(4000);
-           if (pickupCount == 2)// was 3, by changing it to 2, will stop after 2nd place
+           if (pickupCount == 3)// was 3, by changing it to 2, will stop after 2nd place
             {
                 setPathFromCurrentPositionToTargetPose(specimenThreeHangPose);
                 lowerElevatorNextState = AUTON_STATE.BACKUP_AND_LOWER;
@@ -545,8 +550,8 @@ public class RightAutotestPushThree20166 extends OpMode {
     private double lastY = 0;
     private double minDelta = 1000;
 
-    private boolean robotStalled = false;
-    private void checkIfStalled()
+    public boolean robotStalled = false;
+    public void checkIfStalled()
     {
         double distanceMoved = 0;
         if (follower.isBusy()) {
@@ -557,9 +562,19 @@ public class RightAutotestPushThree20166 extends OpMode {
             double distanceMovedY = currentY - lastY;
             lastY = currentY;
             double currentHeading = follower.getPose().getHeading();
-            double distanceMovedHeading = currentHeading - lastHeading;
+            double distanceMovedHeading = Math.abs(currentHeading - lastHeading);
+
+            if (distanceMovedHeading > 2*Math.PI)
+            {
+                distanceMovedHeading = distanceMovedHeading - (2*Math.PI);
+            }
             lastHeading = currentHeading;
-            distanceMoved = Math.abs(distanceMovedX) + Math.abs(distanceMovedY) + Math.abs(distanceMovedHeading * 5);
+            distanceMoved = Math.abs(distanceMovedX) + Math.abs(distanceMovedY) + (distanceMovedHeading * 5);
+            stallX = Math.abs(distanceMovedX);
+            stallY = Math.abs(distanceMovedY);
+            stallT = Math.abs(distanceMovedHeading * 5);
+            stallDeltaTotal = deltaTotal/10;
+
             deltaTotal = deltaTotal - deltaTracking[stallIndex] + distanceMoved;
             if (deltaTotal < minDelta)
                 minDelta = deltaTotal;
@@ -575,8 +590,8 @@ public class RightAutotestPushThree20166 extends OpMode {
                 robotStalled = false;
 
         }
-        telemetryA.addData("Distance Moved", distanceMoved);
-        telemetryA.addData("deltaTotal", deltaTotal);
+//        telemetryA.addData("Distance Moved", distanceMoved);
+        telemetryA.addData("stallDeltaTotal", stallDeltaTotal);
         /*telemetryA.addData("minDelta", minDelta);
         //robotStalled = false;*/
         telemetryA.addData("robotStalled", robotStalled);
@@ -593,15 +608,21 @@ public class RightAutotestPushThree20166 extends OpMode {
 
 //        if (gamepad1.a)
 //            follower.breakFollowing();
-        telemetryA.addData("Timer", timeoutTimer.time());
+//        telemetryA.addData("Timer", timeoutTimer.time());
         telemetryA.addData("Current state",currentAutonomousState);
         telemetryA.addData("Elevator target: ", robotElevator.getTarget());
         telemetryA.addData("Elevator current: ", robotElevator.getPosition());
-        telemetryA.addData("Test X: ", testX);
-        telemetryA.addData("Test Y: ", testY);
+        telemetryA.addData("StallX", stallX);
+        telemetryA.addData("StallY", stallY);
+        telemetryA.addData("StallT", stallT);
+
+
+
+//        telemetryA.addData("Test X: ", testX);
+//        telemetryA.addData("Test Y: ", testY);
 //        telemetryA.addData("Target2 X: ", test2X);
 //        telemetryA.addData("Target2 Y: ", test2Y);
-        telemetryA.addData("Test Heading: ", testHeading);
+//        telemetryA.addData("Test Heading: ", testHeading);
         follower.telemetryDebug(telemetryA);
     }
 }
