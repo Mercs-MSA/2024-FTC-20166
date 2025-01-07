@@ -188,7 +188,15 @@ public class RightAutotestPushThree20166 extends OpMode {
     @Override
     public void init()
     {
-        follower = new Follower(hardwareMap);
+        try {
+            robotRobotID = new SubSystemRobotID(hardwareMap);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
+
+        follower = new Follower(hardwareMap, robotConstants.DRIVE_DIRECTION);
         follower.setStartingPose(startingPoseRight);
         follower.update();
 
@@ -210,24 +218,12 @@ public class RightAutotestPushThree20166 extends OpMode {
             return new Pose(x, y, Math.toRadians(headingInDegrees));
     }
     private void initializeSubSystems() throws InterruptedException {
-        robotRobotID = new SubSystemRobotID(hardwareMap);
-        robotID = robotRobotID.getRobotID();
-        robotConstants = new RobotConstants(robotID);
-
-        if (robotID == 2)
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
-        else
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
-
+        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, robotConstants.ELEVATOR_MOTOR_COUNT);
         robotGrabber = new SubSystemGrabber(hardwareMap, 2);
-
-
-        //robotIntake = new SubSystemIntake(hardwareMap);
-
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
-        robotIntakeArm.setPosition(robotConstants.INTAKE_ARM_START_POSITION);
+        robotIntakeArm.setPositionNow(robotConstants.INTAKE_ARM_START_POSITION);
         robotIntakeSlide= new SubSystemIntakeSlide(hardwareMap);
-        robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_START_POSITION);
+        robotIntakeSlide.setPositionNow(robotConstants.INTAKE_SLIDE_START_POSITION);
         robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
         robotIntakePivot.setPosition(robotConstants.INTAKE_PIVOT_START_POSITION);
     }
@@ -255,12 +251,27 @@ public class RightAutotestPushThree20166 extends OpMode {
  //           pathChainToFollow.getPath(i).setLinearHeadingInterpolation(currentHeading, endHeading);
  //       }
     }
+    void updateTelemetry()
+    {
+        telemetryA.addData("RobotID", robotID);
+//        telemetryA.addData("Timer", timeoutTimer.time());
+        telemetryA.addData("Current state",currentAutonomousState);
+        telemetryA.addData("Elevator target: ", robotElevator.getTarget());
+        telemetryA.addData("Elevator current: ", robotElevator.getPosition());
+        telemetryA.addData("StallX", stallX);
+        telemetryA.addData("StallY", stallY);
+        telemetryA.addData("StallT", stallT);
+        telemetryA.addData("stallDeltaTotal", stallDeltaTotal);
+        telemetryA.addData("minDelta", minDelta);
+
+        follower.telemetryDebug(telemetryA);
+    }
     @Override
     public void init_loop()
     {
         robotID = robotRobotID.getRobotID();
-        telemetryA.addData("RobotID", robotID);
-        telemetryA.update();
+        checkIfStalled();
+        updateTelemetry();
     }
 
     private void restartTimeout(int timeout)
@@ -590,11 +601,6 @@ public class RightAutotestPushThree20166 extends OpMode {
                 robotStalled = false;
 
         }
-//        telemetryA.addData("Distance Moved", distanceMoved);
-        telemetryA.addData("stallDeltaTotal", stallDeltaTotal);
-        /*telemetryA.addData("minDelta", minDelta);
-        //robotStalled = false;*/
-        telemetryA.addData("robotStalled", robotStalled);
     }
 
 
@@ -605,24 +611,6 @@ public class RightAutotestPushThree20166 extends OpMode {
 
         robotIntakeSlide.updateServoPosition();
         robotIntakeArm.updateArmPosition();
-
-//        if (gamepad1.a)
-//            follower.breakFollowing();
-//        telemetryA.addData("Timer", timeoutTimer.time());
-        telemetryA.addData("Current state",currentAutonomousState);
-        telemetryA.addData("Elevator target: ", robotElevator.getTarget());
-        telemetryA.addData("Elevator current: ", robotElevator.getPosition());
-        telemetryA.addData("StallX", stallX);
-        telemetryA.addData("StallY", stallY);
-        telemetryA.addData("StallT", stallT);
-
-
-
-//        telemetryA.addData("Test X: ", testX);
-//        telemetryA.addData("Test Y: ", testY);
-//        telemetryA.addData("Target2 X: ", test2X);
-//        telemetryA.addData("Target2 Y: ", test2Y);
-//        telemetryA.addData("Test Heading: ", testHeading);
-        follower.telemetryDebug(telemetryA);
+        updateTelemetry();
     }
 }

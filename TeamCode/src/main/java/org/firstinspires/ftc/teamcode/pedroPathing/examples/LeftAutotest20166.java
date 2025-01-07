@@ -132,7 +132,15 @@ private static final int xOffset = 6;
     @Override
     public void init()
     {
-        follower = new Follower(hardwareMap);
+        try {
+            robotRobotID = new SubSystemRobotID(hardwareMap);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
+
+        follower = new Follower(hardwareMap, robotConstants.DRIVE_DIRECTION);
         follower.setStartingPose(startingPoseLeft);
         try {
             initializeSubSystems();
@@ -163,20 +171,9 @@ private static final int xOffset = 6;
         submersibleToSpikePathSegment12.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(270), 0.7);
     }
     private void initializeSubSystems() throws InterruptedException {
-        robotRobotID = new SubSystemRobotID(hardwareMap);
-        robotID = robotRobotID.getRobotID();
-        robotConstants = new RobotConstants(robotID);
 
-        if (robotID == 2)
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
-        else
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
-
+        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, robotConstants.ELEVATOR_MOTOR_COUNT);
         robotGrabber = new SubSystemGrabber(hardwareMap, 1);
-
-
-        //robotIntake = new SubSystemIntake(hardwareMap);
-
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
     }
 

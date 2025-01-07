@@ -142,13 +142,16 @@ public class Follower {
     public static boolean useHeading = true;
     public static boolean useDrive = true;
 
+    private int driveDirection = 0;
+
     /**
      * This creates a new Follower given a HardwareMap.
      *
      * @param hardwareMap HardwareMap required
      */
-    public Follower(HardwareMap hardwareMap) {
+    public Follower(HardwareMap hardwareMap, int driveDirection) {
         this.hardwareMap = hardwareMap;
+        this.driveDirection = driveDirection;
         initialize();
     }
 
@@ -168,8 +171,18 @@ public class Follower {
         rightFront = hardwareMap.get(DcMotorEx.class, rightFrontMotorName);
 
         // TODO: Make sure that this is the direction your motors need to be reversed in.
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        // In 20166's case we depend on RobotID to determine which direction the motors need to be set
+        // GoBilda and Swyft have oppisite configurations
+        if (driveDirection == 1)
+        {
+            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+        else
+        {
+            rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
         motors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
 
@@ -927,7 +940,7 @@ public class Follower {
      */
     public void telemetryDebug(MultipleTelemetry telemetry) {
         telemetry.addData("follower busy", isBusy());
-        telemetry.addData("heading error", Math.toDegrees(headingError));
+        telemetry.addData("heading error degrees", Math.toDegrees(headingError));
         telemetry.addData("heading vector magnitude", headingVector.getMagnitude());
         //telemetry.addData("corrective vector magnitude", correctiveVector.getMagnitude());
         //telemetry.addData("corrective vector heading", correctiveVector.getTheta());
@@ -942,8 +955,8 @@ public class Follower {
         //telemetry.addData("drive vector heading", driveVector.getTheta());
         telemetry.addData("x", getPose().getX());
         telemetry.addData("y", getPose().getY());
-        telemetry.addData("heading", Math.toDegrees(getPose().getHeading()));
-        telemetry.addData("total heading", Math.toDegrees(poseUpdater.getTotalHeading()));
+        telemetry.addData("heading degrees", Math.toDegrees(getPose().getHeading()));
+//        telemetry.addData("total heading", Math.toDegrees(poseUpdater.getTotalHeading()));
         //telemetry.addData("velocity magnitude", getVelocity().getMagnitude());
         //telemetry.addData("velocity heading", getVelocity().getTheta());
         driveKalmanFilter.debug(telemetry);

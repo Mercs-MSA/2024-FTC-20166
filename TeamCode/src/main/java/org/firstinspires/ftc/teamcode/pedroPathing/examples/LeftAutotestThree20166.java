@@ -195,7 +195,15 @@ public class LeftAutotestThree20166 extends OpMode {
     @Override
     public void init()
     {
-        follower = new Follower(hardwareMap);
+        try {
+            robotRobotID = new SubSystemRobotID(hardwareMap);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
+
+        follower = new Follower(hardwareMap, robotConstants.DRIVE_DIRECTION);
         follower.setStartingPose(startingPoseLeftThree);
         follower.update();
 
@@ -215,25 +223,13 @@ public class LeftAutotestThree20166 extends OpMode {
             return new Pose(x, y, Math.toRadians(headingInDegrees));
     }
     private void initializeSubSystems() throws InterruptedException {
-        robotRobotID = new SubSystemRobotID(hardwareMap);
-        robotID = robotRobotID.getRobotID();
-        robotConstants = new RobotConstants(robotID);
 
-        if (robotID == 2)
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
-        else
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
-
+        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, robotConstants.ELEVATOR_MOTOR_COUNT);
         robotGrabber = new SubSystemGrabber(hardwareMap, 2);
-
-
-        //robotIntake = new SubSystemIntake(hardwareMap);
-
-
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
-        robotIntakeArm.setPosition(robotConstants.INTAKE_ARM_START_POSITION);
+        robotIntakeArm.setPositionNow(robotConstants.INTAKE_ARM_START_POSITION);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
-        robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_START_POSITION);
+        robotIntakeSlide.setPositionNow(robotConstants.INTAKE_SLIDE_START_POSITION);
         robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
         robotIntakePivot.setPosition(robotConstants.INTAKE_PIVOT_START_POSITION);
     }

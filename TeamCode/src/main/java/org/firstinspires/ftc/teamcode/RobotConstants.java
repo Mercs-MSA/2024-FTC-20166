@@ -9,6 +9,7 @@ public class RobotConstants
     public static final double OBSERVATION_TO_SUBMERSIBLE_SPEED = 1;
     public static double ELEVATOR_MULTIPLIER;
     public static int DRIVE_DIRECTION;
+    public static int ELEVATOR_MOTOR_COUNT;
     public static final int ELEVATOR_BOTTOM_POSITION = 0;//Lowest position, on the floor
     public static final int ELEVATOR_TOP_RUNG_PLACE = -2000;//Upper rung starting position
 
@@ -65,7 +66,7 @@ public class RobotConstants
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.9;
             DRIVE_DIRECTION = 1;
-
+            ELEVATOR_MOTOR_COUNT = 1;
         } else if (robotId == 1)
         { //Bot C (V2)
             ELEVATOR_MULTIPLIER = -0.96;
@@ -73,6 +74,7 @@ public class RobotConstants
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 1;
             DRIVE_DIRECTION = 1;
+            ELEVATOR_MOTOR_COUNT = 1;
         } else
         { //Bot B (V3)
             ELEVATOR_MULTIPLIER = 0.96;
@@ -80,6 +82,7 @@ public class RobotConstants
             BASKET_TO_SAMPLE_SPEED = 0.7;
             SUBMERSIBLE_TO_PUSH_SPEED = 0.7;
             DRIVE_DIRECTION = -1;
+            ELEVATOR_MOTOR_COUNT = 2;
         }
     }
 }

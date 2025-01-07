@@ -178,7 +178,15 @@ public class RightAutotestPushTwo20166 extends OpMode {
     @Override
     public void init()
     {
-        follower = new Follower(hardwareMap);
+        try {
+            robotRobotID = new SubSystemRobotID(hardwareMap);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
+
+        follower = new Follower(hardwareMap, robotConstants.DRIVE_DIRECTION);
         follower.setStartingPose(startingPoseRight);
         follower.update();
 
@@ -198,20 +206,8 @@ public class RightAutotestPushTwo20166 extends OpMode {
             return new Pose(x, y, Math.toRadians(headingInDegrees));
     }
     private void initializeSubSystems() throws InterruptedException {
-        robotRobotID = new SubSystemRobotID(hardwareMap);
-        robotID = robotRobotID.getRobotID();
-        robotConstants = new RobotConstants(robotID);
-
-        if (robotID == 2)
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
-        else
-            robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 1);
-
+        robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, robotConstants.ELEVATOR_MOTOR_COUNT);
         robotGrabber = new SubSystemGrabber(hardwareMap, 2);
-
-
-        //robotIntake = new SubSystemIntake(hardwareMap);
-
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
     }
 

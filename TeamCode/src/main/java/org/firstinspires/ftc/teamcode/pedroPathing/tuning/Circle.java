@@ -42,7 +42,7 @@ public class Circle extends OpMode {
      */
     @Override
     public void init() {
-        follower = new Follower(hardwareMap);
+        follower = new Follower(hardwareMap, 1);
 
         circle = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(0,0, Point.CARTESIAN), new Point(RADIUS,0, Point.CARTESIAN), new Point(RADIUS, RADIUS, Point.CARTESIAN)))
