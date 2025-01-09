@@ -258,6 +258,7 @@ public class RightAutotestPushThree20166 extends OpMode {
         telemetryA.addData("Current state",currentAutonomousState);
         telemetryA.addData("Elevator target: ", robotElevator.getTarget());
         telemetryA.addData("Elevator current: ", robotElevator.getPosition());
+        telemetryA.addData("Left grabber position: ", robotGrabber.getLeftPosition());
         telemetryA.addData("StallX", stallX);
         telemetryA.addData("StallY", stallY);
         telemetryA.addData("StallT", stallT);
@@ -306,7 +307,6 @@ public class RightAutotestPushThree20166 extends OpMode {
     {
         if (hasTimededout())
         {
-            robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
             robotIntakeSlide.setPosition(robotConstants.INTAKE_SLIDE_SAFE_POSITION);
             follower.setMaxPower(robotConstants.START_TO_SUBMERSIBLE_SPEED);
             setPathFromCurrentPositionToTargetPose(specimenZeroHangPose);
