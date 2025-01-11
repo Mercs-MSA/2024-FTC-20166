@@ -583,10 +583,10 @@ public class V3RightAuton1 extends OpMode {
                 distanceMovedHeading = distanceMovedHeading - (2*Math.PI);
             }
             lastHeading = currentHeading;
-            distanceMoved = Math.abs(distanceMovedX) + Math.abs(distanceMovedY) + (distanceMovedHeading * 5);
             stallX = Math.abs(distanceMovedX);
             stallY = Math.abs(distanceMovedY);
-            stallT = Math.abs(distanceMovedHeading * 5);
+            stallT = Math.abs(distanceMovedHeading * 50);
+            distanceMoved = stallX + stallY + stallT;
             stallDeltaTotal = deltaTotal/10;
 
             deltaTotal = deltaTotal - deltaTracking[stallIndex] + distanceMoved;
