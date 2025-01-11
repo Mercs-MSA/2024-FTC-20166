@@ -101,7 +101,7 @@ public class FollowerConstants {
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
-    public static double forwardZeroPowerAcceleration = -25;//Was -24.62719 //12/7 chang to 1?
+    public static double forwardZeroPowerAcceleration = -50;//Was -24.62719 //12/7 chang to 1?      //v2-was -25
 
     // Acceleration of the drivetrain when power is cut in inches/second^2 (should be negative)
     // if not negative, then the robot thinks that its going to go faster under 0 power
