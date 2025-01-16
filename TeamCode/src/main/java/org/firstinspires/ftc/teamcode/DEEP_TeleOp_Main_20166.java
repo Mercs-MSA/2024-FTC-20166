@@ -303,7 +303,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         elevatorMoveTop = gamepad2.dpad_up;
         elevatorMoveLow = gamepad2.dpad_left;
         elevatorMoveHigh = gamepad2.dpad_right;
-        elevatorMode = gamepad2.left_bumper;
+        elevatorMode = gamepad2.left_bumper; //comment
 
         grabberOpen = gamepad2.x;
         grabberClose = gamepad2.b;
