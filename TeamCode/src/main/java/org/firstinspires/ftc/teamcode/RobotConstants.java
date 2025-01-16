@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.robot.Robot;
 @Config
 public class RobotConstants
 {
+
+    public static final double STALL_X_DISREGARD_THRESHOLD = 2;
+    public static final double STALL_Y_DISREGARD_THRESHOLD = 2;
+    public static final double STALL_T_DISREGARD_THRESHOLD = 2;
+
+
     public static final double OBSERVATION_TO_SUBMERSIBLE_SPEED = 1;
     public static double ELEVATOR_MULTIPLIER;
     public static int DRIVE_DIRECTION;

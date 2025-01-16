@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.examples;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.STALL_T_DISREGARD_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.RobotConstants.STALL_X_DISREGARD_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.RobotConstants.STALL_Y_DISREGARD_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPoseRight;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -46,8 +49,11 @@ public class V3RightAuton1 extends OpMode {
 
 
     public double stallX = 0;
+    public double previousStallX = 0;
     public double stallY = 0;
+    public double previousStallY = 0;
     public double stallT = 0;
+    public double previousStallT = 0;
     public double stallDeltaTotal;
 
     private int robotID;
@@ -565,11 +571,24 @@ public class V3RightAuton1 extends OpMode {
     private double minDelta = 1000;
 
     public boolean robotStalled = false;
+
     public void checkIfStalled()
     {
         double distanceMoved = 0;
         if (follower.isBusy()) {
             double currentX = follower.getPose().getX();
+            if (Math.abs(currentX - previousStallX) > STALL_X_DISREGARD_THRESHOLD)
+            {
+                currentX  = previousStallX;
+            }
+            if (Math.abs(currentX - previousStallX) > STALL_Y_DISREGARD_THRESHOLD)
+            {
+                currentX  = previousStallX;
+            }
+            if (Math.abs(currentX - previousStallX) > STALL_T_DISREGARD_THRESHOLD)
+            {
+                currentX  = previousStallX;
+            }
             double distanceMovedX = currentX - lastX;
             lastX = currentX;
             double currentY = follower.getPose().getY();
@@ -588,8 +607,8 @@ public class V3RightAuton1 extends OpMode {
             stallT = Math.abs(distanceMovedHeading * 50);
             distanceMoved = stallX + stallY + stallT;
             stallDeltaTotal = deltaTotal/10;
-
             deltaTotal = deltaTotal - deltaTracking[stallIndex] + distanceMoved;
+
             if (deltaTotal < minDelta)
                 minDelta = deltaTotal;
             deltaTracking[stallIndex] = distanceMoved;

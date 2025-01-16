@@ -19,6 +19,7 @@ package org.firstinspires.ftc.teamcode;
 // leftIntakeServo           expansion          servo 2                 leftIntakeServo
 // rightIntakeServo          expansion          servo 3                 rightIntakeServo
 
+//OTOS                       control            i2bus 1                 OTOS sensor
 // colorSensor               control            i2Bus 2                 color sensor
 // limitSwitch               control            digital 0               limitSwitch digital channel
 // limitSwitchTwo            control            digital 1               limitSwitchTwo digital channel
