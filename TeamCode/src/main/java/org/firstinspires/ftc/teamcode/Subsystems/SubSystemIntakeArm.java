@@ -28,8 +28,8 @@ public class SubSystemIntakeArm {
     public void setPositionNow(double position) {
         currentArmServoPosition = position;
         targetArmServoPosition = position;
-        leftServo.setPosition(1 - currentArmServoPosition);
-        rightServo.setPosition(currentArmServoPosition);
+        rightServo.setPosition(1 - currentArmServoPosition);
+        leftServo.setPosition(currentArmServoPosition);
     }
 
     public void updateArmPosition() {
@@ -44,8 +44,8 @@ public class SubSystemIntakeArm {
                 currentArmServoPosition = targetArmServoPosition;
             }
         }
-        leftServo.setPosition(1 - currentArmServoPosition);
-        rightServo.setPosition(currentArmServoPosition);
+        rightServo.setPosition(1 - currentArmServoPosition);
+        leftServo.setPosition(currentArmServoPosition);
 
     }
 

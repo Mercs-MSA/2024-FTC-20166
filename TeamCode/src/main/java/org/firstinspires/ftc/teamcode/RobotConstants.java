@@ -20,7 +20,7 @@ public class RobotConstants
     public static final int ELEVATOR_TOP_RUNG_PLACE = -2000;//Upper rung starting position
 
     public static final int ELEVATOR_TOP_RUNG_RELEASE = -1700;//Upper rung pull down position
-    public static final int ELEVATOR_TOP_BASKET = -3900;//Top basket location
+    public static final int ELEVATOR_TOP_BASKET = -3670;//Top basket location
     public static final int ELEVATOR_LOW_BASKET = -2550;//Low basket location
     public static final int ELEVATOR_TRANSFER_SAMPLE_POSITION = -253;//sample transfer height
     public static final int LEFT_AUTON_DELAY = 0; //Delay in ms
@@ -40,27 +40,26 @@ public class RobotConstants
     public static final double GRABBER_OPEN_POSITION = 0.7;
     public static final double GRABBER_CLOSE_POSITION = 0.95;
     public static double INTAKE_ARM_TRANSFER_SAMPLE_POSITION = 0.23;
-    public static double INTAKE_ARM_UP_POSITION = 0.2;
-    public static double INTAKE_ARM_DOWN_POSITION = 0.68;
+    public static double INTAKE_ARM_UP_POSITION = 0;
+    public static double INTAKE_ARM_DOWN_POSITION = 0.72;
 
     public static double START_TO_SUBMERSIBLE_SPEED;
     public static  double SUBMERSIBLE_TO_PUSH_SPEED;
     public static double BASKET_TO_SAMPLE_SPEED;
 
-    public static final double INTAKE_ROLLER_OUT_SPEED = 1;
-    public static final double INTAKE_ROLLER_IN_SPEED = -1;
-    public static final double INTAKE_ROLLER_HOLD_SPEED = -0.2;
-    public static double STALL_THRESHOLD; //was 0.2
-    public static final double PIVOT_INTAKE_PICKUP = 0.8;
-    public static final double PIVOT_INTAKE_DEPOSIT = 0.3;
-    public static final double PIVOT_INTAKE_IDLE = 0.8;
+    public static  double INTAKE_ROLLER_OUT_SPEED = 1;
+    public static  double INTAKE_ROLLER_IN_SPEED = -1;
+    public static  double INTAKE_ROLLER_HOLD_SPEED = -0.2;
+    public static double STALL_THRESHOLD;
+    public static double INTAKE_PIVOT_PICKUP_POSITION = 0.4;
+    public static double INTAKE_PIVOT_IDLE_POSITION = 0.5;
     public static final int STALL_SAMPLE_COUNT = 10;
-//    public static final double INTAKE_SLIDE_MAX_POSITION = 0.8;
-//    public static final double INTAKE_SLIDE_MIN_POSITION = 0.25;
-    public static final double INTAKE_SLIDE_SAFE_POSITION = 0.5;
-    public static final double INTAKE_SLIDE_START_POSITION = 0.0;
-    public static final double INTAKE_ARM_START_POSITION = 0.0;
-    public static final double INTAKE_PIVOT_START_POSITION = 0.0;
+    public static double INTAKE_SLIDE_MAX_POSITION = 0.78;
+    public static double INTAKE_SLIDE_MIN_POSITION = 0;
+    public static double INTAKE_SLIDE_SAFE_POSITION = 0.3;
+    public static double INTAKE_SLIDE_START_POSITION = 0.22;
+    public static double INTAKE_ARM_START_POSITION = 0.0;
+    public static double INTAKE_PIVOT_START_POSITION = 0.0;
 
 
     public RobotConstants(int robotId)

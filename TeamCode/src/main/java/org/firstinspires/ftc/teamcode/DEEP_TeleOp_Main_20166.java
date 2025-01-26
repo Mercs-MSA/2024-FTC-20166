@@ -154,6 +154,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private void initializeSubSystems() throws InterruptedException {
         robotRobotID = new SubSystemRobotID(hardwareMap);
         robotID = robotRobotID.getRobotID();
+        robotConstants = new RobotConstants(robotID);
 
         if (robotID == 2)
             robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, 2);
@@ -166,7 +167,6 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
 //        intakePivot = hardwareMap.get(Servo.class, "intakePivot");
         //intakePivot.setPosition(0.5);
-        robotConstants = new RobotConstants(robotID);
     }
 
     private void initializeLEDs(){
@@ -215,16 +215,12 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         //return orientation.getYaw(AngleUnit.RADIANS);
         return Math.toRadians(getHeadingDegrees());
-
-
-
     }
 
     public double getHeadingDegrees() {
         //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
        // return orientation.getYaw(AngleUnit.DEGREES);
         SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-
         return pos.h;
     }
 
@@ -303,7 +299,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         elevatorMoveTop = gamepad2.dpad_up;
         elevatorMoveLow = gamepad2.dpad_left;
         elevatorMoveHigh = gamepad2.dpad_right;
-        elevatorMode = gamepad2.left_bumper; //comment
+        elevatorMode = gamepad2.left_bumper;
 
         grabberOpen = gamepad2.x;
         grabberClose = gamepad2.b;
@@ -333,7 +329,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         if (spatulaMoveDown)
         {
             intakeArmPosition = robotConstants.INTAKE_ARM_DOWN_POSITION;
-            intakePivotPosition = robotConstants.PIVOT_INTAKE_PICKUP;
+            intakePivotPosition = robotConstants.INTAKE_PIVOT_PICKUP_POSITION;
             intakeOverride = true;
 
         }
@@ -344,7 +340,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         }*/
         else {
             intakeArmPosition = robotConstants.INTAKE_ARM_UP_POSITION;
-            intakePivotPosition = robotConstants.PIVOT_INTAKE_IDLE;
+            intakePivotPosition = robotConstants.INTAKE_PIVOT_IDLE_POSITION;
             intakeOverride = false;
         }
         robotIntakeArm.setPosition(intakeArmPosition);

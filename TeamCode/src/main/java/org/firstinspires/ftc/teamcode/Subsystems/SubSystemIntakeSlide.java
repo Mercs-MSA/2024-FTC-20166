@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.opencv.core.Mat;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 
 public class SubSystemIntakeSlide
 {
@@ -23,8 +21,6 @@ public class SubSystemIntakeSlide
         intakeSlideServo = hardwareMap.get(Servo.class, "intakeSlideServo");
     }
 
-    public double min = 0.25;
-    public double max = 0.8;
 
     public void setPosition(double position)
     {
@@ -36,7 +32,7 @@ public class SubSystemIntakeSlide
         {
             position = 1;
         }
-        targetServoPosition = min+((max-min) * position);
+        targetServoPosition = RobotConstants.INTAKE_SLIDE_MIN_POSITION +((RobotConstants.INTAKE_SLIDE_MAX_POSITION - RobotConstants.INTAKE_SLIDE_MIN_POSITION) * position);
     }
 
     public void setPositionNow(double position)
@@ -52,7 +48,7 @@ public class SubSystemIntakeSlide
         currentServoPosition = position;
         targetServoPosition = position;
 
-        intakeSlideServo.setPosition(currentServoPosition);
+        intakeSlideServo.setPosition(1.0-currentServoPosition);
 
     }
     public void updateServoPosition()
@@ -74,7 +70,7 @@ public class SubSystemIntakeSlide
             }
         }
 
-        intakeSlideServo.setPosition(currentServoPosition);
+        intakeSlideServo.setPosition(1.0-currentServoPosition);
 
     }
 

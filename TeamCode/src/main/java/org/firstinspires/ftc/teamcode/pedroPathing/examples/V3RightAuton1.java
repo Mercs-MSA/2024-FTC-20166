@@ -102,9 +102,9 @@ public class V3RightAuton1 extends OpMode {
     public static final double pushAlignY = -12.8;
     public static final double pushObservationY = -43.5;//Was -44;
     public static final double behindSamples = -16.5;
-    public static final double sample1X = 43;
+    public static final double sample1X = 43;//was 43
     public static final double submersibleDropOffY = -31.8;
-    public static final double sample2X = 53;
+    public static final double sample2X = 48;//was 53
     public static final double sample3X = 51;
 
     public double listLastSegmentSpeed = 0.8;
@@ -119,10 +119,10 @@ public class V3RightAuton1 extends OpMode {
 
     //New Poses for submersible to spikes ready to push into human player area
 
-    public static final Pose awayFromSubmersible = pointAndHeadingToPose(-2.5, -34, 90);//Moves back from submersible
-    public static final Pose awayFromSubmersible2 = pointAndHeadingToPose(34.7, -33.2, 90);
+    public static final Pose awayFromSubmersible = pointAndHeadingToPose(-2.5, -36.5, 90);//Moves back from submersible
+    public static final Pose awayFromSubmersible2 = pointAndHeadingToPose(34.7, -36.5, 90);
     //public static final Pose submersibleToSpike1 = pointAndHeadingToPose(34.42,-49.88 , 90);//First point to move away from sub
-    public static final Pose submersibleToSpike2 = pointAndHeadingToPose(37.4, behindSamples, 90);//Slide right ready to move behind samples
+    public static final Pose submersibleToSpike2 = pointAndHeadingToPose(33, behindSamples, 90);//Slide right ready to move behind samples
     public static final Pose submersibleToSpike3 = pointAndHeadingToPose(sample1X , behindSamples, 90);//Drive forward so behind samples
     public static final Pose submersibleToSpike3Push2Samples = pointAndHeadingToPose(51, behindSamples, 90);//NEW POINT
     public static final Pose submersibleToSpike4 = pointAndHeadingToPose(sample1X, pushObservationY , 90);//Push sample 1 to observation zone
