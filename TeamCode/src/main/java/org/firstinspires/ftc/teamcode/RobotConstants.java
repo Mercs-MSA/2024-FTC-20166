@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.robot.Robot;
 public class RobotConstants
 {
 
-    public static final double STALL_X_DISREGARD_THRESHOLD = 2;
-    public static final double STALL_Y_DISREGARD_THRESHOLD = 2;
-    public static final double STALL_T_DISREGARD_THRESHOLD = 2;
+    public static final double STALL_X_DISREGARD_THRESHOLD = 10;
+    public static final double STALL_Y_DISREGARD_THRESHOLD = 10;
+    public static final double STALL_T_DISREGARD_THRESHOLD = 10;
 
 
     public static final double OBSERVATION_TO_SUBMERSIBLE_SPEED = 1;
@@ -61,6 +61,11 @@ public class RobotConstants
     public static double INTAKE_ARM_START_POSITION = 0.0;
     public static double INTAKE_PIVOT_START_POSITION = 0.0;
 
+    public static int CLIMBER_UP_POSITION = 4120;
+    public static int CLIMBER_HANG_POSITION = 2650;
+
+    public static int CLIMBER_SPEED = 100;
+
 
     public RobotConstants(int robotId)
     {
@@ -84,7 +89,7 @@ public class RobotConstants
             ELEVATOR_MOTOR_COUNT = 1;
         } else
         { //Bot B (V3)
-            STALL_THRESHOLD = 0.02;
+            STALL_THRESHOLD = 0.3;
             ELEVATOR_MULTIPLIER = 0.96;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
             BASKET_TO_SAMPLE_SPEED = 0.7;

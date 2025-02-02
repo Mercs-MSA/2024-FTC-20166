@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemClimb;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntake;
@@ -91,6 +92,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private SubSystemIntakePivot robotIntakePivot = null;
     private SubSystemRobotID robotRobotID = null;
 
+    private SubSystemClimb robotClimber = null;
+
 
 
     RevBlinkinLedDriver blinkinLedDriver;
@@ -101,6 +104,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private float intakeOut;
     private boolean spatulaMoveDown = false;
     public boolean intakeOverride = false;
+
+    public int climberCurrentPosition;
+    public int climberDirection = 0;
 
     private int robotID = 0;
 
@@ -165,6 +171,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotIntakeArm = new SubSystemIntakeArm(hardwareMap);
         robotIntakeSlide = new SubSystemIntakeSlide(hardwareMap);
         robotIntakePivot = new SubSystemIntakePivot(hardwareMap);
+        robotClimber = new SubSystemClimb(hardwareMap);
 //        intakePivot = hardwareMap.get(Servo.class, "intakePivot");
         //intakePivot.setPosition(0.5);
     }
@@ -312,6 +319,13 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
             intakeSpeed = robotConstants.INTAKE_ROLLER_IN_SPEED;
         else
             intakeSpeed = robotConstants.INTAKE_ROLLER_HOLD_SPEED;
+
+//        if (gamepad2.y) if the arm is not completely down to drop specimen, the intake rollers will not drop it
+        // if (targetArmServoPosition == currentArmServoPosition)
+//        {
+//            intakeSpeed = robotConstants.INTAKE_ROLLER_OUT_SPEED;
+//        }
+
         //buttons
 //        if(gamepad1.guide && gamepad2.guide) {
 //            imu.resetYaw();
@@ -321,6 +335,23 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
         //Spatula
         spatulaMoveDown = gamepad2.right_bumper;
+
+        //Climb
+
+        if (gamepad1.y)
+        {
+            climberDirection = 1;
+        }
+        else if (gamepad1.a)
+        {
+            climberDirection = -1;
+        }
+        else
+        {
+            climberDirection = 0;
+        }
+
+
 
     }
 
@@ -365,6 +396,20 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         robotIntakeSlide.updateServoPosition();
     }
 
+    private void updateClimber()
+    {
+        climberCurrentPosition = robotClimber.getPosition();
+
+        if ((climberDirection == 1) && (climberCurrentPosition < robotConstants.CLIMBER_UP_POSITION))
+        {
+            robotClimber.setPosition(climberCurrentPosition + robotConstants.CLIMBER_SPEED);
+        }
+        else if ((climberDirection == -1) && (climberCurrentPosition > 0))
+        {
+            robotClimber.setPosition(climberCurrentPosition - robotConstants.CLIMBER_SPEED);
+        }
+
+    }
     private void updateDashboard()
     {
 //        telemetry.addData("FL",frontLeftDrive.getCurrentPosition());
@@ -379,7 +424,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
         telemetry.addLine("\n");
         telemetry.addData("Sample detected", getSampleColor());
-        telemetry.addData("ID Status", robotRobotID.getRobotDigital());
+
+        telemetry.addData("Climb position", climberCurrentPosition);
+        telemetry.addData("Climb direction", climberDirection);
 
 /*
         telemetry.addLine("\n");
@@ -669,7 +716,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void updateIntake()
     {
-        if (intakeOverride)
+        if (intakeSpeed == robotConstants.INTAKE_ROLLER_OUT_SPEED)
+            robotIntake.setSpeed(intakeSpeed);
+        else if (intakeOverride)
             robotIntake.setSpeed(robotConstants.INTAKE_ROLLER_IN_SPEED);
         else
             robotIntake.setSpeed(intakeSpeed);
@@ -696,6 +745,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
                 updateIntake();
                 updateIntakeArm();
                 updateIntakeSlide();
+                updateClimber();
             }
             processStateMachine();
             updateDashboard();

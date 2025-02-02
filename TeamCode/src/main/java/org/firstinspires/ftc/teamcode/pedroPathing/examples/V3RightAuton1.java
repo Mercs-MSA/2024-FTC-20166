@@ -271,7 +271,12 @@ public class V3RightAuton1 extends OpMode {
         telemetryA.addData("StallX", stallX);
         telemetryA.addData("StallY", stallY);
         telemetryA.addData("StallT", stallT);
+        telemetryA.addData("distanceMovedX", distanceMovedX);
+        telemetryA.addData("distanceMovedY", distanceMovedY);
+        telemetryA.addData("distanceMovedHeading", distanceMovedHeading);
+
         telemetryA.addData("stallDeltaTotal", stallDeltaTotal);
+
         telemetryA.addData("minDelta", minDelta);
 
         follower.telemetryDebug(telemetryA);
@@ -570,6 +575,10 @@ public class V3RightAuton1 extends OpMode {
     private double lastY = 0;
     private double minDelta = 1000;
 
+    double distanceMovedX;
+    double distanceMovedY;
+    double distanceMovedHeading;
+
     public boolean robotStalled = false;
 
     public void checkIfStalled()
@@ -577,36 +586,54 @@ public class V3RightAuton1 extends OpMode {
         double distanceMoved = 0;
         if (follower.isBusy()) {
             double currentX = follower.getPose().getX();
-            if (Math.abs(currentX - previousStallX) > STALL_X_DISREGARD_THRESHOLD)
+//            if (Math.abs(currentX - previousStallX) > STALL_X_DISREGARD_THRESHOLD)
+//            {
+//                currentX  = previousStallX;
+//            }
+//            if (Math.abs(currentY - previousStallY) > STALL_Y_DISREGARD_THRESHOLD)
+//            {
+//                currentX  = previousStallX;
+//            }
+//            if (Math.abs(currentX - previousStallX) > STALL_T_DISREGARD_THRESHOLD)
+//            {
+//                currentX  = previousStallX;
+//            }
+
+            distanceMovedX = Math.abs(currentX - lastX);
+
+            if (distanceMovedX > STALL_X_DISREGARD_THRESHOLD)
             {
-                currentX  = previousStallX;
+                //currentX = lastX;
             }
-            if (Math.abs(currentX - previousStallX) > STALL_Y_DISREGARD_THRESHOLD)
-            {
-                currentX  = previousStallX;
-            }
-            if (Math.abs(currentX - previousStallX) > STALL_T_DISREGARD_THRESHOLD)
-            {
-                currentX  = previousStallX;
-            }
-            double distanceMovedX = currentX - lastX;
+
             lastX = currentX;
             double currentY = follower.getPose().getY();
-            double distanceMovedY = currentY - lastY;
+            distanceMovedY = Math.abs(currentY - lastY);
+            if (distanceMovedY > STALL_Y_DISREGARD_THRESHOLD)
+            {
+                //currentY = lastY;
+            }
             lastY = currentY;
             double currentHeading = follower.getPose().getHeading();
-            double distanceMovedHeading = Math.abs(currentHeading - lastHeading);
-
+            distanceMovedHeading = Math.abs(currentHeading - lastHeading);
             if (distanceMovedHeading > 2*Math.PI)
             {
-                distanceMovedHeading = distanceMovedHeading - (2*Math.PI);
+                distanceMovedHeading = Math.abs(distanceMovedHeading - (2*Math.PI));
             }
+            distanceMovedHeading = distanceMovedHeading*50;
+            if (distanceMovedHeading > STALL_T_DISREGARD_THRESHOLD)
+            {
+                distanceMovedHeading = 0.2;
+                //currentHeading = lastHeading;
+            }
+
+
             lastHeading = currentHeading;
-            stallX = Math.abs(distanceMovedX);
-            stallY = Math.abs(distanceMovedY);
-            stallT = Math.abs(distanceMovedHeading * 50);
+            stallX = distanceMovedX;
+            stallY = distanceMovedY;
+            stallT = distanceMovedHeading;
             distanceMoved = stallX + stallY + stallT;
-            stallDeltaTotal = deltaTotal/10;
+            stallDeltaTotal = deltaTotal;
             deltaTotal = deltaTotal - deltaTracking[stallIndex] + distanceMoved;
 
             if (deltaTotal < minDelta)
@@ -621,6 +648,15 @@ public class V3RightAuton1 extends OpMode {
                 robotStalled = true;
             else
                 robotStalled = false;
+
+        }
+        else
+        {
+            lastX = follower.getPose().getX();
+            lastY = follower.getPose().getY();
+            lastHeading = follower.getPose().getHeading();
+
+
 
         }
     }
