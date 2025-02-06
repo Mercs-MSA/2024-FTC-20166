@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemClimb;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
@@ -21,15 +22,19 @@ public class MotorTest extends LinearOpMode {
     private DcMotorEx frontRightDrive = null;
     private DcMotorEx backLeftDrive = null;
     private DcMotorEx backRightDrive = null;
+    private DcMotorEx climber = null;
     private SubSystemGrabber robotGrabber = null;
     private SubSystemIntakeSlide robotIntakeSlide = null;
 
     private SubSystemIntakeArm robotIntakeArm = null;
     private SubSystemRobotID robotRobotID = null;
-
     private static final double GRABBER_OPEN_POSITION = 0.7;
     private static final double GRABBER_CLOSE_POSITION = 0.95;
     private int robotID = 0;
+
+
+
+
 
     public void initializeDriveMotors()
     {
@@ -77,12 +82,21 @@ private void initalizeGrabber() throws InterruptedException
      robotRobotID = new SubSystemRobotID(hardwareMap);
      robotID = robotRobotID.getRobotID();
  }
+
+ private void initializeClimb() throws InterruptedException
+ {
+     climber = hardwareMap.get(DcMotorEx.class, "climber");
+     climber.setDirection(DcMotorSimple.Direction.REVERSE);
+     climber.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+     climber.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+ }
     public void runOpMode() throws InterruptedException {
         initializeRobotID();
         initializeDriveMotors();
         initalizeGrabber();
         initalizeIntakeSlide();
         initalizeIntakePivot();
+        initializeClimb();
 
         waitForStart();
         while (opModeIsActive())
@@ -94,6 +108,7 @@ private void initalizeGrabber() throws InterruptedException
             telemetry.addData("BL (2)", backLeftDrive.getCurrentPosition());
             telemetry.addData("BR (3)", backRightDrive.getCurrentPosition());
             telemetry.addData("Robot ID", robotID);
+            telemetry.addData("Encoder value", climber.getCurrentPosition());
 
 
             if(gamepad1.x)
@@ -131,6 +146,18 @@ private void initalizeGrabber() throws InterruptedException
                 robotIntakeArm.setPosition(0.75);
                 telemetry.addData("Intake arm down", robotIntakeArm.getPosition());
             }
+            if (gamepad1.y)
+            {
+                climber.setPower(0.2);
+            }
+            else if (gamepad1.a)
+            {
+                climber.setPower(-0.2);
+            }
+            else {
+                climber.setPower(0);
+            }
+
 
             updateTelemetry(telemetry);
         }
