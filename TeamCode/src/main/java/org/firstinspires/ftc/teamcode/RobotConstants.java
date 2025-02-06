@@ -61,7 +61,7 @@ public class RobotConstants
     public static double INTAKE_ARM_START_POSITION = 0.0;
     public static double INTAKE_PIVOT_START_POSITION = 0.0;
 
-    public static int CLIMBER_UP_POSITION = 3400;
+    public static int CLIMBER_UP_POSITION = 3400; //
     public static int CLIMBER_HANG_POSITION = 2650;
 
     public static int CLIMBER_SPEED = 100;
