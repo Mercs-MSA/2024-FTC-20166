@@ -104,7 +104,7 @@ public class V3RightAuton1 extends OpMode {
     public static final double behindSamples = -16.5;
     public static final double sample1X = 43;//was 43
     public static final double submersibleDropOffY = -31.8;
-    public static final double sample2X = 48;//was 53
+    public static final double sample2X = 53;
     public static final double sample3X = 51;
 
     public double listLastSegmentSpeed = 0.8;

@@ -13,7 +13,7 @@ public class SubSystemIntakeSlide
 
     private double currentServoPosition = 0;
 
-    private double sliderSpeed = 0.01;
+    private double sliderSpeed = 0.03;
 
 
     public SubSystemIntakeSlide(HardwareMap hardwareMap) throws InterruptedException {

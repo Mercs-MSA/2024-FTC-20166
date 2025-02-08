@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 //config name                hub                slot                    description
 // Fl                        control            Motor 0                 frontLeft Drive motor
 // FR                        control            Motor 1                 frontRight Drive motor
@@ -35,9 +36,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemClimb;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemElevator;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemGrabber;
@@ -46,12 +50,15 @@ import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakePivot;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemIntakeSlide;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp
 public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     SparkFunOTOS myOtos;
 
+    ElapsedTime timer = new ElapsedTime();
     private RobotConstants robotConstants;
     private int elevatorMoveTo = 0;
     private double translateX;
@@ -68,6 +75,8 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private boolean grabberOpen;
     private boolean grabberClose;
+    NormalizedColorSensor colorSensor;
+
 
     private double intakeSpeed = 0;
     private double intakeArmPosition = 0;
@@ -83,6 +92,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private double intakeSlidePosition = 0;
 
+    private SubSystemRobotID robotRobotID = null;
 
     private SubSystemElevator robotElevator = null;
     private SubSystemGrabber robotGrabber = null;
@@ -90,13 +100,13 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
     private SubSystemIntake robotIntake = null;
     private SubSystemIntakeSlide robotIntakeSlide = null;
     private SubSystemIntakePivot robotIntakePivot = null;
-    private SubSystemRobotID robotRobotID = null;
 
     private SubSystemClimb robotClimber = null;
 
 
 
     RevBlinkinLedDriver blinkinLedDriver;
+    RevBlinkinLedDriver.BlinkinPattern pattern;
 
 
     private boolean driverAssistPickup = false;
@@ -140,6 +150,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void initializeSensors()
     {
+
         //Initialize gyro etc...
 //        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
 //        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
@@ -151,13 +162,15 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
         //Initialize the color sensor
 
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
 
-        //Initialize distance sensors
+
 
 
     }
 
     private void initializeSubSystems() throws InterruptedException {
+
         robotRobotID = new SubSystemRobotID(hardwareMap);
         robotID = robotRobotID.getRobotID();
         robotConstants = new RobotConstants(robotID);
@@ -191,31 +204,32 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     public String getSampleColor()
     {
-//        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-//        double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM);
-//        float maxsat = Math.max(Math.max(colors.red, colors.green), colors.blue);
-//        float r = colors.red/maxsat;
-//        float g = colors.green/maxsat;
-//        float b = colors.blue/maxsat;
-//
-//        String sample = "Nothing";
-//
-//        if (distance < 3.0) {
-//            if (r == 1.0) {
-//                sample = "Red";
-//                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-//            } else if (b == 1.00) {
-//                sample = "Blue";
-//                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-//            } else {
-//                sample = "Yellow";
-//                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-//            }
-//        }
-//        else {
-//            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
-//        }
-        return "";
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM);
+        float maxsat = Math.max(Math.max(colors.red, colors.green), colors.blue);
+        float r = colors.red/maxsat;
+        float g = colors.green/maxsat;
+        float b = colors.blue/maxsat;
+
+        String sample = "Nothing";
+
+        if (distance < 8.0) {
+            if (r == 1.0) {
+                sample = "Red";
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+            } else if (b == 1.00) {
+                sample = "Blue";
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+            } else {
+                sample = "Yellow";
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+            }
+        }
+        else {
+            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
+
+        }
+        return sample;
     }
 
     public double getHeadingRadians() {
@@ -404,10 +418,12 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         {
             robotClimber.setPosition(climberCurrentPosition + robotConstants.CLIMBER_SPEED);
         }
-        else if ((climberDirection == -1) && (climberCurrentPosition > 0))
+        //else if ((climberDirection == -1) && (climberCurrentPosition > 0))
+        else if ((climberDirection == -1) && (climberCurrentPosition > robotConstants.CLIMBER_HANG_POSITION))
         {
             robotClimber.setPosition(climberCurrentPosition - robotConstants.CLIMBER_SPEED);
         }
+
 
     }
     private void updateDashboard()
@@ -716,7 +732,9 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
 
     private void updateIntake()
     {
-        if (intakeSpeed == robotConstants.INTAKE_ROLLER_OUT_SPEED)
+        if (timer.time() > 115)
+            robotIntake.setSpeed(0);
+        else if (intakeSpeed == robotConstants.INTAKE_ROLLER_OUT_SPEED)
             robotIntake.setSpeed(intakeSpeed);
         else if (intakeOverride)
             robotIntake.setSpeed(robotConstants.INTAKE_ROLLER_IN_SPEED);
@@ -732,7 +750,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         initalizeEverything();
 
         waitForStart();
-
+        timer.reset();
         while (opModeIsActive())
         {
             updateJoysticks();
@@ -748,6 +766,7 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
                 updateClimber();
             }
             processStateMachine();
+            getSampleColor();
             updateDashboard();
         }
 

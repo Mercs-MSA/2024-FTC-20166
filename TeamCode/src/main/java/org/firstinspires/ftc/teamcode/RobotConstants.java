@@ -56,13 +56,13 @@ public class RobotConstants
     public static final int STALL_SAMPLE_COUNT = 10;
     public static double INTAKE_SLIDE_MAX_POSITION = 0.78;
     public static double INTAKE_SLIDE_MIN_POSITION = 0;
-    public static double INTAKE_SLIDE_SAFE_POSITION = 0.3;
-    public static double INTAKE_SLIDE_START_POSITION = 0.22;
+    public static double INTAKE_SLIDE_SAFE_POSITION = 0.4;
+    public static double INTAKE_SLIDE_START_POSITION = 0.0;
     public static double INTAKE_ARM_START_POSITION = 0.0;
     public static double INTAKE_PIVOT_START_POSITION = 0.0;
 
     public static int CLIMBER_UP_POSITION = 3400; //
-    public static int CLIMBER_HANG_POSITION = 2650;
+    public static int CLIMBER_HANG_POSITION = 1000;
 
     public static int CLIMBER_SPEED = 100;
 

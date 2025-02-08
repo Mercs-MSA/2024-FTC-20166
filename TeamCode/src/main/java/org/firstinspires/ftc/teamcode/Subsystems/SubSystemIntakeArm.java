@@ -14,7 +14,7 @@ public class SubSystemIntakeArm {
     private double targetArmServoPosition = 0;
     private double currentArmServoPosition = 0;
 
-    private double armSpeed = 0.015;
+    private double armSpeed = 0.045;
 
     public SubSystemIntakeArm(HardwareMap hardwareMap) throws InterruptedException {
         leftServo = hardwareMap.get(Servo.class, "leftIntakeArmServo");
