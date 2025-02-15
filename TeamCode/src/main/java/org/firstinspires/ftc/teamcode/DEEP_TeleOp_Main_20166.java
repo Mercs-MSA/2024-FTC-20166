@@ -19,6 +19,7 @@ package org.firstinspires.ftc.teamcode;
 // blinkIn                   expansion          servo 1                 ledDriver
 // leftIntakeServo           expansion          servo 2                 leftIntakeServo
 // rightIntakeServo          expansion          servo 3                 rightIntakeServo
+// topIntakeServo            expansion          servo 4                 topIntakeServo
 
 //OTOS                       control            i2bus 1                 OTOS sensor
 // colorSensor               control            i2Bus 2                 color sensor
@@ -210,26 +211,33 @@ public class DEEP_TeleOp_Main_20166 extends LinearOpMode {
         float r = colors.red/maxsat;
         float g = colors.green/maxsat;
         float b = colors.blue/maxsat;
-
         String sample = "Nothing";
 
-        if (distance < 8.0) {
-            if (r == 1.0) {
-                sample = "Red";
-                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-            } else if (b == 1.00) {
-                sample = "Blue";
-                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-            } else {
-                sample = "Yellow";
-                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-            }
+        if (timer.time() > 100)
+        {
+            sample = "Endgame";
+            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP2_LARSON_SCANNER);
         }
         else {
-            blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
 
+            if (distance < 8.0) {
+                if (r == 1.0) {
+                    sample = "Red";
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                } else if (b == 1.00) {
+                    sample = "Blue";
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+                } else {
+                    sample = "Yellow";
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+                }
+            } else {
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+
+            }
         }
-        return sample;
+            return sample;
+
     }
 
     public double getHeadingRadians() {

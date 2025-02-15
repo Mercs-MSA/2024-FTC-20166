@@ -12,17 +12,20 @@ public class SubSystemIntake {
     private CRServo leftIntakeServo;
     private CRServo rightIntakeServo;
 
+    private CRServo topIntakeServo;
+
 
     public SubSystemIntake(HardwareMap hardwareMap) throws InterruptedException {
         leftIntakeServo = hardwareMap.get(CRServo.class, "leftIntakeServo");
         rightIntakeServo = hardwareMap.get(CRServo.class, "rightIntakeServo");
-
+        topIntakeServo = hardwareMap.get(CRServo.class, "topIntakeServo");
      }
 
     public void setSpeed(double speed)
     {
         leftIntakeServo.setPower(-speed);
         rightIntakeServo.setPower(speed);
+        topIntakeServo.setPower(speed);
     }
 
 }

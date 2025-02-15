@@ -113,7 +113,7 @@ public class V3RightAuton1 extends OpMode {
     public static Pose specimenTwoHangPose = pointAndHeadingToPose(2, submersibleDropOffY, 90);
     public static Pose specimenThreeHangPose = pointAndHeadingToPose(5, submersibleDropOffY, 90);
 
-/*    public static final Pose testPose = pointAndHeadingToPose(40, -40, 90.0);*/
+    /*    public static final Pose testPose = pointAndHeadingToPose(40, -40, 90.0);*/
 
 
 
@@ -136,10 +136,10 @@ public class V3RightAuton1 extends OpMode {
     //public static final Pose submersibleToSpike6 = pointAndHeadingToPose(56.67, behindSamples, 90); //Back behind the samples
     //public static final Pose submersibleToSpike8 = pointAndHeadingToPose(sample2X, behindSamples, 90);//Aligned behind second sample
     public static final Pose submersibleToSpike8 = pointAndHeadingToPose(40, pushObservationY + 5, 200);
-  /*  public static final Pose submersibleToSpike9 = pointAndHeadingToPose(54,pushPrepY , 90);//Back behind samples
-    public static final Pose submersibleToSpike10 = pointAndHeadingToPose(60,pushAlignY , 90);//Aligned behind third sample
-    public static final Pose submersibleToSpike11 = pointAndHeadingToPose(60,pushObservationY  , 90);//Observation drop 'push to' location for third sample
-    public static final Pose submersibleToSpike12 = pointAndHeadingToPose(52,-38  , 90);//Back out of Observation zone*/
+    /*  public static final Pose submersibleToSpike9 = pointAndHeadingToPose(54,pushPrepY , 90);//Back behind samples
+      public static final Pose submersibleToSpike10 = pointAndHeadingToPose(60,pushAlignY , 90);//Aligned behind third sample
+      public static final Pose submersibleToSpike11 = pointAndHeadingToPose(60,pushObservationY  , 90);//Observation drop 'push to' location for third sample
+      public static final Pose submersibleToSpike12 = pointAndHeadingToPose(52,-38  , 90);//Back out of Observation zone*/
     public static final Pose submersibleToSpike13 = pointAndHeadingToPose(specimenWallPickupX,specimenWallPickupY  , 270);//Move into grabbing position
 
     //public static final Pose testPoint1 = pointAndHeadingToPose(42.5, pushObservationY, 90);
@@ -178,12 +178,12 @@ public class V3RightAuton1 extends OpMode {
     //
     public static Pose specimenPickupPose = pointAndHeadingToPose(specimenWallPickupX,specimenWallPickupY  , 270);
 
-/*    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenTwoClipOn));
-    public static final Path moveToSpeciminThreePickup = new Path (new BezierCurve(specimenTwoClipOn, specimenPickupPoint));
-    public static final Path specimenThreeToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenThreeClipOn)); */
+    /*    public static final Path specimenTwoToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenTwoClipOn));
+        public static final Path moveToSpeciminThreePickup = new Path (new BezierCurve(specimenTwoClipOn, specimenPickupPoint));
+        public static final Path specimenThreeToSubmersible = new Path(new BezierCurve(specimenPickupPoint, specimenThreeClipOn)); */
     public static Pose autonHoldLocation = pointAndHeadingToPose(35, -57, 0);
 
- /*   public static final Path moveToAutonHoldPath = new Path(new BezierCurve(specimenThreeClipOn, autonHoldLocation));*/
+    /*   public static final Path moveToAutonHoldPath = new Path(new BezierCurve(specimenThreeClipOn, autonHoldLocation));*/
 
 
     /**
@@ -224,7 +224,7 @@ public class V3RightAuton1 extends OpMode {
 
     private static Pose pointAndHeadingToPose(double x, double y, double headingInDegrees)
     {
-            return new Pose(x, y, Math.toRadians(headingInDegrees));
+        return new Pose(x, y, Math.toRadians(headingInDegrees));
     }
     private void initializeSubSystems() throws InterruptedException {
         robotElevator = new SubSystemElevator(hardwareMap, robotConstants.ELEVATOR_MULTIPLIER, robotConstants.ELEVATOR_MOTOR_COUNT);
@@ -254,11 +254,11 @@ public class V3RightAuton1 extends OpMode {
         //MAKE SURE DEGREES OR RADIANS CORRECT
 
         follower.followPath(pathChainToFollow, true);
- //       int curveCount = pathChainToFollow.size();
- //       for (int i = 0; i < curveCount; i++)
- //       {
- //           pathChainToFollow.getPath(i).setLinearHeadingInterpolation(currentHeading, endHeading);
- //       }
+        //       int curveCount = pathChainToFollow.size();
+        //       for (int i = 0; i < curveCount; i++)
+        //       {
+        //           pathChainToFollow.getPath(i).setLinearHeadingInterpolation(currentHeading, endHeading);
+        //       }
     }
     void updateTelemetry()
     {
@@ -298,11 +298,11 @@ public class V3RightAuton1 extends OpMode {
     private boolean pathIsBusy()
     {
         //if (hasTimededout())
-          //  return false;
+        //  return false;
         //else if (follower.isBusy())
-          //  return true;
+        //  return true;
         //else
-          //  return false;
+        //  return false;
         if (robotStalled)
             return false;
         else
@@ -401,25 +401,25 @@ public class V3RightAuton1 extends OpMode {
         robotElevator.setPosition(robotConstants.ELEVATOR_SPECIMEN_PICK_UP_LIFT_POSITION);
         if (robotElevator.atTargetYet(10))
         {
-           restartTimeout(4000);
-           if (pickupCount == 3)// was 3, by changing it to 2, will stop after 2nd place
+            restartTimeout(4000);
+            //if (pickupCount == 3)// was 3, by changing it to 2, will stop after 2nd place
+            //{
+                //setPathFromCurrentPositionToTargetPose(specimenThreeHangPose);
+                //lowerElevatorNextState = AUTON_STATE.BACKUP_AND_LOWER;
+            //}
+            if (pickupCount == 1) {
+
+                setPathFromCurrentPositionToTargetPose(specimenOneHangPose);
+                lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
+            }
+            else if (pickupCount == 2)
             {
-                setPathFromCurrentPositionToTargetPose(specimenThreeHangPose);
+                setPathFromCurrentPositionToTargetPose(specimenTwoHangPose);
                 lowerElevatorNextState = AUTON_STATE.BACKUP_AND_LOWER;
             }
-            else if (pickupCount == 1) {
-
-               setPathFromCurrentPositionToTargetPose(specimenOneHangPose);
-               lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
-           }
-           else if (pickupCount == 2)
-           {
-               setPathFromCurrentPositionToTargetPose(specimenTwoHangPose);
-               lowerElevatorNextState = AUTON_STATE.MOVE_TO_SPECIMEN_PICKUP;
-           }
-           robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
-           currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
-           waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
+            robotElevator.setPosition(robotConstants.ELEVATOR_TOP_RUNG_PLACE);
+            currentAutonomousState = AUTON_STATE.WAIT_PATH_DONE_STATE;
+            waitPathDoneNextState = AUTON_STATE.LOWER_ELEVATOR_SETUP_STATE;
         }
     }
     private Point poseToPoint(Pose pose)
@@ -665,6 +665,7 @@ public class V3RightAuton1 extends OpMode {
     public void loop() {
         processStateMachine();
         follower.update();
+
         checkIfStalled();
 
         robotIntakeSlide.updateServoPosition();

@@ -89,7 +89,7 @@ public class RobotConstants
             ELEVATOR_MOTOR_COUNT = 1;
         } else
         { //Bot B (V3)
-            STALL_THRESHOLD = 0.3;
+            STALL_THRESHOLD = 0.15;
             ELEVATOR_MULTIPLIER = 0.96;
             START_TO_SUBMERSIBLE_SPEED = 0.6;
             BASKET_TO_SAMPLE_SPEED = 0.7;
