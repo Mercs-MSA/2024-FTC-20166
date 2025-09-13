@@ -179,7 +179,8 @@ public class RightAutotestPushThree20166 extends OpMode {
 
     /**
      * This initializes the Follower and creates the forward and backward Paths. Additionally, this
-     * initializes the FTC Dashboard telemetry.
+     * initializes the FTC Dashboard
+     * .
      */
     @Override
     public void start() {

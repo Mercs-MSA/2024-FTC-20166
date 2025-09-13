@@ -21,10 +21,10 @@ public class DriveTest extends LinearOpMode {
     private DcMotorEx m1 = null;
     private DcMotorEx m2 = null;
     private DcMotorEx m3 = null;
-    private DcMotorEx m4 = null;
-    private DcMotorEx m5 = null;
-    private DcMotorEx m6 = null;
-    private DcMotorEx m7 = null;
+//    private DcMotorEx m4 = null;
+//    private DcMotorEx m5 = null;
+//    private DcMotorEx m6 = null;
+//    private DcMotorEx m7 = null;
     private IMU imu;
 
     private double FLYPower = 0.0;
@@ -47,19 +47,19 @@ public class DriveTest extends LinearOpMode {
         m1 = hardwareMap.get(DcMotorEx.class, "FR");
         m2 = hardwareMap.get(DcMotorEx.class, "BL");
         m3 = hardwareMap.get(DcMotorEx.class, "BR");
-        m4 = hardwareMap.get(DcMotorEx.class, "M4");
-        m5 = hardwareMap.get(DcMotorEx.class, "M5");
-        m6 = hardwareMap.get(DcMotorEx.class, "M6");
-        m7 = hardwareMap.get(DcMotorEx.class, "M7");
+//        m4 = hardwareMap.get(DcMotorEx.class, "M4");
+//        m5 = hardwareMap.get(DcMotorEx.class, "M5");
+//        m6 = hardwareMap.get(DcMotorEx.class, "M6");
+//        m7 = hardwareMap.get(DcMotorEx.class, "M7");
 
         m0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         m1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         m2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         m3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        m4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        m5.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        m6.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        m7.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        m4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        m5.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        m6.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        m7.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.resetYaw();
@@ -142,6 +142,10 @@ public class DriveTest extends LinearOpMode {
 
             updateDriveControls();
             calculateDrivePower();
+
+            //FLXPower.setVelocity(1000); // Sets target velocity to 1000 ticks per second
+            // m0.setVelocity();
+
             setDriveMotors((FLXPower + FLYPower + FLRPower), (FRXPower + FRYPower + FRRPower), (BLXPower + BLYPower + BLRPower), (BRXPower + BRYPower + BRRPower));
 
             updateTelemetry(telemetry);
