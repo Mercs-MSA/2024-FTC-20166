@@ -39,9 +39,16 @@ public class ClosedLoopMotorTest extends LinearOpMode {
     
     public double measured_Velocity;
 
-
-
-
+    static int findNeededSpeed(double ms) // Calculate TPS for M/s
+    {
+        double solvedSpeedRPM = ms / (Math.PI * 0.09525) * 60;
+        if (solvedSpeedRPM > 5100)
+        {
+            solvedSpeedRPM = 5100;
+        }
+        double solvedSpeedTPS = (solvedSpeedRPM / 5100) * 2400;
+        return (int) solvedSpeedTPS;
+    }
 
     public void initializeDriveMotors()
     {
