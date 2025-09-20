@@ -164,6 +164,15 @@ public class DriveTestFaceGoal extends LinearOpMode {
         BLRPower = driveRotate; //gamepad1.right_stick_x;
         BRRPower = -driveRotate; //-gamepad1.right_stick_x;
     }
+
+    public static double getPointsHeading(double x, double y, double xr, double yr)
+    {
+        double calculatedAngleRads = Math.atan2(y - yr, x - xr);
+        double calculatedAngleDegs = (180.0 / Math.PI) * calculatedAngleRads;
+        double correctedAngle = calculatedAngleDegs - 90.0;
+        return correctedAngle;
+    }
+
     public void runOpMode() throws InterruptedException {
        initializeHardware();
 
