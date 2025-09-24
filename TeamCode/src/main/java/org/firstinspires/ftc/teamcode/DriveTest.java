@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ public class DriveTest extends LinearOpMode {
 
     private double driveX;
     private double driveY;
+    private double driveRotate;
     //Motor demo variables
     private DcMotorEx m0 = null;
     private DcMotorEx m1 = null;
@@ -46,15 +48,14 @@ public class DriveTest extends LinearOpMode {
     private double FRRPower = 0.0;
     private double BLRPower = 0.0;
     private double BRRPower = 0.0;
+    private double FLPower = 0.0;
+    private double FRPower = 0.0;
+    private double BLPower = 0.0;
+    private double BRPower = 0.0;
+    private double currentHeading = 0.0;
 
-    public void initializeHardware() {
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
-        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
-        if (limitSwitch.getState() == true) {
-            robotID = 1;
-        }
-        telemetry.addData("robotID",robotID);
-        telemetry.addData("Limit Switch",limitSwitch.getState())
+    private void initializeMotors()
+    {
         m0 = hardwareMap.get(DcMotorEx.class, "FL");
         m1 = hardwareMap.get(DcMotorEx.class, "FR");
         m2 = hardwareMap.get(DcMotorEx.class, "BL");
@@ -73,15 +74,43 @@ public class DriveTest extends LinearOpMode {
 //        m6.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        m7.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if (robotID == 1)
+        if (robotID == 0)
         {
-            m0.setDirection(DcMotorSimple.Direction.REVERSE);
-            m2.setDirection(DcMotorSimple.Direction.REVERSE);
+            m1.setDirection(DcMotorSimple.Direction.REVERSE);
+            m3.setDirection(DcMotorSimple.Direction.REVERSE);
         }
+    }
 
+    private void initializeIMU()
+    {
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection;
+
+        if (robotID == 0) {
+            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+        }
+        else
+        {
+            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+       }
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
-
+    }
+    public void initializeHardware() {
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        if (limitSwitch.getState() == false) {
+            robotID = 0;
+        } else
+        {
+            robotID = 1;
+        }
+        initializeMotors();
+        initializeIMU();
     }
 
     private void setDriveMotors(double FL, double FR, double BL, double BR)
@@ -98,7 +127,6 @@ public class DriveTest extends LinearOpMode {
         m1.setPower(FR);
         m2.setPower(BL);
         m3.setPower(BR);
-
     }
     
     private void updateDriveControls() 
@@ -118,7 +146,8 @@ public class DriveTest extends LinearOpMode {
 
         driveX = oldDriveX * Math.cos(angleInRadians) - oldDriveY * Math.sin(angleInRadians);
         driveY = oldDriveX * Math.sin(angleInRadians) + oldDriveY * Math.cos(angleInRadians);
-
+        driveRotate = gamepad1.right_stick_x;
+        currentHeading = Math.toDegrees(angleInRadians);
     }
 
     private void calculateDrivePower()
@@ -133,10 +162,15 @@ public class DriveTest extends LinearOpMode {
         BLXPower = -driveX;
         BRXPower = driveX;
 
-        FLRPower = gamepad1.right_stick_x;
-        FRRPower = -gamepad1.right_stick_x;
-        BLRPower = gamepad1.right_stick_x;
-        BRRPower = -gamepad1.right_stick_x;
+        FLRPower = driveRotate;
+        FRRPower = -driveRotate;
+        BLRPower = driveRotate;
+        BRRPower = -driveRotate;
+
+        FLPower = (FLXPower + FLYPower + FLRPower);
+        FRPower = (FRXPower + FRYPower + FRRPower);
+        BLPower = (BLXPower + BLYPower + BLRPower);
+        BRPower = (BRXPower + BRYPower + BRRPower);
     }
     public void runOpMode() throws InterruptedException {
        initializeHardware();
@@ -144,28 +178,24 @@ public class DriveTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive())
         {
- /*           telemetry.addData("Motor 0", m0.getCurrentPosition());
-            telemetry.addData("Motor 1", m1.getCurrentPosition());
-            telemetry.addData("Motor 2", m2.getCurrentPosition());
-            telemetry.addData("Motor 3", m3.getCurrentPosition());
-            telemetry.addData("Motor 4", m4.getCurrentPosition());
-            telemetry.addData("Motor 5", m5.getCurrentPosition());
-            telemetry.addData("Motor 6", m6.getCurrentPosition());
-            telemetry.addData("Motor 7", m7.getCurrentPosition());
-
-  */
-//            telemetry.addData("IMU X", orientation.getYaw(AngleUnit.DEGREES));
-//            telemetry.addData("IMU Y", orientation.getPitch(AngleUnit.DEGREES));
-//            telemetry.addData("IMU Z", orientation.getRoll(AngleUnit.DEGREES));
-
-
             updateDriveControls();
             calculateDrivePower();
 
-            //FLXPower.setVelocity(1000); // Sets target velocity to 1000 ticks per second
-            // m0.setVelocity();
+            setDriveMotors(FLPower, FRPower, BLPower, BRPower);
 
-            setDriveMotors((FLXPower + FLYPower + FLRPower), (FRXPower + FRYPower + FRRPower), (BLXPower + BLYPower + BLRPower), (BRXPower + BRYPower + BRRPower));
+            telemetry.addData("Robot ID",robotID);
+            telemetry.addData("Current Heading ", currentHeading);
+            telemetry.addData("Drive X", driveX);
+            telemetry.addData("Drive Y", driveY);
+            telemetry.addData("Drive Rotate", driveRotate);
+            telemetry.addData("FL power ",FLPower);
+            telemetry.addData("FL ticks ", m0.getCurrentPosition());
+            telemetry.addData("FR power ",FRPower);
+            telemetry.addData("FR ticks ", m1.getCurrentPosition());
+            telemetry.addData("BL power ",BLPower);
+            telemetry.addData("BL ticks ", m2.getCurrentPosition());
+            telemetry.addData("BR power ",BRPower);
+            telemetry.addData("BR ticks ", m3.getCurrentPosition());
 
             updateTelemetry(telemetry);
         }
