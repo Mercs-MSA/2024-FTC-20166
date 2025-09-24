@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -27,6 +29,10 @@ public class DriveTest extends LinearOpMode {
 //    private DcMotorEx m7 = null;
     private IMU imu;
 
+    //robotID initializing
+    private DigitalChannel limitSwitch;
+    private int robotID = 0;
+
     private double FLYPower = 0.0;
     private double FRYPower = 0.0;
     private double BLYPower = 0.0;
@@ -41,8 +47,14 @@ public class DriveTest extends LinearOpMode {
     private double BLRPower = 0.0;
     private double BRRPower = 0.0;
 
-    public void initializeHardware()
-    {
+    public void initializeHardware() {
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
+        limitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        if (limitSwitch.getState() == true) {
+            robotID = 1;
+        }
+        telemetry.addData("robotID",robotID);
+        telemetry.addData("Limit Switch",limitSwitch.getState())
         m0 = hardwareMap.get(DcMotorEx.class, "FL");
         m1 = hardwareMap.get(DcMotorEx.class, "FR");
         m2 = hardwareMap.get(DcMotorEx.class, "BL");
@@ -61,8 +73,15 @@ public class DriveTest extends LinearOpMode {
 //        m6.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        m7.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        if (robotID == 1)
+        {
+            m0.setDirection(DcMotorSimple.Direction.REVERSE);
+            m2.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+
         imu = hardwareMap.get(IMU.class, "imu");
         imu.resetYaw();
+
     }
 
     private void setDriveMotors(double FL, double FR, double BL, double BR)

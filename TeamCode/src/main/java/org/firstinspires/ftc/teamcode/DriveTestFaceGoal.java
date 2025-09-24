@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.startingPoseRight;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -12,8 +10,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 
 
 @TeleOp
@@ -51,9 +47,20 @@ public class DriveTestFaceGoal extends LinearOpMode {
 
     private double driveRotate;
 
+
+    SparkFunOTOS.Pose2D robotPos;
+
+
     public static SparkFunOTOS.Pose2D startPointMiddleBottom = new SparkFunOTOS.Pose2D(0, 60, Math.toRadians(0));
+
+    private double redGoalPointx = 72;
+    private double redGoalPointy = 72;
+
+    private double blueGoalPointx = -72;
+    private double blueGoalPointy = 72;
+
     private boolean currentlyTurning = false;
-    private double desiredHeading;
+    private double joystickHeading;
 
     //public Point startPose
 
@@ -87,8 +94,8 @@ public class DriveTestFaceGoal extends LinearOpMode {
     public double getHeadingDegrees() {
         //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         // return orientation.getYaw(AngleUnit.DEGREES);
-        SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-        return pos.h;
+        robotPos = myOtos.getPosition();
+        return robotPos.h;
     }
     private void setDriveMotors(double FL, double FR, double BL, double BR)
     {
@@ -106,12 +113,36 @@ public class DriveTestFaceGoal extends LinearOpMode {
         m3.setPower(BR);
 
     }
-    
+
+    public static double getPointsHeading(double x, double y, double xr, double yr)
+    {
+        double calculatedAngleRads = Math.atan2(y - yr, x - xr);
+        double calculatedAngleDegs = Math.toDegrees(calculatedAngleRads);
+        //double correctedAngle = calculatedAngleDegs - 90.0;
+        return calculatedAngleDegs;
+    }
+
+    public static double headingError(double actualHeading, double desiredHeading)
+    {
+        double error = actualHeading - desiredHeading;
+        if (error > 180)
+        {
+            error -= 360;
+        } else if (error < -180)
+        {
+            error += 360;
+        }
+        return error;
+    }
+
     private void updateDriveControls() 
     {
         double angleInRadians;
         double oldDriveX = gamepad1.left_stick_x;
         double oldDriveY = gamepad1.left_stick_y;
+        double headingPFactor = (1.0 / 90.0);
+        double desiredHeading;
+        double goalHeading;
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         if(gamepad1.right_bumper)
         {
@@ -130,7 +161,7 @@ public class DriveTestFaceGoal extends LinearOpMode {
             driveRotate = 0;
             if (currentlyTurning)
             {
-                desiredHeading = getHeadingDegrees();
+                joystickHeading = getHeadingDegrees();
             }
             currentlyTurning = false;
         }
@@ -138,12 +169,21 @@ public class DriveTestFaceGoal extends LinearOpMode {
         {
             currentlyTurning = true;
         }
-        //double error = headingError(getHeadingDegrees(), desiredHeading);
-//        if (error > 5)
-//        {
-//            //driveRotate =
-//        }
-
+        goalHeading = getPointsHeading(redGoalPointx, redGoalPointy, robotPos.x, robotPos.y);
+        if (gamepad1.left_bumper)
+        {
+            desiredHeading = goalHeading;
+        } else
+        {
+            desiredHeading = joystickHeading;
+        }
+        double error = headingError(getHeadingDegrees(), desiredHeading);
+        if (error > 5)
+        {
+            driveRotate = error * headingPFactor;
+        }
+        //displaying the error on the driver hub
+        telemetry.addData("error", error);
     }
 
     private void calculateDrivePower()
@@ -163,14 +203,6 @@ public class DriveTestFaceGoal extends LinearOpMode {
         FRRPower = -driveRotate; //-gamepad1.right_stick_x;
         BLRPower = driveRotate; //gamepad1.right_stick_x;
         BRRPower = -driveRotate; //-gamepad1.right_stick_x;
-    }
-
-    public static double getPointsHeading(double x, double y, double xr, double yr)
-    {
-        double calculatedAngleRads = Math.atan2(y - yr, x - xr);
-        double calculatedAngleDegs = (180.0 / Math.PI) * calculatedAngleRads;
-        double correctedAngle = calculatedAngleDegs - 90.0;
-        return correctedAngle;
     }
 
     public void runOpMode() throws InterruptedException {

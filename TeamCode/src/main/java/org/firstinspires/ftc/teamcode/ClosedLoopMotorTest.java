@@ -126,18 +126,18 @@ public class ClosedLoopMotorTest extends LinearOpMode {
             */
             
             desired_Velocity = max_tps * gamepad1.right_trigger;
-            
+
+            if (gamepad1.a)
+            {
+                desired_Velocity = 2000;
+            }
+
             //if (gamepad1.right_bumper)
             {
                 frontLeftDrive.setVelocity(desired_Velocity);
                 frontRightDrive.setVelocity(desired_Velocity);
                 backLeftDrive.setVelocity(desired_Velocity);
                 backRightDrive.setVelocity(desired_Velocity);
-            }
-
-            if (gamepad1.a)
-            {
-                desired_Velocity = 1000;
             }
 
             measured_Velocity = frontLeftDrive.getVelocity();
