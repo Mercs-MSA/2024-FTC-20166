@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
@@ -20,7 +21,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 public class DriveTestFaceGoal extends LinearOpMode
 {
     private Telemetry telemetryA;
-
     private double driveX;
     private double driveY;
     SparkFunOTOS myOtos;
@@ -30,6 +30,8 @@ public class DriveTestFaceGoal extends LinearOpMode
     private DcMotorEx m1 = null;
     private DcMotorEx m2 = null;
     private DcMotorEx m3 = null;
+    private Servo servo1;
+    private Servo servo2;
 //    private DcMotorEx m4 = null;
 //    private DcMotorEx m5 = null;
 //    private DcMotorEx m6 = null;
@@ -56,7 +58,7 @@ public class DriveTestFaceGoal extends LinearOpMode
     SparkFunOTOS.Pose2D robotPose;
 
 
-    public static SparkFunOTOS.Pose2D startPointMiddleBottom = new SparkFunOTOS.Pose2D(0, 60, Math.toRadians(0));
+    public static SparkFunOTOS.Pose2D startPointMiddleBottom = new SparkFunOTOS.Pose2D(0, -60, Math.toRadians(0));
 
     private double redGoalPointx = 72;
     private double redGoalPointy = 72;
@@ -74,8 +76,12 @@ public class DriveTestFaceGoal extends LinearOpMode
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
+        servo1 = hardwareMap.get(Servo.class, "servo1");
+        servo2 = hardwareMap.get(Servo.class, "servo2");
+
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         myOtos.setPosition(startPointMiddleBottom);
+        //myOtos.setOffset(new Pose2D(0,0,90);
         m0 = hardwareMap.get(DcMotorEx.class, "FL");
         m1 = hardwareMap.get(DcMotorEx.class, "FR");
         m2 = hardwareMap.get(DcMotorEx.class, "BL");
@@ -134,10 +140,10 @@ public class DriveTestFaceGoal extends LinearOpMode
 
     public static double getPointsHeading(double x, double y, double xr, double yr)
     {
-        double calculatedAngleRads = Math.atan2(y - yr, x - xr);
+        double calculatedAngleRads = Math.atan2(x - xr, y - yr);
         double calculatedAngleDegs = Math.toDegrees(calculatedAngleRads);
         //double correctedAngle = calculatedAngleDegs - 90.0;
-        return calculatedAngleDegs;
+        return -1 * calculatedAngleDegs;
     }
 
     public static double headingError(double actualHeading, double desiredHeading)
@@ -195,7 +201,7 @@ public class DriveTestFaceGoal extends LinearOpMode
         }
 
         //setting heading to goal heading or regular heading
-        goalHeading = getPointsHeading(redGoalPointx, redGoalPointy, robotPose.x, robotPose.y);
+        goalHeading = getPointsHeading(blueGoalPointx, blueGoalPointy, robotPose.x, robotPose.y);
         if (gamepad1.left_bumper)
         {
             desiredHeading = goalHeading;
@@ -214,6 +220,7 @@ public class DriveTestFaceGoal extends LinearOpMode
         telemetryA.addData("error", error);
         telemetryA.addData("Desired Heading", desiredHeading);
         telemetryA.addData("Joystick Heading", joystickHeading);
+        telemetryA.addData("Goal Heading", goalHeading);
 
     }
 
@@ -241,7 +248,6 @@ public class DriveTestFaceGoal extends LinearOpMode
     public void runOpMode() throws InterruptedException
     {
        initializeHardware();
-
         waitForStart();
         while (opModeIsActive())
         {
