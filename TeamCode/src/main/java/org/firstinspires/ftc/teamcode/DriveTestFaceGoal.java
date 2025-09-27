@@ -1,20 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.acmerobotics.dashboard.FtcDashboard;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 @TeleOp
 //@Disabled
-public class DriveTestFaceGoal extends LinearOpMode {
+public class DriveTestFaceGoal extends LinearOpMode
+{
+    private Telemetry telemetryA;
 
     private double driveX;
     private double driveY;
@@ -48,7 +53,7 @@ public class DriveTestFaceGoal extends LinearOpMode {
     private double driveRotate;
 
 
-    SparkFunOTOS.Pose2D robotPos;
+    SparkFunOTOS.Pose2D robotPose;
 
 
     public static SparkFunOTOS.Pose2D startPointMiddleBottom = new SparkFunOTOS.Pose2D(0, 60, Math.toRadians(0));
@@ -58,7 +63,7 @@ public class DriveTestFaceGoal extends LinearOpMode {
 
     private double blueGoalPointx = -72;
     private double blueGoalPointy = 72;
-
+    private final double errorDeadZone = 5.0;
     private boolean currentlyTurning = false;
     private double joystickHeading;
 
@@ -66,9 +71,11 @@ public class DriveTestFaceGoal extends LinearOpMode {
 
     public void initializeHardware()
     {
+        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetryA.update();
+
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         myOtos.setPosition(startPointMiddleBottom);
-       // myOtos.
         m0 = hardwareMap.get(DcMotorEx.class, "FL");
         m1 = hardwareMap.get(DcMotorEx.class, "FR");
         m2 = hardwareMap.get(DcMotorEx.class, "BL");
@@ -91,11 +98,22 @@ public class DriveTestFaceGoal extends LinearOpMode {
         imu.resetYaw();
     }
 
-    public double getHeadingDegrees() {
-        //YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        // return orientation.getYaw(AngleUnit.DEGREES);
-        robotPos = myOtos.getPosition();
-        return robotPos.h;
+    public void updateRobotPose()
+    {
+        robotPose = myOtos.getPosition();
+    }
+
+    public double getHeadingDegrees()
+    {
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        return orientation.getYaw(AngleUnit.DEGREES);
+        //robotPos = myOtos.getPosition();
+        //return robotPos.h;
+    }
+    public double getHeadingRadians()
+    {
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        return orientation.getYaw(AngleUnit.RADIANS);
     }
     private void setDriveMotors(double FL, double FR, double BL, double BR)
     {
@@ -143,33 +161,41 @@ public class DriveTestFaceGoal extends LinearOpMode {
         double headingPFactor = (1.0 / 90.0);
         double desiredHeading;
         double goalHeading;
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+
+        //Robot Centric or Field Centric switching
         if(gamepad1.right_bumper)
         {
             angleInRadians = 0;
         }
         else
         {
-            angleInRadians = orientation.getYaw(AngleUnit.RADIANS);
+            angleInRadians = getHeadingRadians();
         }
 
+        // Applying Trig for field centric driving
         driveX = oldDriveX * Math.cos(angleInRadians) - oldDriveY * Math.sin(angleInRadians);
         driveY = oldDriveX * Math.sin(angleInRadians) + oldDriveY * Math.cos(angleInRadians);
         driveRotate = gamepad1.right_stick_x;
+
+        //setting josytick heading if rotating
+        if (currentlyTurning)
+        {
+            joystickHeading = getHeadingDegrees();
+        }
+
+        //Setting dead zone
         if (Math.abs(driveRotate) < .1)
         {
             driveRotate = 0;
-            if (currentlyTurning)
-            {
-                joystickHeading = getHeadingDegrees();
-            }
             currentlyTurning = false;
         }
         else
         {
             currentlyTurning = true;
         }
-        goalHeading = getPointsHeading(redGoalPointx, redGoalPointy, robotPos.x, robotPos.y);
+
+        //setting heading to goal heading or regular heading
+        goalHeading = getPointsHeading(redGoalPointx, redGoalPointy, robotPose.x, robotPose.y);
         if (gamepad1.left_bumper)
         {
             desiredHeading = goalHeading;
@@ -177,53 +203,62 @@ public class DriveTestFaceGoal extends LinearOpMode {
         {
             desiredHeading = joystickHeading;
         }
+
+        //Calculating and applying heading error
         double error = headingError(getHeadingDegrees(), desiredHeading);
-        if (error > 5)
+        if (Math.abs(error) > errorDeadZone)
         {
             driveRotate = error * headingPFactor;
         }
-        //displaying the error on the driver hub
-        telemetry.addData("error", error);
+        //displaying telemetry on the driver hub
+        telemetryA.addData("error", error);
+        telemetryA.addData("Desired Heading", desiredHeading);
+        telemetryA.addData("Joystick Heading", joystickHeading);
+
     }
 
     private void calculateDrivePower()
     {
+        // Setting the power for forwards and backwards
         FLYPower = -driveY;
         FRYPower = -driveY;
         BLYPower = -driveY;
         BRYPower = -driveY;
 
+        //Setting power for strafing
         FLXPower = driveX;
         FRXPower = -driveX;
         BLXPower = -driveX;
         BRXPower = driveX;
 
-
+        //Setting rotational power
         FLRPower = driveRotate; //gamepad1.right_stick_x;
         FRRPower = -driveRotate; //-gamepad1.right_stick_x;
         BLRPower = driveRotate; //gamepad1.right_stick_x;
         BRRPower = -driveRotate; //-gamepad1.right_stick_x;
     }
 
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() throws InterruptedException
+    {
        initializeHardware();
 
         waitForStart();
         while (opModeIsActive())
         {
- /*           telemetry.addData("Motor 0", m0.getCurrentPosition());
-            telemetry.addData("Motor 1", m1.getCurrentPosition());
-            telemetry.addData("Motor 2", m2.getCurrentPosition());
-            telemetry.addData("Motor 3", m3.getCurrentPosition());
-            telemetry.addData("Motor 4", m4.getCurrentPosition());
-            telemetry.addData("Motor 5", m5.getCurrentPosition());
-            telemetry.addData("Motor 6", m6.getCurrentPosition());
-            telemetry.addData("Motor 7", m7.getCurrentPosition());
+ /*           telemetryA.addData("Motor 0", m0.getCurrentPosition());
+            telemetryA.addData("Motor 1", m1.getCurrentPosition());
+            telemetryA.addData("Motor 2", m2.getCurrentPosition());
+            telemetryA.addData("Motor 3", m3.getCurrentPosition());
+            telemetryA.addData("Motor 4", m4.getCurrentPosition());
+            telemetryA.addData("Motor 5", m5.getCurrentPosition());
+            telemetryA.addData("Motor 6", m6.getCurrentPosition());
+            telemetryA.addData("Motor 7", m7.getCurrentPosition());
 
   */
-//            telemetry.addData("IMU X", orientation.getYaw(AngleUnit.DEGREES));
-//            telemetry.addData("IMU Y", orientation.getPitch(AngleUnit.DEGREES));
-//            telemetry.addData("IMU Z", orientation.getRoll(AngleUnit.DEGREES));
+//            telemetryA.addData("IMU X", orientation.getYaw(AngleUnit.DEGREES));
+//            telemetryA.addData("IMU Y", orientation.getPitch(AngleUnit.DEGREES));
+//            telemetryA.addData("IMU Z", orientation.getRoll(AngleUnit.DEGREES));
+            updateRobotPose();
             updateDriveControls();
             calculateDrivePower();
 
@@ -232,12 +267,12 @@ public class DriveTestFaceGoal extends LinearOpMode {
             //m0.setVelocity();
             setDriveMotors((FLXPower + FLYPower + FLRPower), (FRXPower + FRYPower + FRRPower), (BLXPower + BLYPower + BLRPower), (BRXPower + BRYPower + BRRPower));
 
-            SparkFunOTOS.Pose2D pos = myOtos.getPosition();
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
+            telemetryA.addData("X coordinate", robotPose.x);
+            telemetryA.addData("Y coordinate", robotPose.y);
+            telemetryA.addData("Heading angle", getHeadingDegrees());
 
-            updateTelemetry(telemetry);
+
+            updateTelemetry(telemetryA);
         }
     }
 }
