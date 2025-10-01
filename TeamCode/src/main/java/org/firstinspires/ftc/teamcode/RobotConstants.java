@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.robot.Robot;
 
 @Config
 public class RobotConstants
@@ -65,6 +64,7 @@ public class RobotConstants
     public static int CLIMBER_HANG_POSITION = 1000;
 
     public static int CLIMBER_SPEED = 100;
+
 
 
     public RobotConstants(int robotId)
